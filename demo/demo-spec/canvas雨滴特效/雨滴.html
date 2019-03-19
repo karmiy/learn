@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+  <style>
+	*{
+		margin:0;
+		padding:0;
+	}
+	canvas{
+		background-color:#000;
+/*		vertical-align:middle;*/
+		display:block;
+	}
+  </style>
+ </head>
+ <body>
+	<canvas id="canvas"></canvas>
+ </body>
+ <script type="text/javascript">
+	var canvas = document.getElementById("canvas");
+	var w = canvas.width = window.innerWidth;
+	var h = canvas.height = window.innerHeight;
+
+	window.onresize = function(){
+		w = canvas.width = window.innerWidth;
+		h = canvas.height = window.innerHeight;
+	};
+
+	var cxt = canvas.getContext("2d");
+//	cxt.fillStyle = '#cc33ff';
+//	cxt.fillRect(10,10,100,100);
+	
+//	cxt.strokeStyle = '#cc33ff';
+//	cxt.arc(200,200,30,0,Math.PI*2,false);
+//	cxt.stroke();
+
+	function Drop(){}
+	Drop.prototype = {
+		init:function(){
+			this.x = random(0,w);
+			this.y = 0;
+			this.vy = random(4,5);//y轴速度
+			this.l = random(0.8*h,0.9*h);
+			this.r = 1;//圆初始的半径
+			this.vr = 1;
+			this.a = 1;//圆初始透明度
+			this.va = 0.96;
+			this.color = color();
+		},
+		draw:function(){
+			if(this.y>this.l){
+				//画圆
+				cxt.beginPath();
+				//cxt.strokeStyle = "rgba(204,51,255,"+this.a+")";
+				//204 51 255
+				cxt.strokeStyle = toRgba(this.color,this.a);
+				cxt.arc(this.x,this.y,this.r,0,Math.PI*2,false);
+				cxt.stroke();
+			}else{
+				//画矩形
+				cxt.fillStyle = this.color;
+				cxt.fillRect(this.x,this.y,2,10);
+			}
+			this.update();
+		},
+		update:function(){
+			if(this.y < this.l){
+				this.y += this.vy;
+			}else{
+				if (this.a > 0.03){
+					this.r += this.vr;
+					if(this.r>50){
+						this.a*=this.va;
+					}
+				}else{
+					this.init();
+				}
+			}
+		}
+	};
+	
+	var drops=[];
+	for(var i=0;i<30;i++){
+		setTimeout(function(){
+			var drop = new Drop();
+			drop.init();
+			drops.push(drop);
+		},i*200);
+	}
+
+	setInterval(function(){
+		cxt.fillStyle = "rgba(0,0,0,0.1)";
+		cxt.fillRect(0,0,w,h);
+		for(var i=0;i<drops.length;i++){
+			drops[i].draw();
+		}
+	},1000/60);
+
+	function random(min,max){
+		return Math.random()*(max - min) + min;
+	}
+	//生成随机颜色
+	function color(){
+		var r = Math.floor(Math.random()*256);
+		var g = Math.floor(Math.random()*256);
+		var b = Math.floor(Math.random()*256);
+		return "rgb("+r+","+g+","+b+")";
+	}
+
+	function toRgba(rgb,a){
+		var s = rgb.indexOf("(");
+		var e = rgb.indexOf(")");
+		rgb = rgb.substring(s+1,e);
+		return "rgba("+rgb+","+a+")";
+	}
+ </script>
+</html>

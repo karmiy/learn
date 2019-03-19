@@ -1,0 +1,686 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>please enter your title</title>
+		<meta charset="utf-8">
+		<meta name="Author" content="karmiy">
+		<link rel="stylesheet" type="text/css" href="lib/font-awesome-4.7.0/css/font-awesome.min.css" >
+		<style type='text/css'>
+			*{ 
+				margin:0; 
+				padding:0;
+				font-family:'宋体';
+			}
+			body{
+				overflow-x:hidden;
+				background-color:#F4F4F4;
+			}
+			.top{
+				height:36px;
+				background-color:#F5F5F5;
+			}
+			.top .title{
+				width:1190px;
+				height:100%;
+				margin:auto;
+			}
+			.top .title .title-left{
+				float:left;
+				height:inherit;
+				vertical-align:middle;
+			}
+			.top .title .title-right{
+				float:right;
+				height:inherit;
+				vertical-align:middle;
+			}
+			.top .title ul{
+				height:inherit;
+				list-style:none;
+			}
+			.top .title ul li{
+				float:left;
+				height:inherit;
+				line-height:36px;
+				padding-right:10px;
+				color:#6C6C6C;
+				font-size:12px;
+			}
+			.top .title .title-left ul li:nth-child(1){
+				color:#000;
+			}
+			.top .title .title-left ul li:nth-child(2){
+				color:#F22E00;
+			}
+			/* .top .title .title-right ul li:nth-child(2) i:nth-child(1),li:nth-child(7) i:nth-child(1){
+				color:#F22E00;
+			} */
+			.top .title .title-right ul li:nth-child(2) i:nth-child(1){
+				color:#F22E00;
+			}
+			.top .title .title-right ul li:nth-child(7) i:nth-child(1){
+				color:#F22E00;
+			}
+			
+			.title-img{
+				height:70px;
+				background-color:#FE2323;
+			}
+			.title-img i{
+				display:block;
+				width:1190px;
+				height:inherit;
+				margin:auto;
+				background:url('images/title.jpg');
+			}
+
+			/*搜索栏那行*/
+			.cup{
+				width:100%;
+				height:97px;
+				padding-top:34px;
+				padding-bottom:9px;
+				background-color:#fff;
+			}
+			.cup .J_cup{
+				width:1190px;
+				height:97px;
+				margin:auto;
+				position:relative;
+			}
+			.cup .J_cup .J_cup_left{
+				position:absolute;
+				width:190px;
+				height:140px;
+				display:block;
+				left:0;
+				top:-34px;
+				background:url('images/cup_left.gif');
+			}
+			.cup .J_cup .J_cup_center{
+				width:630px;
+				height:62px;
+				margin:auto;
+			}
+			.cup .J_cup .J_cup_center .search_tab{
+				width:613px;
+				height:22px;
+				margin-left:17px;
+			}
+			.search_tab ul{
+				list-style:none;
+				height:inherit;
+			}
+			.search_tab ul li{
+				float:left;
+				width:36px;
+				height:inherit;
+				line-height:22px;
+				color:#FF4400;
+				font-size:12px;
+				margin-right:4px;
+				text-align:center;
+			}
+			.search_tab ul li:nth-child(1) div{
+				background-color:#FF7300;
+				color:#fff;
+				font-weight:bold;
+				border-radius:5px 5px 0px 0px;
+			}
+			.cup .J_cup .J_cup_center .search_panel{
+				position:relative;
+				width:inherit;
+				height:40px;
+				background-color:#FF8700;
+				border-radius:20px;
+			}
+			.search_panel .search_combobox{
+				float:left;
+				position:absolute;
+				width:554px;
+				height:36px;
+				left:2px;
+				top:2px;
+				z-index:1;
+				background-color:#fff;
+				border-radius:20px 0 0 20px;
+			}
+			.search_panel .search_combobox input{
+				position:relative;
+				border-radius:20px;
+				width:472px;
+				height:24px;
+				line-height:24px;
+				border:0;
+				padding:6px 0;
+				background:#fff;
+				outline:0;
+				text-indent:10px;
+			}
+			.search_panel .search_combobox i:nth-child(2){
+				position:absolute;
+				font-size:16px;
+				top:9px;
+				left:14px;
+				color:#919191;
+			}
+			.search_panel .search_combobox i:nth-child(3){
+				position:absolute;
+				font-size:16px;
+				top:9px;
+				left:520px;
+				color:#919191;
+				cursor: pointer;
+			}
+			.search_panel .search_query{
+				float:right;
+				width:74px;
+				height:36px;
+				line-height:36px;
+				padding:2px 0;
+				font-size:18px;
+				text-indent:18px;
+				font-weight:bold;
+				color:#fff;
+			}
+			.J_cup_center .search_footer{
+				width:inherit;
+				height:20px;
+				padding-top:5px;
+			}
+			.search_footer ul{
+				list-style:none;
+			}
+			.search_footer ul li{
+				float:left;
+				font-size:12px;
+				margin-right:8px;
+				color:#666666;
+			}
+			.search_footer ul li:hover{
+				color:#FF5000;
+			}
+			.search_footer .more{
+				float:right;
+				font-size:12px;
+				color:#666666;
+			}
+			.J_cup .qr_code{/*二维码图片*/
+				position:absolute;
+				top:0;
+				right:110px;
+				width:76px;
+				height:91px;
+				background:url('images/qr_code.png');
+			}
+			.J_cup .qr_code i{/*打叉图片*/
+				position:absolute;
+				top:0;
+				left:-16px;
+				width:16px;
+				height:16px;
+				background:url('images/cancel.png');
+			}
+
+			/*内容上方导航栏*/
+			.nav{
+				width:1190px;
+				height:30px;
+				margin:0 auto;
+				/* background-color:#FF8700; */
+				background: linear-gradient(to right, #FF8600 , #FF5000);
+			}
+			.nav h2{
+				float:left;
+				width:190px;
+				height:30px;
+				line-height:30px;
+				text-align:center;
+				font-size:16px;
+				background-color:#ff5000;
+				color:#fff;
+				font-weight:bold;
+			}
+			.nav ul{
+				float:left;
+				list-style:none;
+				height:30px;
+			}
+			.nav ul li{
+				float:left;
+				height:30px;
+				line-height:30px;
+				text-align:center;
+				cursor:pointer;
+				color:#fff;
+				font-weight:700;
+			}
+			.nav .nav-hd li{
+				margin:0 3px;
+				padding:0 9px;
+				font-size:16px;
+			}
+			.nav .nav-hb li{
+				margin-left:12px;
+				font-size:14px;
+			}
+			/*主题市场内容*/
+			.content{
+				width:1190px;
+				height:632px;
+				margin:0 auto;
+			}
+			.content .main{
+				float:left;
+				width:900px;
+				height:522px;
+			}
+			.content .main .service{
+				float:left;
+				width:188px;
+				height:521px;
+				border:1px solid #FF5000;
+				border-top:none;
+				background-color:#fff;
+			}
+			.content .main .service ul{
+				padding-top:5px;
+				list-style:none;
+			}
+			.content .main .service ul li{
+				position:relative;
+				width:145px;
+				height:32px;
+				line-height:32px;
+				padding-left:25px;
+				padding-right:18px;
+				overflow:hidden;
+				font-size:14px;
+				color:#666;
+			}
+			.content .main .service ul li:hover{
+				background-color:#FFE4DC;
+				color:#FF5000;
+			}
+			.content .main .service ul li i{
+				position:absolute;
+				left:170px;
+				line-height:32px;
+			}
+			.content .main .core{
+				float:left;
+				width:520px;
+				height:512px;
+				margin-top:10px;
+				margin-left:10px;
+				/* background-color:red; */
+			}
+			.core img{
+				display:block;
+			}
+			.content .main .sub{
+				float:right;
+				width:160px;
+				height:512px;
+				margin-top:10px;
+				margin-right:10px;
+				/* background-color:red; */
+			}
+			.sub img{
+				display:block;
+			}
+			.sub h5{
+				color:#a1a1a1;
+				height:24px;
+				padding-top:6px;
+				line-height:24px;
+				font-weight:400;
+				font-size:12px;
+			}
+			/*登录注册开店区*/
+			.content .member{
+				float:left;
+				width:290px;
+				height:632px;
+				margin-top:10px;
+			}
+			.member img{
+				display:block;
+			}
+			.member .report_area{
+				width:290px;
+				height:26px;
+			}
+			.member .report_area a{
+				position:relative;
+				padding-left:82px;
+				line-height:26px;
+				height:26px;
+				color:#f40;
+				display:block;
+				font-size:12px;
+				text-decoration:none;
+				background-color:#FFE4DD;
+			}
+			.member .report_area a i{
+				position:absolute;
+				right:52px;
+				line-height:26px;
+				height:26px;
+				font-size:18px;
+			}
+			.member .notice{
+				height:98px;
+				padding-top:10px;
+				background-color:#fff;
+			}
+			.notice .notice-nav{
+				list-style:none;
+				height:24px;
+				padding:0 8px;
+				margin-right:-2px;
+				margin-top:4px;
+			}
+			.notice .notice-nav li{
+				float:left;
+				line-height:20px;
+				height:22px;
+				width:32px;
+				text-align:center;
+				margin:0 11px;
+			}
+			.notice .notice-nav li:nth-child(1){
+				font-weight:700;
+				border-bottom:2px solid #F40;
+			}
+			.notice .notice-nav li:hover{
+				font-weight:700;
+				border-bottom:2px solid #F40;
+			}
+			.notice .notice-nav li a{
+				text-decoration:none;
+				height:14px;
+				font-size:12px;
+				color:#000;
+			}
+			.notice .notice-bd{
+				height:65px;
+			}
+			.notice .notice-bd ul{
+				list-style:none;
+				height:50px;
+				padding-top:9px;
+				padding-bottom:6px;
+				overflow:hidden;
+				margin:0 12px;
+			}
+			.notice .notice-bd ul li{
+				float:left;
+				min-width:130px;
+				height:25px;
+				line-height:25px;
+				font-size:12px;
+			}
+			.notice .notice-bd ul li:hover{
+				color:#FF5000;
+			}
+			.member .module{
+				height:232px;
+				background-color:#fff;
+			}
+			.module ul{
+				list-style:none;
+			}
+			.module ul li{
+				float:left;
+				width:70.5px;
+				height:77px;
+				border:1px solid #f4f4f4;
+				border-top-color:transparent;
+				border-left-color:transparent;
+				text-align:center;
+				cursor:pointer;
+			}
+			.module ul li:hover{
+				color:#FF4400;
+			}
+			.module ul .has_top{
+				border-top:1px solid #f4f4f4;
+			}
+			.module ul li img{
+				display:inline-block;
+				width:24px;
+				height:24px;
+				margin-top:11px;
+			}
+			.module ul li p{
+				height:24px;
+				line-height:24px;
+				font-size:12px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="top">
+			<div class="title">
+				<div class="title-left">
+					<ul>
+						<li>
+							中国大陆
+							<i class="fa fa-angle-down"></i>
+						</li>
+						<li>亲，请登录</li>
+						<li>免费注册</li>
+						<li>&nbsp;手机逛淘宝</li>
+					</ul>
+				</div>
+				<div class="title-right">
+					<ul>
+						<li>
+							我的淘宝
+							<i class="fa fa-angle-down"></i>
+						</li>
+						<li>
+							&nbsp;<i class="fa fa-cart-plus"></i>
+							购物车
+							<i class="fa fa-angle-down"></i>
+						</li>
+						<li>
+							&nbsp;<i class="fa fa-star"></i>
+							收藏夹
+							<i class="fa fa-angle-down"></i></li>
+						<li>&nbsp;商品分类&nbsp;|</li>
+						<li>
+							卖家中心
+							<i class="fa fa-angle-down"></i>
+							</li>
+						<li>
+							&nbsp;联系客服
+							<i class="fa fa-angle-down"></i>
+						</li>
+						<li>
+							&nbsp;<i class="fa fa-navicon"></i>
+							网站导航
+							<i class="fa fa-angle-down"></i>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="title-img">
+			<i>
+			</i>
+		</div>
+		<div class="cup">
+			<div class="J_cup">
+				<i class="J_cup_left">
+				</i>
+				<div class="J_cup_center">
+					<div class="search_tab">
+						<ul>
+							<li>
+								<div>宝贝</div>
+							</li>
+							<li>
+								天猫
+							</li>
+							<li>
+								店铺
+							</li>
+						</ul>
+					</div>
+					<div class="search_panel">
+						<div class="search_combobox">
+							<input type="text" placeholder="   蕾丝橄榄型眼膜贴" />
+							<i class="fa fa-search"></i>
+							<i class="fa fa-camera"></i>
+						</div>
+						<div class="search_query">
+							搜索
+						</div>
+					</div>
+					<div class="search_footer">
+						<ul>
+							<li>
+								新款连衣裙
+							</li>
+							<li>
+								四件套
+							</li>
+							<li>
+								潮流T恤
+							</li>
+							<li>
+								时尚女鞋
+							</li>
+							<li>
+								短裤
+							</li>
+							<li>
+								半身裙
+							</li>
+							<li>
+								男士外套
+							</li>
+							<li>
+								墙纸
+							</li>
+							<li>
+								行车记录仪
+							</li>
+							<li>
+								新款男鞋
+							</li>
+							<li>
+								耳机
+							</li>
+						</ul>
+						<div class="more">
+							更多
+							<i class="fa fa-angle-right"></i>
+						</div>
+					</div>
+				</div>
+				<div class="qr_code">
+					<i></i>
+				</div>
+			</div>
+		</div>
+		<div class="nav">
+			<h2>主题市场</h2>
+			<ul class="nav-hd">
+				<li>天猫</li>
+				<li>聚划算</li>
+				<li>天猫超市</li>
+			</ul>
+			<ul class="nav-hb">
+				<li>|</li>
+				<li>淘抢购</li>
+				<li>电器城</li>
+				<li>司法拍卖</li>
+				<li>中国质造</li>
+				<li>兴农扶贫</li>
+			</ul>
+			<ul class="nav-hb">
+				<li>|</li>
+				<li>飞猪旅行</li>
+				<li>智能生活</li>
+				<li>苏宁易购</li>
+			</ul>
+		</div>
+		<div class="content">
+			<div class="main">
+				<div class="service">
+					<ul>
+						<li>女装/男装/内衣<i class="fa fa-angle-right"></i></li>
+						<li>鞋靴/箱包/配件<i class="fa fa-angle-right"></i></li>
+						<li>童装玩具/孕产/用品<i class="fa fa-angle-right"></i></li>
+						<li>家电/数码/手机<i class="fa fa-angle-right"></i></li>
+						<li>美妆/洗护/保健品<i class="fa fa-angle-right"></i></li>
+						<li>珠宝/眼镜/手表<i class="fa fa-angle-right"></i></li>
+						<li>运动/户外/乐器<i class="fa fa-angle-right"></i></li>
+						<li>游戏/动漫/影视<i class="fa fa-angle-right"></i></li>
+						<li>美食/生鲜/零食<i class="fa fa-angle-right"></i></li>
+						<li>鲜花/宠物/农资<i class="fa fa-angle-right"></i></li>
+						<li>房产/装修/建材<i class="fa fa-angle-right"></i></li>
+						<li>家具/家饰/家纺<i class="fa fa-angle-right"></i></li>
+						<li>汽车/二手车/用品<i class="fa fa-angle-right"></i></li>
+						<li>办公/DIY/五金电子<i class="fa fa-angle-right"></i></li>
+						<li>百货/餐厨/家庭保健<i class="fa fa-angle-right"></i></li>
+						<li>学习/卡券/本地服务<i class="fa fa-angle-right"></i></li>
+					</ul>
+				</div>
+				<div class="core">
+					<img class="core-lb-img" src="images/core_lb.jpg"/>
+					<img class="core-ld-img" src="images/core_ld.png"/>
+				</div>
+				<div class="sub">
+					<img class="sub-top" src="images/sub_top.jpg"/>
+					<h5>今日热卖</h5>
+					<img class="sub-down" src="images/sub_down.jpg"/>
+				</div>
+			</div>
+			<div class="member">
+				<img class="user_info" src="images/user_info.png"/>
+				<div class="report_area">
+					<a href="#">网上有害信息举报专区<i class="fa fa-caret-right"></i></a>
+				</div>
+				<div class="notice">
+					<ul class="notice-nav">
+						<li><a href="#">公告</a></li>
+						<li><a href="#">规则</a></li>
+						<li><a href="#">论坛</a></li>
+						<li><a href="#">安全</a></li>
+						<li><a href="#">工艺</a></li>
+					</ul>
+					<div class="notice-bd">
+						<ul>
+							<li>新零售全面爆发，阿里再度上调财年收入指引</li>
+							<li>北京中心聚力新零售</li>
+							<li>天猫银泰推智能卫生间</li>
+						</ul>
+					</div>
+				</div>
+				<div class="module">
+					<ul>
+						<li class="has_top"><img src="images/phone.png" /><p>充话费<p></li>
+						<li class="has_top"><img src="images/travel.png" /><p>旅行<p></li>
+						<li class="has_top"><img src="images/car.png" /><p>车险<p></li>
+						<li class="has_top"><img src="images/game.png" /><p>游戏<p></li>
+						<li><img src="images/picket.png" /><p>彩票<p></li>
+						<li><img src="images/movie.png" /><p>电影<p></li>
+						<li><img src="images/hotel.png" /><p>酒店<p></li>
+						<li><img src="images/manage.png" /><p>理财<p></li>
+						<li><img src="images/service.png" /><p>找服务<p></li>
+						<li><img src="images/perform.png" /><p>演出<p></li>
+						<li><img src="images/fee.png" /><p>水电煤<p></li>
+						<li><img src="images/train.png" /><p>火车票<p></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			
+		</script>
+	</body>
+</html>

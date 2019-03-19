@@ -1,0 +1,102 @@
+<!doctype html><!--声明当前文档为html文档-->
+<html lang="en"><!--语言为英语-->
+	<head><!--头部-->
+		<meta charset="UTF-8"><!--字符编码：utf-8国际编码  gb2312中文编码-->
+		<meta name="Keywords" content="关键词">
+		<meta name="Description" content="描述">
+		<title>Document</title>
+		<style>/*css样式表的衣柜*/
+		*{
+			margin:0px;
+			padding:0px;
+		}
+		body{
+			background:#000;
+		}
+		canvas{
+			background:#fff;
+			display:block;
+			margin:50px auto;
+		}
+		</style>
+	</head>
+	<body><!--身体-->
+		<canvas id="canvas" width="500" height="500">
+			您的浏览器不支持canvas标签，请您更换浏览器！！
+		</canvas>
+	</body>
+	<script>
+		var can = document.getElementById("canvas");
+		var cxt = can.getContext("2d");//设置canvas绘图环境
+		//获取时间
+		function clock(){
+			//清楚画布
+			cxt.clearRect(0,0,can.width,can.height);
+			var now = new Date();
+			var hour = now.getHours();//小时
+			var min = now.getMinutes();//分数
+			var sec = now.getSeconds();//秒数
+			min = min + sec/60;
+			hour = hour + min/60;
+			//分刻度
+			cxt.lineWidth = 5;
+			cxt.strokeStyle = "#000";
+			for (var i = 0 ;i<60 ;i++ )
+			{
+				cxt.beginPath();
+				cxt.moveTo(250,250);
+				cxt.arc(250,250,200,i*6*Math.PI/180,(i+1)*6*Math.PI/180,false);
+				cxt.closePath();
+				cxt.stroke();
+			}
+				//绘制一个白色的圆来覆盖
+			cxt.fillStyle = "#fff";
+			cxt.beginPath();
+			cxt.arc(250,250,185,0,360,false);
+			cxt.closePath();
+			cxt.fill();
+			//时刻度和表盘
+			cxt.lineWidth = 10;
+			for (var i=0;i<12 ;i++ )
+			{
+				cxt.beginPath();
+				cxt.moveTo(250,250);
+				cxt.arc(250,250,200,i*30*Math.PI/180,(i+1)*30*Math.PI/180,false);
+				cxt.closePath();
+				cxt.stroke();
+			}
+			cxt.fillStyle = "#fff";
+			cxt.beginPath();
+			cxt.arc(250,250,180,0,360,false);
+			cxt.closePath();
+			cxt.fill();
+			//时针
+			cxt.lineWidth = 7;
+			cxt.beginPath();
+			cxt.moveTo(250,250);
+			cxt.arc(250,250,150,(-90+hour*30)*Math.PI/180,(-90+hour*30)*Math.PI/180,false);
+			cxt.stroke();
+			//分针
+			cxt.lineWidth = 5;
+			cxt.beginPath();
+			cxt.moveTo(250,250);
+			cxt.arc(250,250,170,(-90+min*6)*Math.PI/180,(-90+min*6)*Math.PI/180,false);
+			cxt.stroke();
+			//秒针
+			cxt.lineWidth = 3;
+			cxt.strokeStyle = "red";
+			cxt.beginPath();
+			cxt.moveTo(250,250);
+			cxt.arc(250,250,180,(-90+sec*6)*Math.PI/180,(-90+sec*6)*Math.PI/180,false);
+			cxt.stroke();
+			//中间实心圆
+			cxt.fillStyle = "#000";
+			cxt.beginPath();
+			cxt.arc(250,250,10,0,360,false);
+			cxt.fill();
+		}
+		//和本地时间关联
+		clock();
+		setInterval(clock,1000);
+	</script>
+</html>

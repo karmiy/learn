@@ -1,0 +1,228 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>3D轮播图</title>
+		<meta charset="utf-8">
+		<meta name="content" content="carousel3D">
+		<link rel="stylesheet" type="text/css" href="lib/font-awesome-4.7.0/css/font-awesome.min.css" >
+		<style type='text/css'>
+			*{
+				margin:0;
+				padding:0;
+				font-family:'Microsoft yahei';
+			}
+			body{
+				-webkit-perspective:1000px;
+			}
+			.frame{
+				position:relative;
+				width:400px;
+				height:225px;
+				margin:100px auto 50px;
+			}
+			.content{
+				position:absolute;
+				width:400px;
+				height:225px;
+				/* background-color:red; */
+				transform-style:preserve-3d;
+				/* transform:rotateX(-10deg); */
+				transition:.5s;
+			}
+			/* .content:hover{
+				transform:rotateY(-60deg);
+			} */
+			.content div{
+				position:absolute;
+				top:0;
+				left:0;
+				width:400px;
+				/* height:340px; */
+				height:225px;
+			}
+			.content div:nth-child(1){
+				/* transform:translateZ(519.6px); */
+				transform:translateZ(346.4px);
+			}
+			.content div:nth-child(2){
+				left:400px;
+				transform:translateZ(346.4px) rotateY(60deg);
+				transform-origin:left;
+			}
+			.content div:nth-child(3){
+				left:400px;
+				transform:translateZ(-346.4px) rotateY(-60deg);
+				transform-origin:left;
+			}
+			.content div:nth-child(4){
+				transform:translateZ(-346.4px);
+			}
+			.content div:nth-child(5){
+				left:-400px;
+				transform:translateZ(-346.4px) rotateY(60deg);
+				transform-origin:right;
+			}
+			.content div:nth-child(6){
+				left:-400px;
+				transform:translateZ(346.4px) rotateY(-60deg);
+				transform-origin:right;
+			}
+			.content div img{
+				display:block;
+				width:400px;
+				height:225px;
+			}
+			.frame .angle{
+				position:absolute;
+				width:80px;
+				height:225px;
+				text-align:center;
+			}
+			.frame .angle:nth-child(2){
+				top:0;
+				left:-300px;
+			}
+			.frame .angle:nth-child(3){
+				top:0;
+				left:620px;
+			}
+			.frame .angle i{
+				line-height:225px;
+				color:#000;
+				font-size:50px;
+			}
+			.scroll{
+				width:600px;
+				height:50.625px;
+				/* background-color:green; */
+				margin:20px auto;
+			}
+			.scroll ul{
+				list-style:none;
+			}
+			.scroll ul li{
+				float:left;
+				width:90px;
+				height:50.625px;
+				margin-left:12px;
+			}
+			.scroll ul li:nth-child(1){
+				margin-left:0;
+			}
+			.scroll ul li img{
+				display:block;
+				width:90px;
+				height:50.625px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="frame">
+			<div class="content">
+				<div class="carou"><img src="images/bar.jpg" /></div>
+				<div class="carou"><img src="images/boat.jpg" /></div>
+				<div class="carou"><img src="images/build.jpg" /></div>
+				<div class="carou"><img src="images/flow.jpg" /></div>
+				<div class="carou"><img src="images/tec.jpg" /></div>
+				<div class="carou"><img src="images/sea.jpg" /></div>
+			</div>
+			<div class="angle">
+				<i class="fa fa-angle-left"></i>
+			</div>
+			<div class="angle">
+				<i class="fa fa-angle-right"></i>
+			</div>
+		</div>
+		<div class="scroll">
+			<ul>
+				<li><img src="images/bar.jpg" /></li>
+				<li><img src="images/boat.jpg" /></li>
+				<li><img src="images/build.jpg" /></li>
+				<li><img src="images/flow.jpg" /></li>
+				<li><img src="images/tec.jpg" /></li>
+				<li><img src="images/sea.jpg" /></li>
+			</ul>
+		</div>
+		<script type="text/javascript">
+			//给箭头加点击事件，实现UL左右偏移
+			var angles = document.querySelectorAll('.frame .angle i');
+			var oContent = document.querySelector('.frame .content');
+			var oScrollLi = document.querySelectorAll('.scroll ul li');
+			//默认第一张图光亮
+			window.onload = function(){
+				oScrollLi[0].style.boxShadow="0 0 20px #990099";
+			}
+			
+			var oScrollLiIndex = {//每个旋转角度除360余数对应的li索引
+				'0':0,
+				'60':1,
+				'120':2,
+				'180':3,
+				'240':4,
+				'300':5
+			}
+			for(var i=0,len=angles.length;i<len;i++){
+				~~function(i){
+					angles[i].addEventListener('click',function(){
+						var preRotateY = oContent.dataset.rotate || 0;
+						if(i == 0){//左箭头
+							preRotateY = parseInt(preRotateY)-60;
+						}else{
+							preRotateY = parseInt(preRotateY)+60;
+						}
+						oContent.dataset.rotate = preRotateY;
+						oContent.style.transform = 'rotateY('+preRotateY+'deg)';
+
+						//旋转角度除360求余，求当前应该光亮哪个li
+						var residue = calRotateResidue(preRotateY);
+						//下方图片卡对应索引光亮
+						clearShadow(oScrollLi);
+						oScrollLi[oScrollLiIndex[residue]].style.boxShadow="0 0 30px #990099";
+					});
+				}(i);
+			}
+			
+			//给下方图片卡添加点击事件
+			for(var i=0,len=oScrollLi.length;i<len;i++){
+				~~function(i){
+					oScrollLi[i].addEventListener('click',function(){
+						//清除其他图片的光亮，添加当前图片光亮
+						clearShadow(oScrollLi);
+						this.style.boxShadow="0 0 30px #0000cc";
+						//得到当前是第几个轮播图
+						var curRorate = oContent.dataset.rotate || 0;//当前旋转角度
+						var residue = calRotateResidue(curRorate);//余数
+						var curIndex = oScrollLiIndex[residue];
+						//计算差值，没差一个图，翻转60°
+						var value = parseInt(curIndex) - parseInt(i);
+						curRorate = parseInt(curRorate) + value*60;
+						//alert(curRorate);
+						oContent.dataset.rotate = curRorate;
+						oContent.style.transform = 'rotateY('+curRorate+'deg)';
+					});
+				}(i);
+			}
+
+			//清除li的阴影
+			function clearShadow(lis){
+				for(var i=0,len=lis.length;i<len;i++){
+					lis[i].style.boxShadow="";
+				}
+			}
+			
+			//逆向旋转时，余数要先减去N个360再取余
+			const calRotateResidue = (num)=>{
+				while(num>0){
+					num-=360;
+				}
+				return Math.abs(num)%360;
+			}
+		</script>
+	</body>
+</html>
+<!--
+		0     1      2      3      4     5
+		0    -60    -120   -180   -240  -300
+	   -360  -420   -480   -540   -600  -660
+		360   300    240    180    120   60
+%360    0     60     120    180    240   300 -->

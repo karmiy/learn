@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>please enter your title</title>
+		<meta name="description" content="">
+		<style type='text/css'>
+			html,body{
+				margin:0;
+				padding:0;
+				width:100%;
+				height:100%;
+				line-height:0;
+				font-size:0;
+				background-color:#001122;
+			}
+
+		</style>
+	</head>
+	<body>
+		<svg width="100%" height="100%" viewBox = "-400 -300 800 600" preserveAspectRatio="xMidYMid slice">
+			<defs>
+				<polygon id="star" points="0,-10 2,-2 10,0 2,2 0,10 -2,2 -10,0 -2,-2" fill="white"></poly>
+			</defs>
+			<g id="real">
+				<g id="star-group">
+				</g>
+				<g id="light-tower" transform="translate(250,0)">
+					<defs>
+						<lineargradient id="tower" x1="0" y1="0" x2="1" y2="0">
+							<stop offset="0" stop-color="#999"></stop>
+							<stop offset="1" stop-color="#333"></stop>
+						</lineargradient>
+						<radialGradient id="light" cx="0.5" cy="0.5" r="0.5">
+							<stop offset="0" stop-color="rgba(255,255,255,.8)"></stop>
+							<stop offset="1" stop-color="rgba(255,255,255,0)"></stop>
+						</radialGradient>
+						<clipPath id="light-clip">
+							<polygon points="0 0 -400 -15 -400 15" fill="red">
+								<animateTransform attributeName="transform" attributeType="XML" 
+								type="rotate" from="0" to="360" dur="10s" repeatCount="indefinite">
+								</animateTransform>
+							</polygon>
+						</clipPath>
+					</defs>
+					<polygon points="0 0 5 50 -5 50" fill="url(#tower)"></polygon>
+					<ellipse cx="0" cy="0" rx="300" ry="100" fill="url(#light)" clip-path="url(#light-clip)"></ellipse>
+					<circle cx="0" cy="0" r="2" fill="white"></circle>
+				</g>
+				<g id="moon-group">
+					<mask id="moon-mask">
+						<circle cx="-250" cy="-100" r="100" fill="white"></circle>
+						<circle cx="-200" cy="-150" r="100" fill="black"></circle>
+					</mask>
+					<circle cx="-250" cy="-100" r="100" fill="#00ffcc" mask="url(#moon-mask)"></circle>
+				</g>
+			</g>
+			<g id="reflact" transform="translate(0,50)" mask="url(#fading)">
+				<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+					<stop offset="0" stop-color="rgba(255,255,255,.5)"></stop>
+					<stop offset="0.5" stop-color="rgba(255,255,255,0)"></stop>
+				</linearGradient>
+				<mask id="fading">
+					<rect x="-400" y="0" width="800" height="300" fill="url(#fade)"></rect>
+				</mask>
+				<use xlink:href="#real" transform="scale(1,-1) translate(0,-50)"></use>
+			</g>
+			<line x1="-400" y1="50" x2="400" y2="50" stroke="white"></line>
+		</svg>
+		<script type="text/javascript">
+			var SVG_NS='http://www.w3.org/2000/svg';
+			var XLINK_NS='http://www.w3.org/1999/xlink';
+			var pager = document.querySelector('svg');
+			function random(min,max){
+				return min + (max-min)*Math.random();
+			}
+			function createUse(origin){
+				var use = document.createElementNS(SVG_NS,'use');
+				use.setAttributeNS(XLINK_NS,'xlink:href','#'+origin.id);
+				return use;
+			}
+			function renderStar(){
+				var star = document.getElementById('star');
+				var star_group = document.getElementById('star-group');
+				var star_count = 500;
+				while(star_count--){
+					var use = createUse(star);
+					use.setAttribute('opacity',random(0.1,0.4));
+					use.setAttribute('transform',
+					'translate('+random(-400,400)+','+random(-300,50)+') scale('+random(0.1,0.6)+')');
+					star_group.appendChild(use);
+				}
+
+			}
+			renderStar();
+		</script>
+	</body>
+</html>

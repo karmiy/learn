@@ -1,0 +1,303 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>please enter your title</title>
+		<meta name="description" content="karmiy">
+		<style type='text/css'>
+			*{
+				margin:0;
+				padding:0;
+				font-family:'Microsoft yahei';
+			}
+			html,body{
+				width:100%;
+				height:100%;
+				background-color:rgba(0,0,0,.5);
+				position:relative;
+			}
+			#canvas{
+				display:block;
+				position:absolute;
+				top:0;left:0;right:0;bottom:0;
+				margin:auto;
+				background-color:#D3A990;
+			}
+
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas" width="640" height="640"></canvas>
+		<script type="text/javascript">
+			var canvas = document.getElementById('canvas');
+			var cxt = canvas.getContext('2d');
+			//定义格数，16等分，15条可绘制线
+			var n = 16;
+			var nWidth = canvas.width/n;
+			var curType = 1;//当前棋子颜色(黑1白-1)
+			var chessR = 16;//棋子半径
+
+			//定义二位数组存储棋子，i行j列
+			var chessArr = new Array();
+			for(var i=0;i<n;i++){
+				chessArr[i] = new Array();
+				for(var j=0;j<n;j++){
+					chessArr[i][j] = null;
+				}
+			}
+
+			//绘制棋盘线
+			drawChessLines(n,nWidth);
+			//鼠标点击后绘制棋子
+			canvas.onmousedown = function(e){
+				var ev = e||window.event;
+				//鼠标处x,y坐标
+				var x = ev.clientX-canvas.offsetLeft;
+				var y = ev.clientY-canvas.offsetTop;
+				//得到应绘制棋子的角的坐标
+				var drawPoint = getDrawPosition(nWidth,x,y);
+				//判断鼠标位置是否在棋盘内，并且绘制位置不存在已有的棋子
+				if(canDrawChess(n,nWidth,x,y) && chessArr[drawPoint.x/40][drawPoint.y/40]==null){
+					cxt.beginPath();
+					cxt.fillStyle = chessGradientColor(drawPoint.x,drawPoint.y,curType);
+					cxt.arc(drawPoint.x,drawPoint.y,chessR,0,Math.PI*2,false);
+					cxt.fill();
+					//每绘制一个就存到二维数组
+					var chess = new Chess(drawPoint.x,drawPoint.y,curType);
+					chessArr[drawPoint.x/40][drawPoint.y/40] = chess;	
+					//判断是否有5子
+					if(checkChess(drawPoint.x,drawPoint.y,n)){
+						var winType = curType;
+						window.setTimeout(function(){
+							switch(winType){
+								case 1:
+									alert('黑子获胜');
+									break;
+								case -1:
+									alert('白子获胜');
+									break;
+							}
+							//清除棋盘
+							cxt.clearRect(0,0,canvas.width,canvas.height);
+							//重置二维数组
+							clearChessArr();
+							//重绘棋盘线
+							drawChessLines(n,nWidth);
+						},1000/60);
+					}
+					curType = -curType;
+				}
+				
+			}
+			//棋子的渐变颜色，黑棋type=1，白棋type=-1
+			function chessGradientColor(x,y,type){
+				var color = null;
+				switch (type)
+				{
+					case 1:
+						color = cxt.createRadialGradient(x,y,1,x,y,chessR);
+						color.addColorStop(0,"rgba(60,60,60,1)");
+						color.addColorStop(.1,"rgba(45,45,45,1)");
+						color.addColorStop(.2,"rgba(40,40,40,1)");
+						color.addColorStop(.3,"rgba(35,35,35,1)");
+						color.addColorStop(.4,"rgba(30,30,30,1)");
+						color.addColorStop(.5,"rgba(25,25,25,1)");
+						color.addColorStop(.6,"rgba(20,20,20,1)");
+						color.addColorStop(.7,"rgba(15,15,15,1)");
+						color.addColorStop(.8,"rgba(10,10,10,1)");
+						color.addColorStop(.9,"rgba(5,5,5,1)");
+						color.addColorStop(1,"rgba(0,0,0,1)");
+						break;
+					case -1:
+						color = cxt.createRadialGradient(x,y,1,x,y,chessR);
+						color.addColorStop(0,"rgba(255,255,255,1)");
+						color.addColorStop(.1,"rgba(253,253,253,1)");
+						color.addColorStop(.2,"rgba(250,250,250,1)");
+						color.addColorStop(.3,"rgba(247,247,247,1)");
+						color.addColorStop(.4,"rgba(245,245,245,1)");
+						color.addColorStop(.5,"rgba(242,242,242,1)");
+						color.addColorStop(.6,"rgba(240,240,240,1)");
+						color.addColorStop(.7,"rgba(237,237,237,1)");
+						color.addColorStop(.8,"rgba(235,235,235,1)");
+						color.addColorStop(.9,"rgba(232,232,232,1)");
+						color.addColorStop(1,"rgba(230,230,230,1)");
+						break;
+				}
+				return color;
+			}
+			//判断是否可以绘制棋子(只能绘制在棋盘上)
+			function canDrawChess(n,nWidth,x,y){
+				if(x>=nWidth && x<=(n-1)*nWidth && y>=nWidth && y<=(n-1)*nWidth){
+					return true;
+				}else{
+					return false;
+				}
+			}
+			//获取当前点击位置，应该绘制的棋子处
+			function getDrawPosition(nWidth,x,y){
+				var point = {};
+				//获得点击位置是正方形中左上角的点坐标
+				var lt_x = Math.floor(x/40)*40;
+				var lt_y = Math.floor(y/40)*40;
+				if(x - lt_x <= nWidth/2){
+					point.x = lt_x;
+				}else{
+					point.x = lt_x + nWidth;
+				}
+				if(y - lt_y <= nWidth/2){
+					point.y = lt_y;
+				}else{
+					point.y = lt_y + nWidth;
+				}
+				//console.log(point.x,point.y);
+				return point;
+			}
+
+			//棋子对象
+			function Chess(x,y,type){
+				this.x = x;
+				this.y = y;
+				this.type = type;
+			}
+			//判断是否连成5子
+			function checkChess(x,y,n){
+				//得到当前棋子的列行数
+				var col = x/40;
+				var row = y/40;	
+				//判断横向是否有5子
+				var count = 0;
+				var curPoint = null;
+				for(var i=1;i<n;i++){
+					if(chessArr[i][row]==null){//如果这个位置没有棋子，继续循环，且清空数据
+						count = 0;
+						curPoint = null;
+						continue;
+					}
+					if(curPoint==null){//如果是第一个循环到的点，当前点指向它，数量++
+						curPoint = chessArr[i][row];
+						count++;
+					}else{
+						//如果不是第一个点，判断是否同一颜色，是则数量++，否则数量为1，重新指向当前点
+						if(curPoint.type == chessArr[i][row].type){
+							count++;
+						}else{
+							count=1;
+						}
+						curPoint = chessArr[i][row];
+					}
+					if(count==5){
+						return true;
+					}
+				}
+				//判断纵向是否有5子
+				count = 0;
+				curPoint = null;
+				for(var i=1;i<n;i++){
+					if(chessArr[col][i]==null){//如果这个位置没有棋子，继续循环，且清空数据
+						count = 0;
+						curPoint = null;
+						continue;
+					}
+					if(curPoint==null){//如果是第一个循环到的点，当前点指向它，数量++
+						curPoint = chessArr[col][i];
+						count++;
+					}else{
+						//如果不是第一个点，判断是否同一颜色，是则数量++，否则数量为1，重新指向当前点
+						if(curPoint.type == chessArr[col][i].type){
+							count++;
+						}else{
+							count=1;
+						}
+						curPoint = chessArr[col][i];
+					}
+					if(count==5){
+						return true;
+					}
+				}
+				//判断斜向下是否有5子
+				//y=x+b b=y-x=row-col y=x+(row-col)
+				count = 0;
+				curPoint = null;
+				for(var i=1;i<n;i++){
+					var x0=i,y0=i+(row-col);
+					if(y0<1 || y0>15){
+						continue;
+					}
+					if(chessArr[x0][y0]==null){//如果这个位置没有棋子，继续循环，且清空数据
+						count = 0;
+						curPoint = null;
+						continue;
+					}
+					if(curPoint==null){//如果是第一个循环到的点，当前点指向它，数量++
+						curPoint = chessArr[x0][y0];
+						count++;			
+					}else{
+						//如果不是第一个点，判断是否同一颜色，是则数量++，否则数量为1，重新指向当前点
+						if(curPoint.type == chessArr[x0][y0].type){
+							count++;
+						}else{
+							count=1;
+						}
+						curPoint = chessArr[x0][y0];
+					}
+					if(count==5){
+						return true;
+					}
+				}
+				//判断斜向下是否有5子
+				//y=-x+b b=y+x=row+col  y=-x+(row+col)
+				count = 0;
+				curPoint = null;
+				for(var i=1;i<n;i++){
+					var x0=i,y0=-i+(row+col);
+					if(y0<1 || y0>15){
+						continue;
+					}
+					if(chessArr[x0][y0]==null){//如果这个位置没有棋子，继续循环，且清空数据
+						count = 0;
+						curPoint = null;
+						continue;
+					}
+					if(curPoint==null){//如果是第一个循环到的点，当前点指向它，数量++
+						curPoint = chessArr[x0][y0];
+						count++;			
+					}else{
+						//如果不是第一个点，判断是否同一颜色，是则数量++，否则数量为1，重新指向当前点
+						if(curPoint.type == chessArr[x0][y0].type){
+							count++;
+						}else{
+							count=1;
+						}
+						curPoint = chessArr[x0][y0];
+					}
+					if(count==5){
+						return true;
+					}
+				}
+			}
+			//重置二位数组
+			function clearChessArr(){
+				for(var i=0,len=chessArr.length;i<len;i++){
+					for(var j=0,length=chessArr[i].length;j<length;j++){
+						chessArr[i][j] = null;
+					}
+				}
+			}
+			//绘制棋盘线
+			function drawChessLines(n,nWidth){
+				for(var i=1;i<n;i++){
+					cxt.beginPath();
+					cxt.moveTo(nWidth,i*nWidth);
+					cxt.lineTo(canvas.width-nWidth,i*nWidth);
+					cxt.stroke();
+				}
+				for(var i=1;i<n;i++){
+					cxt.beginPath();
+					cxt.moveTo(i*nWidth,nWidth);
+					cxt.lineTo(i*nWidth,canvas.width-nWidth);
+					cxt.stroke();
+				}
+			}
+		</script>
+	</body>
+</html>

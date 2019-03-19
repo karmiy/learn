@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+	<style id="css">
+		*{
+			margin:0;
+			padding:0;
+		}
+		#wrap{
+			width:800px;
+			height:360px;
+			margin:150px auto;
+/*			border:1px solid red;*/
+		}
+		#pic{
+			width:800px;
+			height:360px;
+			perspective:500px;/*景深*/
+		}
+		#pic ul li{
+			position:relative;
+			list-style:none;
+			float:left;
+			height:360px;
+			transform-style:preserve-3d;/*构造3D场景*/
+			box-sizing:border-box;
+			transition:1s;
+		}
+		#pic ul li div{
+			position:absolute;
+			height:360px;
+/*			border:1px solid red;*/
+			
+		}
+		#pic ul li div:nth-child(1){
+			top:-360px;
+			transform-origin:bottom;/*设置元素旋转轴心*/
+			transform:translateZ(180px) rotateX(90deg);/*元素沿X轴旋转*/
+			background:url('images/1.png');
+		}
+		#pic ul li div:nth-child(2){
+			top:360px;
+			transform-origin:top;/*设置元素旋转轴心*/
+			transform:translateZ(180px) rotateX(-90deg);/*元素沿X轴旋转*/
+			background:url('images/2.png');
+		}
+		#pic ul li div:nth-child(3){
+			transform:translateZ(180px);
+			background:url('images/3.png');
+		}
+		#pic ul li div:nth-child(4){
+			transform:translateZ(-180px);
+			background:url('images/4.png');
+		}
+		#pic ul li:hover{
+/*			transform:rotateX(180deg);*/
+		}
+		
+	</style>
+ </head>
+ <body>
+	<div id="wrap">
+		<div id="pic">
+			<ul><!--上下前后-->
+				<!--<li>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</li>
+				<li>
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</li>
+				<li style="z-index:-10;">
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</li>
+				<li style="z-index:-50;">
+					<div></div>
+					<div></div>
+					<div></div>
+					<div></div>
+				</li>-->
+			</ul>
+		</div>
+		<div id="tab">
+		</div>
+	</div>
+	<script type="text/javascript">
+		/*
+			1.函数
+				生成n个li
+					每个li宽度不一样
+		*/
+		var oUl = document.getElementsByTagName("ul")[0],
+		oCss = document.getElementById("css");
+		play(50);
+
+		function play(num){
+			var width = 800/num,//求单个li的宽度
+				uHtml = '',
+				pHtml = '';
+			for(var i=0;i<num;i++){
+				if(i>num/2){
+					uHtml += "<li style='z-index:"+(-i)+"'><div></div><div></div><div></div><div></div></li>";
+				}else{
+					uHtml += "<li><div></div><div></div><div></div><div></div></li>";
+				}
+				pHtml += "#pic ul li:nth-child("+(i+1)+") div{background-position:"+-width*i+"px;}";
+			}
+			oUl.innerHTML = uHtml;
+			oCss.innerHTML += pHtml + "li,#pic div{width:"+width+"px}";
+
+		}
+
+		var flag = true;//用于在动画完成前不重复
+		
+		window.addEventListener('click',function(){
+			if(flag){
+				rotate();
+			}
+		});
+
+		//rotate();
+		//旋转
+		function rotate(){
+			flag = false;
+			var lis = document.getElementsByTagName("li");
+			var li = lis[0];
+			var rotateFrom = li.style.transform;
+			var rotateTo = roateNext(rotateFrom);
+
+			for(var i=0,len=lis.length;i<len;i++){
+				
+				~~(function(i){
+					var t = setTimeout(function(){
+						lis[i].style.transform = rotateTo;
+						clearTimeout(t);
+						if(i == (len-1)){
+							flag = true;
+						}
+					},50*i);
+				})(i);
+			}
+		}
+
+		function roateNext(str){
+			if(str == ''){
+				return 'rotateX(90deg)';
+			}else{
+				var beginSub = str.indexOf("(")+1;
+				var endSub = str.indexOf("d");
+				var num = str.substring(beginSub,endSub);
+				num = parseInt(num)+90;
+				return "rotateX("+num+"deg)";
+			}
+		}
+	</script>
+ </body>
+</html>

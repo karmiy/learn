@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+  <style>
+	*{
+		margin:0;
+	}
+	.content{
+		width:500px;
+		height:550px;
+		border:1px solid #ccc;
+		margin:50px auto;
+	}
+	.img{
+		width:500px;
+		height:500px;
+		border-bottom:1px dashed #ccc;
+	}
+	.controlBox{
+		display:flex;
+		justify-content:space-around;
+		width:500px;
+		height:49px;
+	}
+	.upload,.download{
+		width:49px;
+		height:49px;
+	}
+	.upload{
+		background-image:url('images/upload.png');
+		background-size:cover;
+	}
+	.upload input{
+		display:block;
+		width:49px;
+		height:49px;
+		opacity:0;
+	}
+	.download{
+		background-image:url('images/download.png');
+		background-size:cover;
+	}
+  </style>
+ </head>
+ <body>
+	<div class="content">
+		<div class="img">
+			<canvas id="drawBox" width="500" height="500"></canvas>
+		</div>
+		<div class="controlBox">
+			<div class="upload"><input type="file" id="selectPic"></div>
+			<div class="download"></div>
+		</div>
+	</div>
+	<script>
+		var canvas = document.getElementById("drawBox");//卷轴
+		var canCon = canvas.getContext("2d");//卷轴上宣纸
+		var upB = document.getElementById("selectPic");//上传按钮
+
+//		canCon.fillStyle = '#cc00ff';
+//		canCon.fillRect(100,100,150,150);
+		upB.onchange = function(){
+			canCon.clearRect(0,0,500,500);//清除之前的图形
+			//console.log(this.files[0]);
+			var url = window.URL.createObjectURL(this.files[0]);
+			//console.log(url);
+			var img = new Image();
+			img.src = url;
+			img.onload = function(){
+				var w = img.naturalWidth;//图片实际宽度
+				var h = img.naturalHeight;//图片实际宽度
+				if(w>h){
+					var h1 = h/(w/500);//新高度
+					canCon.drawImage(img,0,0,500,h1);//5个参数    图片元素，左上角位置，右下角位置
+				}else{
+					var w1 = w/(h/500);//新宽度
+					canCon.drawImage(img,(500-w1)/2,0,w1,500);//5个参数    图片元素，左上角位置，右下角位置
+				}
+				
+			}
+			
+		}
+		canvas.addEventListener("mousedown",mosaic);
+		canvas.addEventListener("mousemove",mosaic);
+		document.addEventListener("mouseup",mosaic);
+		
+		var toggle=false;//是否点击canvas
+		function mosaic(){
+			var ev = window.event||ev;
+			switch(ev.type){
+				case "mousedown":
+					toggle=true;
+					//console.log(ev);
+					drawMosaic(ev.offsetX,ev.offsetY);
+					break;
+				case "mousemove":
+					if(toggle){
+						drawMosaic(ev.offsetX,ev.offsetY);
+					}
+					break;
+				case "mouseup":
+					toggle=false;
+					break;
+			}
+		}
+		
+		/*以当前鼠标为中心，x,y减5为起点，加5位终点，画矩形，将每个点颜色平均*/
+		function drawMosaic(x,y){
+			var aColor = restore(canCon.getImageData(x-5,y-5,10,10).data,4);//获取指定区域的颜色值,宽高1,1则拿到4个值，rgba的值，如果是10,10则连续性拼接一起的rgba,即400个值
+			//console.log(restore(color.data,4));
+
+			var vr=0,vg=0,vb=0;
+			for(var i=0,len=aColor.length;i<len;i++){
+				vr += aColor[i][0];//累加红色
+				vg += aColor[i][1];//累加绿色
+				vb += aColor[i][2];//累加蓝色
+			}
+			canCon.fillStyle = "rgb("+Math.round(vr/aColor.length)+","+Math.round(vg/aColor.length)+","+Math.round(vb/aColor.length)+")";
+			canCon.fillRect(x-5,y-5,10,10);
+
+		}
+		function restore(arr,stepSize){//将一维数组变为二维数组
+			var arrList = [];//目标二位数组
+			var index = 0;//从哪开始截取
+			var number = parseInt(arr.length/stepSize);
+			for(var i=0;i<number;i++){
+				arrList.push(arr.slice(index,stepSize+index));
+				index+=stepSize;
+			}
+			return arrList;
+
+		}
+	</script>
+ </body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>karmiy-以撒的结合</title>
+		<meta name="description" content="karmiy">
+		<style type='text/css'>
+			/**{
+				margin:0;
+				padding:0;
+				font-family:'Microsoft yahei';
+			}*/
+			body,dl,dd,p,h1,h2,h3,h4,h5,h6{
+				margin:0;
+			}
+			ol,ul{
+				margin:0;
+				padding:0;
+				list-style:none;
+			}
+			img{
+				border:none;
+			}
+			html,body{
+				height:100%;
+			}
+			body{
+				
+			}
+			#bg{
+				position:absolute;
+				width:640px;
+				height:480px;
+				left:0;right:0;top:0;bottom:0;
+				margin:auto;
+				background-image:url('imgs/bg.png');
+			}
+			/*div#ys{
+				position:absolute;
+				width:44px;
+				height:52px;
+				top:60%;
+				left:48%;
+			}
+			div#ys img.ys-img{
+				position:relative;
+				display:block;
+				width:100%;
+				height:auto;
+				z-index:5;
+			}*/
+			#ys{
+				display:block;
+				position:absolute;
+				width:44px;
+				height:52px;
+				top:60%;
+				left:48%;
+				z-index:5;
+			}
+		</style>
+		<script type="text/javascript" src="js/AnimatePlane.js"></script>
+	</head>
+	<body>
+		<div id="bg">
+			<!-- <div id="ys">
+				<img class="ys-img" src="imgs/self/wait.png" alt="" />
+			</div> -->
+			<img id="ys" class="ys-img" src="imgs/self/wait.png" alt="" />
+		</div>
+		<script type="text/javascript">
+			var bg = document.querySelector('#bg');//背景图（游戏区域）
+			//var ys = document.querySelector('#ys');//人物DIV
+			//var img = document.querySelector('#ys img');//人物图
+			var img = document.querySelector('#ys');//人物图
+			var enemys = [];//敌人的数组
+			//参数
+			var param = {
+				img : img,
+				parent : bg,
+				waitImg : 'imgs/self/wait.png',
+				horizonImg : 'imgs/self/horizon.gif',
+				verticalImg : 'imgs/self/vertical.gif',
+				attackLeftImg : 'imgs/self/attack_left.gif',
+				attackRightImg : 'imgs/self/attack_right.gif',
+				attackTopImg : 'imgs/self/attack_top.gif',
+				attackDownImg : 'imgs/self/attack_down.gif',
+				attackMoveLeftImg : 'imgs/self/attack_move_left.gif',
+				attackMoveRightImg : 'imgs/self/attack_move_right.gif',
+				attackMoveTopImg : 'imgs/self/attack_move_top.gif',
+				attackMoveDownImg : 'imgs/self/attack_move_down.gif',
+				minLeft : 49,
+				maxLeft : 553,
+				minTop : 105,
+				maxTop : 365,
+				//一个方向会有上下/左右2种子弹，[-3,2]是上方子弹,left:-3,top:2
+				bulletPosition : {left:[[-3,2],[2,14]],right:[[28,2],[20,14]],top:[[2,14],[20,14]],down:[[2,14],[20,14]]},
+				bulletProperty : {
+					imgSrc : 'imgs/selfBullet/bullet.png',
+					bombImg : 'imgs/selfBullet/moon.gif',
+					bombedImg : 'imgs/selfBullet/moon2.gif',
+					goals:enemys
+				},
+				attackedImgSrc : 'imgs/self/attacked.png',
+				blood:3,
+				deadCallback : createDeadBg
+			}
+			//创建操作人物
+			var t = new AnimatePlane(param);
+			//绑定键盘keydown和keyup事件
+			document.onkeydown = function(e){
+				t.bindKeydown(e.keyCode);
+			}
+			document.onkeyup = function(e){
+				t.bindKeyup(e.keyCode);
+			}
+			//创建敌人
+			var param_e = {
+				left : 150,
+				top : 150,
+				parent : bg,
+				prey : t,
+				imgSrc : 'imgs/enemy/enemy1/enemy1.gif',
+				attackImgSrc : 'imgs/enemy/enemy1/at.gif',
+				isAutoAttack:true,
+				autoAttackPosition : "rd",
+				attackHorizonSpeed : 6,
+				attackVerticalSpeed : 4,
+				isAutoNavigation : true,
+				bulletProperty :{
+					imgSrc : 'imgs/enemy/enemy1/eBullet.gif?'+new Date().getTime(),
+					bombImg : 'imgs/enemy/enemy1/eBorm.gif?'+new Date().getTime(),
+					bombedImg : 'imgs/enemy/enemy1/eBorm.gif?'+new Date().getTime(),
+					bombedImgClearTime : 750
+				},
+				blood:5
+			}
+			var enemy = new Enemy(param_e);
+			enemy.init();
+			
+			enemys.push(enemy);
+
+			//创建敌人
+			var param_e2 = {
+				left : 250,
+				top : 350,
+				parent : bg,
+				prey : t,
+				imgSrc : 'imgs/enemy/enemy1/enemy1.gif',
+				attackImgSrc : 'imgs/enemy/enemy1/at.gif',
+				isAutoAttack:true,
+				autoAttackPosition : "rd",
+				attackHorizonSpeed : 6,
+				attackVerticalSpeed : 4,
+				isAutoNavigation : true,
+				bulletProperty :{
+					imgSrc : 'imgs/enemy/enemy1/eBullet.gif?'+new Date().getTime(),
+					bombImg : 'imgs/enemy/enemy1/eBorm.gif?'+new Date().getTime(),
+					bombedImg : 'imgs/enemy/enemy1/eBorm.gif?'+new Date().getTime(),
+					bombedImgClearTime : 750
+				},
+				blood:5
+			}
+			var enemy2 = new Enemy(param_e2);
+			enemy2.init();
+			
+			enemys.push(enemy2);
+
+			//人物死亡死的回调函数
+			function createDeadBg(){
+				var div = document.createElement("div");
+				div.style.position = "absolute";
+				div.style.width = "100%";
+				div.style.height = "405px";
+				div.style.left = "0";
+				div.style.right = "0";
+				div.style.top = "73px";
+				div.style.margin = "auto";
+				div.style.zIndex = "15";	
+				//调整背景图位置
+				var x = (this.img.offsetLeft-(105-this.img.offsetWidth)/2-8)+"px";
+				var y = (-(357-(this.img.offsetTop+this.img.offsetHeight-73))+23)+"px";
+				div.style.background = "rgb(0,0,0) url('imgs/self/die.png') no-repeat "+x+" "+y;
+				bg.appendChild(div);
+				setTimeout(function(){
+					alert('game over!');
+					window.location.reload();
+				},200);
+			}
+
+		</script>
+	</body>
+</html>
