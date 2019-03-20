@@ -22,3 +22,5 @@
     span.txt {
         ...
     }
+    
+    <span class='txt'>...</span>
