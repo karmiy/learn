@@ -1,0 +1,1110 @@
+@charset "UTF-8";
+/*主区域的宽度1240px*/
+.all_main, #header .h-main, #video .v-main, #menu ul, #home, #information, #recommend {
+  /*主区域公共样式*/
+  margin: 0 auto;
+  width: 1240px;
+  height: 100%;
+}
+
+html {
+  min-width: 1240px;
+}
+
+/*头部header*/
+#header {
+  position: relative;
+  width: 100%;
+  height: 90px;
+  background-color: #0b0b0b;
+}
+#header .h-main {
+  position: relative;
+}
+#header .h-main .h-logo {
+  display: block;
+  position: absolute;
+  width: 190px;
+  height: 100px;
+  top: 5px;
+  left: 0;
+  z-index: 13;
+  background: url("../imgs/source.png") no-repeat 0 -30px;
+}
+#header .h-main ul.h-nav {
+  float: left;
+  width: 600px;
+  height: 100%;
+  margin-left: 200px;
+}
+#header .h-main ul.h-nav li {
+  float: left;
+  width: 120px;
+  height: 100%;
+}
+#header .h-main ul.h-nav li a {
+  display: block;
+  padding-top: 27px;
+  text-align: center;
+  color: #fafafa;
+  font-size: 18px;
+}
+#header .h-main ul.h-nav li a span {
+  display: block;
+  /*常用公共字体样式*/
+  color: #838383;
+  font-size: 10px;
+  font-family: "Tahoma";
+  text-transform: uppercase;
+}
+#header .h-main span.h-icon {
+  display: block;
+  float: left;
+  width: 40px;
+  height: 90px;
+  margin-left: 5px;
+}
+#header .h-main span.h-icon i {
+  display: block;
+  height: 27px;
+  margin: 25px auto 0;
+  cursor: pointer;
+  background-image: url("../imgs/source.png");
+  background-repeat: no-repeat;
+}
+#header .h-main span.h-icon i.h-search {
+  width: 27px;
+  background-position: -8px 0;
+}
+#header .h-main span.h-icon i.h-phone {
+  width: 21px;
+  background-position: -45px 0;
+}
+#header .h-main .h-user {
+  float: right;
+  position: relative;
+  width: 350px;
+  height: 100%;
+}
+#header .h-main .h-user .user-side {
+  float: left;
+  position: relative;
+  width: 100px;
+  height: 100%;
+}
+#header .h-main .h-user .user-side .user-mask {
+  display: block;
+  position: absolute;
+  width: 74px;
+  height: 74px;
+  top: 8px;
+  left: 13px;
+  z-index: 10;
+  background: url("../imgs/source.png") no-repeat 0 -169px;
+}
+#header .h-main .h-user .user-side img {
+  display: block;
+  width: 66px;
+  height: 66px;
+  padding-top: 12px;
+  margin: 0 auto;
+  border-radius: 50%;
+}
+#header .h-main .h-user .user-main {
+  padding-top: 17px;
+  margin-left: 110px;
+  overflow: hidden;
+}
+#header .h-main .h-user .user-main .user-login {
+  padding: 5px 0;
+  /*常用公共字体样式*/
+  color: #fff;
+  font-size: 16px;
+}
+#header .h-main .h-user .user-main .user-login span {
+  color: #dfb257;
+  text-decoration: underline;
+  margin: 0 3px;
+  cursor: pointer;
+}
+#header .h-main .h-user .user-main .login-des {
+  /*常用公共字体样式*/
+  color: #999;
+  font-size: 12px;
+}
+#header .h-main .h-user:hover {
+  background-color: rgba(27, 27, 27, 0.9);
+}
+#header .h-main .h-user:hover .user-drop {
+  visibility: visible;
+}
+#header .h-main .h-user .user-drop {
+  position: absolute;
+  visibility: hidden;
+  width: 100%;
+  left: 0;
+  top: 88px;
+  padding-top: 20px;
+  z-index: 3;
+  background-color: #1b1b1b;
+  background-color: rgba(27, 27, 27, 0.9);
+}
+#header .h-main .h-user .user-drop .drop-content {
+  padding: 10px 30px 0;
+  /*常用公共字体样式*/
+  color: #868686;
+  font-size: 14px;
+  text-align: left;
+}
+#header .h-main .h-user .user-drop .drop-warn {
+  margin-left: -2px;
+  height: 30px;
+  line-height: 29px;
+  /*常用公共字体样式*/
+  color: #999;
+  font-size: 12px;
+  text-align: center;
+}
+#header .h-main .h-user .user-drop .drop-personal {
+  display: block;
+  width: 100%;
+  height: 36px;
+  line-height: 36px;
+  background: #161413;
+  /*常用公共字体样式*/
+  color: #e0e0e0;
+  font-size: 12px;
+  text-align: center;
+}
+#header .detailNav {
+  position: absolute;
+  visibility: hidden;
+  width: 100%;
+  padding: 20px 0;
+  left: 0;
+  top: 88px;
+  z-index: 10;
+  background-color: black;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+#header .detailNav ul {
+  width: 1040px;
+  height: 190px;
+  padding-left: 200px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+#header .detailNav ul li {
+  float: left;
+  width: 120px;
+}
+#header .detailNav ul li a {
+  display: block;
+  width: 100%;
+  height: 28px;
+  line-height: 28px;
+  /*常用公共字体样式*/
+  color: #e1e1e1;
+  font-size: 14px;
+  text-align: center;
+}
+#header .detailNav ul li a i {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 2px;
+  vertical-align: middle;
+  background-image: url("../imgs/source.png");
+}
+#header .detailNav ul li a i.hot {
+  background-position: -107px 0;
+}
+#header .detailNav ul li a i.new {
+  background-position: -129px 0;
+}
+#header .detailNav ul li a:hover {
+  color: #e9c06c;
+}
+
+/*video*/
+#video {
+  width: 100%;
+  height: 350px;
+  overflow-x: hidden;
+  background: url("../imgs/video-bg.jpg") no-repeat center top;
+}
+#video .v-main {
+  position: relative;
+}
+#video .v-main video {
+  position: absolute;
+  width: 1920px;
+  height: 100%;
+  left: 50%;
+  top: 0;
+  margin-left: -960px;
+  z-index: 1;
+}
+#video .v-main .hero-intro {
+  position: relative;
+  padding-top: 100px;
+  z-index: 1;
+}
+#video .v-main .hero-intro h2 {
+  position: relative;
+  height: 50px;
+  line-height: 50px;
+  margin-bottom: 50px;
+  /*常用公共字体样式*/
+  color: #ffcb60;
+  font-size: 50px;
+  font-weight: bold;
+  /*渐变背景色*/
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffe8b8), to(#af8530));
+  /*背景色被裁剪到文本的这部分*/
+  -webkit-background-clip: text;
+  /*文本填充色设为透明。让文本完全由背景呈现*/
+  -webkit-text-fill-color: transparent;
+}
+#video .v-main .hero-intro h2 span {
+  position: absolute;
+  /*文字阴影*/
+  left: 0;
+  top: 0;
+  color: transparent;
+  text-shadow: 0 0 10px #000;
+  z-index: -1;
+}
+#video .v-main .hero-intro a {
+  display: block;
+  width: 155px;
+  height: 36px;
+  line-height: 36px;
+  border: 2px solid #bd9440;
+  /*常用公共字体样式*/
+  color: #c89b3c;
+  font-size: 14px;
+  text-align: center;
+  font-weight: bold;
+  background: black;
+  background: rgba(0, 0, 0, 0.65);
+  webkit-border-image: -webkit-linear-gradient(top, #6b5024 0%, #b88d35 100%);
+  border-image: linear-gradient(to bottom, #6b5024 0%, #b88d35 100%);
+  border-image-slice: 1;
+}
+#video .v-main .version {
+  position: absolute;
+  height: 26px;
+  line-height: 26px;
+  right: 0;
+  bottom: 30px;
+  z-index: 1;
+  /*常用公共字体样式*/
+  color: #888787;
+  font-size: 14px;
+}
+#video .v-main .version span {
+  color: #f5d185;
+  margin-right: 14px;
+}
+#video .v-main .version a {
+  float: right;
+  padding: 0 15px;
+  height: 22px;
+  line-height: 22px;
+  border: 2px solid #f5d185;
+  /*常用公共字体样式*/
+  color: #f5d185;
+  font-size: 12px;
+  text-align: center;
+  background: black;
+  background: rgba(0, 0, 0, 0.65);
+  -webkit-border-image: -webkit-linear-gradient(top, #6b5024 0%, #b88d35 100%);
+  border-image: linear-gradient(to bottom, #6b5024 0%, #b88d35 100%);
+  border-image-slice: 1;
+}
+
+/*菜单*/
+#menu {
+  width: 100%;
+  height: 80px;
+  border-top: 2px solid #8c6c2d;
+  background: url("../imgs/source.png") repeat-x 0 -257px;
+}
+#menu ul li.content {
+  float: left;
+  width: 110px;
+  height: 58px;
+  line-height: 58px;
+  /*常用公共字体样式*/
+  color: #555;
+  font-size: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+#menu ul li.on {
+  color: #d1ab57;
+  border-bottom: 2px solid #d1ab57;
+}
+#menu ul li.dot {
+  float: left;
+  width: 13px;
+  height: 50px;
+  margin: 4px 18px;
+  background: url("../imgs/source.png") no-repeat -290px -30px;
+}
+
+/*主内容区域*/
+#content {
+  width: 100%;
+  height: auto;
+  padding-top: 40px;
+  margin-top: -20px;
+  background: #f7f7f7 url("../imgs/bg-content.jpg") no-repeat center top;
+}
+
+#home {
+  height: 400px;
+  margin-bottom: 60px;
+}
+#home .carousel {
+  float: left;
+  width: 820px;
+  height: 100%;
+  overflow: hidden;
+}
+#home .carousel ul.pic {
+  width: 550%;
+  height: 350px;
+  transition: .3s;
+}
+#home .carousel ul.pic li {
+  float: left;
+  width: 820px;
+  height: 100%;
+}
+#home .carousel ul.pic li a {
+  display: block;
+  width: 820px;
+  height: 100%;
+}
+#home .carousel ul.pic li a img {
+  display: block;
+  width: 820px;
+  height: 350px;
+}
+#home .carousel ul.nav {
+  width: 100%;
+  height: 50px;
+}
+#home .carousel ul.nav li {
+  float: left;
+  width: 164px;
+  height: 100%;
+  line-height: 50px;
+  background-color: #121112;
+  /*常用公共字体样式*/
+  color: #c8c8c8;
+  font-size: 14px;
+  text-align: center;
+  transition: .2s;
+  cursor: pointer;
+}
+#home .carousel ul.nav li.on {
+  color: #e9c06c;
+  background-color: #303030;
+}
+#home .func {
+  float: right;
+  width: 400px;
+  height: 100%;
+}
+#home .func .download {
+  float: right;
+  width: 100%;
+  height: 150px;
+}
+#home .func .download video {
+  display: block;
+  width: 100%;
+  height: 150px;
+  cursor: pointer;
+}
+#home .func ul.side-menu {
+  float: right;
+  padding-top: 10px;
+  width: 405px;
+  height: 240px;
+}
+#home .func ul.side-menu li {
+  float: left;
+  width: 130px;
+  height: 55px;
+  margin: 5px 0 0 5px;
+  background: greenyellow;
+}
+#home .func ul.side-menu li a {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  line-height: 55px;
+  background-color: #fff;
+  /*常用公共字体样式*/
+  color: #555;
+  font-size: 14px;
+  text-align: center;
+}
+#home .func ul.side-menu li a i.icon {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  vertical-align: middle;
+  background: url("../imgs/source.png") no-repeat;
+}
+#home .func ul.side-menu li a i.icon-guide {
+  background-position: -200px 0;
+}
+#home .func ul.side-menu li a i.icon-universe {
+  background-position: -560px 0;
+}
+#home .func ul.side-menu li a i.icon-mall {
+  background-position: -590px 0;
+}
+#home .func ul.side-menu li a i.icon-client {
+  background-position: -380px 0;
+}
+#home .func ul.side-menu li a i.icon-gorge {
+  background-position: -650px 0;
+}
+#home .func ul.side-menu li a i.icon-player {
+  background-position: -650px -30px;
+}
+#home .func ul.side-menu li a i.icon-rgm {
+  background-position: -620px 0;
+}
+#home .func ul.side-menu li a i.icon-data {
+  background-position: -260px 0;
+}
+#home .func ul.side-menu li a i.icon-center {
+  background-position: -470px 0;
+}
+#home .func ul.side-menu li a i.icon-weibi {
+  background-position: -500px 0;
+}
+#home .func ul.side-menu li a i.icon-forum {
+  background-position: -410px 0;
+}
+#home .func ul.side-menu li a i.icon-service {
+  background-position: -440px 0;
+}
+#home .func ul.side-menu li a i.flag {
+  display: block;
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  top: 3px;
+  background: url("../imgs/source.png") no-repeat;
+}
+#home .func ul.side-menu li a i.flag-hot {
+  right: 8px;
+  background-position: -107px 0;
+}
+#home .func ul.side-menu li a i.flag-new {
+  right: 2px;
+  background-position: -129px 0;
+}
+#home .func ul.side-menu li a:hover {
+  background-color: #f0f0f0;
+}
+
+/*最新资讯*/
+#information {
+  height: 715px;
+  margin-bottom: 60px;
+  overflow: hidden;
+  /*左侧资讯区*/
+  /*右侧英雄列表区*/
+}
+#information .news {
+  float: left;
+  width: 820px;
+  height: 100%;
+}
+#information .news .news-tab {
+  width: 100%;
+  height: 50px;
+  border-bottom: 3px solid #ededee;
+}
+#information .news .news-tab h3 {
+  float: left;
+  height: 100%;
+  line-height: 50px;
+  margin-right: 40px;
+  /*常用公共字体样式*/
+  color: #404040;
+  font-size: 26px;
+  font-weight: normal;
+}
+#information .news .news-tab ul.nav {
+  float: left;
+  height: 36px;
+  margin-top: 14px;
+}
+#information .news .news-tab ul.nav li {
+  float: left;
+  width: 168px;
+  height: 100%;
+  line-height: 36px;
+  cursor: pointer;
+  /*常用公共字体样式*/
+  color: #666;
+  font-size: 18px;
+  text-align: center;
+}
+#information .news .news-tab ul.nav li.on {
+  color: #d1ab57;
+  font-weight: bold;
+  border-bottom: 3px solid #d1ab57;
+}
+#information .news .news-contents {
+  display: none;
+  width: 100%;
+  height: auto;
+  padding-top: 24px;
+}
+#information .news .news-contents ul {
+  width: 100%;
+  color: #666;
+}
+#information .news .news-contents ul li.big-list {
+  height: 124px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+#information .news .news-contents ul li.big-list a {
+  display: block;
+}
+#information .news .news-contents ul li.big-list a img {
+  float: left;
+  display: block;
+  width: 200px;
+  height: 124px;
+  margin-right: 20px;
+}
+#information .news .news-contents ul li.big-list a h3 {
+  float: left;
+  width: 600px;
+  height: 50px;
+  line-height: 50px;
+  overflow: hidden;
+  /*常用公共字体样式*/
+  color: #3e3e3e;
+  font-size: 36px;
+  font-weight: bold;
+}
+#information .news .news-contents ul li.big-list a p {
+  float: left;
+  width: 600px;
+  height: 60px;
+  line-height: 1.5;
+  font-size: 14px;
+  color: #898989;
+}
+#information .news .news-contents ul li.list {
+  height: 35px;
+  line-height: 35px;
+  padding: 4px 0;
+}
+#information .news .news-contents ul li.list a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+#information .news .news-contents ul li.list a .news-type {
+  float: left;
+  display: block;
+  width: 68px;
+  height: 100%;
+  line-height: 35px;
+  margin-right: 22px;
+  background-color: #ebebeb;
+  text-align: center;
+  color: #7a7a7a;
+}
+#information .news .news-contents ul li.list a:hover .news-type {
+  background-color: #d1ab57;
+  color: #fff;
+}
+#information .news .news-contents ul li.list a p {
+  float: left;
+  width: 675px;
+  height: 100%;
+  line-height: 35px;
+  font-size: 16px;
+  color: #555555;
+  overflow: hidden;
+}
+#information .news .news-contents ul li.list a:hover p {
+  color: #d1ab57;
+}
+#information .news .news-contents ul li.list a .news-date {
+  float: right;
+  display: block;
+  width: 50px;
+  height: 100%;
+  line-height: 35px;
+  /*常用公共字体样式*/
+  color: #bababa;
+  font-size: 16px;
+  text-align: right;
+}
+#information .news .currentNews {
+  display: block;
+}
+#information .news a.news-more {
+  display: block;
+  width: 100%;
+  height: 45px;
+  line-height: 45px;
+  margin-top: 15px;
+  background-color: #f0f0f0;
+  /*常用公共字体样式*/
+  color: #515151;
+  font-size: 16px;
+  text-align: center;
+}
+#information .news a.news-more span {
+  color: #d1ab57;
+}
+#information .hero {
+  float: right;
+  width: 400px;
+  height: 100%;
+}
+#information .hero .hero-tab {
+  height: 53px;
+}
+#information .hero .hero-tab ul.nav {
+  margin-top: 14px;
+  height: 36px;
+}
+#information .hero .hero-tab ul.nav li {
+  float: left;
+  width: 133.33px;
+  height: 36px;
+  line-height: 36px;
+  overflow: hidden;
+  cursor: pointer;
+  /*常用公共字体样式*/
+  color: #666;
+  font-size: 16px;
+  text-align: center;
+}
+#information .hero .hero-tab ul.nav li.on {
+  color: #d1ab57;
+  font-weight: bold;
+  border-bottom: 3px solid #d1ab57;
+}
+#information .hero .hero-content {
+  position: relative;
+  display: none;
+  width: 400px;
+  height: 462px;
+}
+#information .hero .hero-content .suspend {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+}
+#information .hero .hero-content .suspend ul {
+  width: 110%;
+  height: 400px;
+  overflow: hidden;
+}
+#information .hero .hero-content .suspend ul li {
+  position: relative;
+  float: left;
+  margin: 0 10px 10px 0;
+}
+#information .hero .hero-content .suspend ul li a {
+  display: block;
+  height: 100%;
+}
+#information .hero .hero-content .suspend ul li a img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+#information .hero .hero-content .suspend ul li.big-list {
+  width: 400px;
+  height: 145px;
+}
+#information .hero .hero-content .suspend ul li.list {
+  width: 195px;
+  height: 70px;
+}
+#information .hero .hero-content .suspend ul li.list span.instruct {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  line-height: 70px;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  /*常用公共字体样式*/
+  color: #c9aa71;
+  font-size: 14px;
+  text-align: center;
+  background-color: black;
+  background-color: rgba(0, 0, 0, 0.78);
+  cursor: pointer;
+}
+#information .hero .hero-content .suspend ul li.list:hover span.instruct {
+  display: block;
+}
+#information .hero .hero-content .suspend .free-buttom {
+  width: 100%;
+  height: 24px;
+}
+#information .hero .hero-content .suspend .free-buttom .free-drag {
+  float: left;
+  height: 15px;
+  padding: 0 15px;
+  background: #d1ab57;
+  cursor: pointer;
+}
+#information .hero .hero-content .suspend .free-buttom .free-drag i {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  background: url("../imgs/source.png") no-repeat;
+}
+#information .hero .hero-content .suspend .free-buttom .free-date {
+  float: right;
+  color: #9F9F9F;
+  font-size: 12px;
+}
+#information .hero .hero-content .suspend .down-buttom .free-drag i {
+  background-position: -678px -80px;
+}
+#information .hero .hero-content .suspend .up-buttom .free-drag i {
+  background-position: -678px -60px;
+}
+#information .hero .hero-content .suspend-on {
+  background-color: #fff;
+}
+#information .hero .currentHero {
+  display: block;
+}
+#information .hero .go {
+  height: 70px;
+}
+#information .hero .go a {
+  display: block;
+  width: 195px;
+  height: 100%;
+}
+#information .hero .go a img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+#information .hero .go a.survey {
+  float: left;
+}
+#information .hero .go a.mall {
+  float: right;
+}
+#information .hero .tips {
+  height: 75px;
+  margin-top: 21px;
+}
+#information .hero .tips i {
+  float: left;
+  display: block;
+  width: 70px;
+  height: 70px;
+  margin-right: 10px;
+  background: url("../imgs/source.png") no-repeat -330px -89px;
+}
+#information .hero .tips h5 {
+  float: left;
+  width: 320px;
+  padding-top: 5px;
+  /*常用公共字体样式*/
+  color: #404040;
+  font-size: 14px;
+  font-weight: normal;
+}
+#information .hero .tips p {
+  float: left;
+  line-height: 19px;
+  font-size: 12px;
+  color: #878787;
+}
+
+/*最新推荐*/
+#recommend {
+  height: 323px;
+  overflow: hidden;
+  margin-bottom: 70px;
+}
+#recommend .rec-tab {
+  height: 50px;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #ededee;
+}
+#recommend .rec-tab h3 {
+  float: left;
+  height: 50px;
+  line-height: 50px;
+  margin-right: 40px;
+  /*常用公共字体样式*/
+  color: #404040;
+  font-size: 26px;
+  font-weight: normal;
+}
+#recommend .rec-tab ul {
+  float: left;
+  height: 36px;
+  margin-top: 14px;
+}
+#recommend .rec-tab ul li {
+  float: left;
+  width: 150px;
+  height: 36px;
+  line-height: 36px;
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+}
+#recommend .rec-tab ul li.on {
+  color: #d1ab57;
+  font-weight: bold;
+  border-bottom: 3px solid #d1ab57;
+}
+#recommend .rec-content {
+  display: none;
+  width: 100%;
+  height: auto;
+}
+#recommend .rec-content ul.rec-video {
+  width: 110%;
+  height: 155px;
+}
+#recommend .rec-content ul.rec-video li {
+  float: left;
+  width: 190px;
+  height: 100%;
+  margin-right: 20px;
+}
+#recommend .rec-content ul.rec-video li a {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+#recommend .rec-content ul.rec-video li a img {
+  display: block;
+  width: 100%;
+  height: 110px;
+  margin-bottom: 5px;
+}
+#recommend .rec-content ul.rec-video li a .hours {
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 20%;
+  left: 0;
+  bottom: 37px;
+  line-height: 30px;
+  z-index: 1;
+  /*常用公共字体样式*/
+  color: #555;
+  font-size: 12px;
+  text-align: right;
+}
+#recommend .rec-content ul.rec-video li a .hours i {
+  background: rgba(17, 17, 17, 0.8);
+  font-style: normal;
+  color: #ddd;
+  padding: 0 4px;
+}
+#recommend .rec-content ul.rec-video li a p {
+  height: 40px;
+  line-height: 20px;
+  overflow: hidden;
+  font-size: 14px;
+  color: #555;
+}
+#recommend .rec-content ul.rec-video li a i.shadow {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 110px;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.3);
+}
+#recommend .rec-content ul.rec-video li a i.vIcon {
+  display: none;
+  position: absolute;
+  width: 65px;
+  height: 65px;
+  left: 60px;
+  top: 20px;
+  z-index: 4;
+  background: url("../imgs/recommend/bg-icon-v.png") no-repeat;
+}
+#recommend .rec-content ul.rec-video li a:hover {
+  background-color: #eee;
+}
+#recommend .rec-content ul.rec-video li a:hover p {
+  color: #c49f58;
+}
+#recommend .rec-content ul.rec-video li a:hover i.shadow {
+  display: block;
+}
+#recommend .rec-content ul.rec-video li a:hover i.vIcon {
+  display: block;
+}
+#recommend .rec-content a.rec-more {
+  display: block;
+  height: 45px;
+  line-height: 45px;
+  margin-top: 50px;
+  background-color: #f0f0f0;
+  /*常用公共字体样式*/
+  color: #515151;
+  font-size: 16px;
+  text-align: center;
+}
+#recommend .rec-content a.rec-more span {
+  color: #d1ab57;
+}
+#recommend .rec-content a.rec-more:hover {
+  color: #555555;
+  background-color: #dad8d8;
+}
+#recommend .rec-content ul.rec-activity {
+  width: 110%;
+  height: 240px;
+}
+#recommend .rec-content ul.rec-activity li {
+  float: left;
+  width: 300px;
+  height: 100%;
+  margin-right: 13.33px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+#recommend .rec-content ul.rec-activity li a {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 130px;
+  overflow: hidden;
+}
+#recommend .rec-content ul.rec-activity li a img {
+  display: block;
+  width: 100%;
+  height: 130px;
+  transition: .8s;
+}
+#recommend .rec-content ul.rec-activity li a:hover img {
+  transform: scale(1.05);
+}
+#recommend .rec-content ul.rec-activity li a span.attention {
+  display: block;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 26px;
+  line-height: 26px;
+  /*常用公共字体样式*/
+  color: #f8f8f8;
+  font-size: 12px;
+  text-align: center;
+  background-image: url("../imgs/recommend/bg-incon-r.png");
+}
+#recommend .rec-content ul.rec-activity li a span.attention strong {
+  color: #f3ca6f;
+  margin: 0 4px;
+  font-weight: normal;
+}
+#recommend .rec-content ul.rec-activity li a span.timesOver {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  height: 22px;
+  line-height: 22px;
+  padding: 0 8px;
+  border-radius: 11px;
+  font-size: 12px;
+  color: #fff;
+  background-color: #72ca2a;
+}
+#recommend .rec-content ul.rec-activity li .inner {
+  padding: 11px 15px 0;
+}
+#recommend .rec-content ul.rec-activity li .inner h4 {
+  color: #666;
+  font-size: 12px;
+}
+#recommend .rec-content ul.rec-activity li .inner .act-date {
+  font-size: 12px;
+  line-height: 16px;
+  color: #d1ab57;
+  margin: 6px 0 10px;
+}
+#recommend .rec-content ul.rec-activity li .inner .act-date span {
+  color: #9f9f9f;
+}
+#recommend .rec-content ul.rec-activity li .inner .act-content {
+  color: #888;
+  font-size: 12px;
+  line-height: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+#recommend .currentContent {
+  display: block;
+}
+
+/*底部*/
+#footer {
+  width: 100%;
+  height: 95px;
+  padding: 30px 0;
+  background: url("../imgs/footer/bg.jpg") no-repeat center top;
+}
+#footer .footer-content {
+  width: 860px;
+  height: 100%;
+  padding-left: 380px;
+  margin: 0 auto;
+}
+#footer .footer-content ul {
+  float: right;
+}
+#footer .footer-content ul li {
+  height: 19px;
+  line-height: 19px;
+  color: #415967;
+  font-size: 12px;
+}
+#footer .footer-content ul li a {
+  color: #568193;
+}
+#footer .footer-content ul li span {
+  color: #568193;
+}
+#footer .footer-content ul li.last {
+  color: #A5A5A5;
+}
