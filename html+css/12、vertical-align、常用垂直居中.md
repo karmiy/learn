@@ -271,4 +271,26 @@
     
 ![Alt text](./imgs/12-13.png)
 
-（CSS3属性要考虑兼容性问题）
+（CSS3属性要考虑兼容性问题, >= IE9）
+
+6、flex布局实现垂直居中：
+
+    #wrap {
+        display: flex; // 父级 flex布局
+        width: 400px;
+        height: 400px;
+        border: 5px solid pink;
+        margin: 50px auto;
+
+        justify-content: center; // 子元素水平方向居中排列
+        align-items: center; // 子元素垂直方向居中排列
+    }
+    #wrap p {
+        width: 100px;
+        height: 100px;
+        background-color: red;
+    }
+    
+![Alt text](./imgs/12-12.png)
+
+（CSS3属性要考虑兼容性问题, >= IE10）
