@@ -135,5 +135,22 @@
 
 1、行高实现垂直居中
 
+    #wrap {
+        width: 800px;
+        height: 500px;
+        border: 5px solid red;
+        margin: 50px auto;
+    }
+    #wrap p {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        background-color: red;
+    }
+    
+    <div id='wrap'>
+        <p></p>
+    </div>
+    
 ![Alt text](./imgs/12-09.png)
 
