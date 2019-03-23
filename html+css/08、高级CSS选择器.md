@@ -146,3 +146,49 @@
     
 ![Alt text](./imgs/8-01.png)
 
+### 高级选择器的优先级
+
+1、子代选择器 > 不提高优先级
+
+    div > a {
+        ...
+    }
+    div a {
+        ...
+    }
+    优先级一样
+    
+2、兄弟选择器 + 不提高优先级
+
+    p + p {
+        ...
+    }
+    body p {
+        ...
+    }
+    优先级一样
+
+3、伪元素选择器优先级与class一致
+
+    #wrap:hover {
+        background-color: skyblue;
+    }
+    #wrap.box {
+        background-color: greenyellow;
+    }
+    优先级一致
+    
+    但是因为#wrap.box写在后面，所以结果会是#wrap.box的背景色，上面:hover无效
+    
+4、属性选择器优先级与class一致
+
+    #wrap[title='box'] {
+        background-color: skyblue;
+    }
+    #wrap.box {
+        background-color: greenyellow;
+    }
+    
+    优先级一致
+        
+    但是因为#wrap.box写在后面，所以结果会是#wrap.box的背景色，上面[title='box']无效
