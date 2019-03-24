@@ -130,6 +130,22 @@
     a:visited {
         ...
     }
+    
+### :focus焦点状态
+
+    <input type='text' id='user' />
+    
+    // input获得焦点时的样式
+    input.user:focus {
+        ...
+    }
+    
+ > &#9733; 贴士 
+ 
+对于\<a>、\<area>、\<button>、\<input>、\<select>、\<textarea>等元素是默认可以获得焦点的，如果想让如div有焦点，需要给div设置一个属性
+    
+    // 这样div就可以获得焦点了，数字越小优先级越高
+    <div tabindex='0'></div>
 
 ### 伪元素选择器
 
