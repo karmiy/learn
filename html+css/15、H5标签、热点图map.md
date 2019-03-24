@@ -206,4 +206,4 @@ IE8及以下不兼容
 ### \<mark>文本的背景标记
 
     // 是个自带 color: black与background-color: yellow的<span>标签
-    <p>这是神羊<mark>软用没有</mark></p>
+    <p>这神羊<mark>软用没有</mark></p>

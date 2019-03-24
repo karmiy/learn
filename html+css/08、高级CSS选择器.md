@@ -61,7 +61,7 @@
 属性**包含**val值
     
     // [attr~=val]兼容性：>= IE7 
-    // [attr*=val]兼容性：>= IE8
+    // [attr*=val]兼容性：>= IE8 （*=是CSS3的）
     
     div.box[title*='123'] {
         ...
@@ -86,7 +86,7 @@
 匹配属性以val开头
     
     // [attr|=val]兼容性：>= IE7 
-    // [attr^=val]兼容性：>= IE8
+    // [attr^=val]兼容性：>= IE8 （^=是CSS3的）
     
     [title|='en']
     
@@ -104,7 +104,7 @@
 
 ### 属性选择器[attr$=val]
 
-与[attr^=val]相反，以val结尾，兼容性 >=IE8
+    与[attr^=val]相反，以val结尾，兼容性 >=IE8（$=是CSS3的）
 
 ### 伪类选择器
 
@@ -130,8 +130,26 @@
     a:visited {
         ...
     }
+
+5、:first-letter 匹配首字母
     
-### :focus焦点状态
+    p:first-letter {
+        ...
+    }
+    
+    // 会选中‘这’字
+    <p>这是首字母的选择器</p>
+    
+6、:first-line 匹配首行
+
+    p:first-line {
+        ...
+    }
+    
+    // 假如这个p有3行，会选中它的第一行内容
+    <p>...</p>
+    
+7、:focus 焦点状态
 
     <input type='text' id='user' />
     
@@ -146,6 +164,26 @@
     
     // 这样div就可以获得焦点了，数字越小优先级越高
     <div tabindex='0'></div>
+    
+8、:first-child 父元素第一个相同子元素
+
+    p:first-child {
+        ...
+    }
+    
+    <div>
+        <p>...</p> // 会匹配这个p
+        <p>...</p>
+    </div>
+    
+    <div>
+        <span>...</span> // 匹配不了，因为第一个子元素是span
+        <p>...</p>
+    </div>
+    
+9、:last-child 父元素最后一个相同子元素
+
+    与:first-child相反（:last-child是CSS3的）
 
 ### 伪元素选择器
 
