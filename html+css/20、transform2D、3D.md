@@ -61,3 +61,22 @@
     
 ![Alt text](./imgs/20-04.png) 
 ![Alt text](./imgs/20-05.png) 
+
+## skew、skewX、skewY倾斜
+
+    // 基本用法
+    transform: skew(x,y);
+        x轴方向倾斜
+        y轴方向倾斜
+    // 单独写法
+    transform: skewX(0deg);
+    transform: skewY(0deg);
+    
+    // 示例
+    img {
+        display: block;
+        width: 200px;
+        transform: skew(45deg, -15deg);
+    }
+    
+![Alt text](./imgs/20-06.png) 
