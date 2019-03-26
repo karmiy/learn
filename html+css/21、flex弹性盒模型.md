@@ -44,9 +44,7 @@
     纵向排列时，高度由内容撑开，宽度100%；
     
 ![Alt text](./imgs/21-02.png) 
-
 ![Alt text](./imgs/21-03.png) 
 
 ![Alt text](./imgs/21-04.png) 
-
 ![Alt text](./imgs/21-05.png) 
