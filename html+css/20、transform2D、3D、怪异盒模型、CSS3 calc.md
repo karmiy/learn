@@ -1,5 +1,7 @@
 ## transform 2D变换
 
+兼容性：>= IE9
+
 ### rotate旋转
 
     // 取值
@@ -86,7 +88,10 @@
 ### transform-origin变换基点
 
 默认基点是Z轴（Z轴方向与我们看屏幕的视线反向，即从屏幕垂直向外）
-
+    
+    // 兼容性
+    >=IE9
+    
     // 取值：
     1、默认中心点
     2、关键词：
@@ -110,12 +115,34 @@
     
 ![Alt text](./imgs/20-09.png) 
 
+### rotateX、rotateY、rotateZ
+
+    // 兼容性
+    >= IE10
+    // 写法
+    img {
+        ...
+        transform: rotateX(10deg) rotateY(10deg) rotateZ(10deg);
+    }
+    
+    // 3个轴线如何判断旋转方法？
+    以左手拇指为箭头方向，4指蜷缩方向为角度正值，方向为负值
+    
+![Alt text](./imgs/20-14.png) 
+
+![Alt text](./imgs/20-15.png) 
+
+
 ### perspective景深
 
 用来设置用户与元素3D空间Z平面的距离，能实现3D立体效果，**给3D元素的父级添加，不会出现梯形效果，给3D元素添加景深，会出现梯形效果**
 
 一般设置500 - 1000
-
+    
+    // 兼容性
+    >= IE10
+    
+    // 示例
     <div id="main">
         <div class="child">
             <img class="k1" src="./2.png" alt='' />
@@ -174,8 +201,12 @@
 ### transform-style
 
 transform-style: preserve-3d，相当于一个舞台，提供一个子元素可以在这此呈现3D效果的环境
-
-     #main {
+    
+    // 兼容性
+    IE不兼容
+    
+    // 示例
+    #main {
         width: 150px;
         height: 150px;
         ...
@@ -213,3 +244,50 @@ transform-style: preserve-3d，相当于一个舞台，提供一个子元素可�
 ![Alt text](./imgs/20-12.png) 
 
 ![Alt text](./imgs/20-13.png) 
+
+## 怪异盒模型box-sizing
+
+    // W3C标准盒子模型：content-box （默认）
+        content + padding = 宽高
+        
+    // 传统IE盒子模型：border-box
+        content + padding + border = 宽高
+        
+    // 示例
+    li {
+        width: 200px;
+        height: 200px;
+        padding: 50px;
+        border: 10px solid red;
+        background-color: blue;
+    }
+    li:nth-child(1) {
+        ...
+        box-sizing: content-box;
+    }
+    li:nth-child(2) {
+        ...
+        box-sizing: border-box;
+    }
+    
+![Alt text](./imgs/20-16.png) 
+
+## CSS calc运算
+
+用来指定元素的长度，给元素border、margin、padding、font-size、width等属性设置动态值
+    
+    // 兼容性
+    >= IE9
+    
+    // 注：
+        1、表达式中有 + 和 - ，符号两边必须有空格
+        2、表达式中有 * 和 / ，符号两边可以没有空格，建议保留
+        
+    // 示例
+    .wrap {
+        ...
+        width: calc(20% - 10px);
+        height: calc(200px + 50px);
+        margin-left: calc(45px / 3);
+        padding-right: calc(15px * 2);
+    }
