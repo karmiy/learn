@@ -58,3 +58,37 @@
     
     注：
     如果nowrap，即使子元素我们写了width，也被无视掉被挤压
+    
+![Alt text](./imgs/21-06.png) 
+![Alt text](./imgs/21-07.png) 
+
+![Alt text](./imgs/21-08.png) 
+
+### flex-flow（flex-direction、flex-wrap复合）
+    
+    // 用法
+    flex-flow: flex-direction flex-wrap;
+    
+    // 示例
+    ul {
+        ...
+        flex-flow: row-reverse wrap;
+    }
+
+## justify-content设置子元素的主轴（X轴）方向上的对齐方式
+
+    // 取值
+    1、flex-start 子元素左对齐（默认值）
+    2、flex-end 子元素右对齐
+    3、center 子元素居中对齐
+    4、space-between 子元素平均分配在X轴
+    5、space-around 子元素平均分配在X轴，但两端保留子元素之间间距的一半
+    
+![Alt text](./imgs/21-09.png) 
+![Alt text](./imgs/21-10.png) 
+
+![Alt text](./imgs/21-11.png) 
+![Alt text](./imgs/21-12.png) 
+
+![Alt text](./imgs/21-13.png) 
+
