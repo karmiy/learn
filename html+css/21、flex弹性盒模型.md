@@ -75,7 +75,7 @@
         flex-flow: row-reverse wrap;
     }
 
-## justify-content设置子元素的主轴（X轴）方向上的对齐方式
+### justify-content设置子元素的主轴（X轴）方向上的对齐方式
 
     // 取值
     1、flex-start 子元素左对齐（默认值）
@@ -92,7 +92,7 @@
 
 ![Alt text](./imgs/21-13.png) 
 
-## align-items设置子元素的侧轴（Y轴）方向上的对齐方式
+### align-items设置子元素的侧轴（Y轴）方向上的对齐方式
 
     // 取值
     1、flex-start 子元素在y轴上顶端对齐
@@ -110,7 +110,7 @@
 ![Alt text](./imgs/21-18.png) 
 ![Alt text](./imgs/21-19.png) 
 
-## align-content设置元素行与行之间的间距（行间距）
+### align-content设置元素行与行之间的间距（行间距）
 
     // 取值
     1、flex-start 每一行从顶部开始，挨着向下排列
