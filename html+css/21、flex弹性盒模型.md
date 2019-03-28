@@ -92,3 +92,21 @@
 
 ![Alt text](./imgs/21-13.png) 
 
+## align-items设置子元素的侧轴（Y轴）方向上的对齐方式
+
+    // 取值
+    1、flex-start 子元素在y轴上顶端对齐
+    2、flex-end 子元素在y轴上底部对齐
+    3、center 子元素在y轴上居中对齐
+    4、baseline 子元素在y轴上基线对齐，和文字有关
+    5、stretch （默认值）子元素在y轴上没有设置高度(有设置还是按设置的)时，会拉升自身去填满父级容器高度
+    
+![Alt text](./imgs/21-14.png) 
+![Alt text](./imgs/21-15.png) 
+
+![Alt text](./imgs/21-16.png) 
+![Alt text](./imgs/21-17.png) 
+
+![Alt text](./imgs/21-18.png) 
+![Alt text](./imgs/21-19.png) 
+
