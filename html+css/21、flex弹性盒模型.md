@@ -99,7 +99,7 @@
     2、flex-end 子元素在y轴上底部对齐
     3、center 子元素在y轴上居中对齐
     4、baseline 子元素在y轴上基线对齐，和文字有关
-    5、stretch （默认值）子元素在y轴上没有设置高度(有设置还是按设置的)时，会拉升自身去填满父级容器高度
+    5、stretch （默认值）子元素在y轴上没有设置高度(有设置还是按设置的)时，会拉升自身去填满父级容器高度（如果剩余空间的负值或设置了高度，相当于flex-start）
     
 ![Alt text](./imgs/21-14.png) 
 ![Alt text](./imgs/21-15.png) 
@@ -110,3 +110,87 @@
 ![Alt text](./imgs/21-18.png) 
 ![Alt text](./imgs/21-19.png) 
 
+## align-content设置元素行与行之间的间距（行间距）
+
+    // 取值
+    1、flex-start 每一行从顶部开始，挨着向下排列
+    2、flex-end 每一行从底部开始，挨着向下排列
+    3、center 每一行之间无间距，在y轴居中
+    4、space-between 每一行在y轴上平均分布行高，上下两行挨着边框
+    5、space-around 每一行在y轴上平均分布行高，上下两行与边框之间的间距是行与行间距的一半
+    6、stretch （默认值）同align-items的stretch
+    
+![Alt text](./imgs/21-20.png) 
+![Alt text](./imgs/21-21.png) 
+
+![Alt text](./imgs/21-22.png) 
+![Alt text](./imgs/21-23.png) 
+
+![Alt text](./imgs/21-24.png) 
+![Alt text](./imgs/21-25.png) 
+
+## flex子集特性
+
+设置在子元素的属性上
+
+### order元素位置排序
+
+    // 定义
+    用整数值来定义排列顺序，数值小的排列在前，可以为负值
+    
+    // 示例
+    #main {
+        display: flex;
+        width: 300px;
+        height: 300px;
+        margin: 20px 0 0 20px;
+        border: 1px solid #000;
+    }
+    .child{
+        box-sizing: border-box;
+        width: 60px;
+        height: 60px;
+        border: 1px solid red;
+    }
+    .child:nth-child(7) {
+        order: 2
+    }
+    .child:nth-child(3) {
+        order: 3
+    }
+    .child:nth-child(8) {
+        order: -1
+    }
+    .child:nth-child(4) {
+        order: 0
+    }
+    
+![Alt text](./imgs/21-26.png) 
+
+### flex-grow让元素占据剩余空间
+
+    // 定义
+    让某一个或几个子元素去占据剩余空间，按照给定的比例值来，默认0
+    
+    // 注
+    如果设置了换行flex-wrap:wrap，子元素宽度合超过了父元素。则设置flex-grow无效
+    
+    // 示例
+    #main {
+        display: flex;
+        width: 500px;
+        ...
+    }
+    .child{
+        width: 90px;
+        border: 5px solid red;
+        ...
+    }
+    .child:nth-child(1) {
+        flex-grow: 1;
+    }
+    .child:nth-child(2) {
+        flex-grow: 3;
+    }
+    
+![Alt text](./imgs/21-27.png) 
