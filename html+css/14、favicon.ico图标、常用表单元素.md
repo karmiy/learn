@@ -1,3 +1,18 @@
+## favicon.ico图标
+
+一般网站的title旁都有自己的图标
+
+![Alt text](./imgs/14-11.png)
+
+可以通过网站域名 XXX/favicon.ico找到这张图
+
+![Alt text](./imgs/14-12.png)
+
+如何为自己的网页添加title图标
+
+    // type可以不写
+    <link ref='shortcut icon' href='icon/favicon.ico' type='images/x-icon' />
+
 ## form表单
 
     <form action='XXX.php' method='post'>

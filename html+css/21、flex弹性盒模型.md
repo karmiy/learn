@@ -194,3 +194,98 @@
     }
     
 ![Alt text](./imgs/21-27.png) 
+
+### flex-shrink设置子元素伸缩比例
+
+    // 定义
+    当子元素宽度合超过父元素时，设置子元素伸缩比例，每一个都按照比例去分担超出的那一部分，默认1
+    
+    // 注
+    1、flex-wrap:wrap时无效，因为会换行
+    2、子元素宽度合没有超过父元素宽度也无效
+    3、让出的宽度是：实例宽度比* flex-shrink的比例，假如3个子元素宽度比是1:1:2，flex-shrink是1:2:3，则需要让出的空间比是1:2:6
+    
+    // 示例
+    #main {
+        display: flex;
+        width: 300px;
+        height: 300px;
+        margin: 20px 0 0 20px;
+        border: 1px solid #000;
+    }
+    .child{
+        box-sizing: border-box;
+        width: 60px;
+        height: 60px;
+        border: 1px solid red;
+    }
+    .child:nth-child(2) {
+        flex-shrink: 2; // div2的shrink为2，其他默认值1
+    }
+![Alt text](./imgs/21-28.png) 
+
+### flex-basis设置元素初始长度的像素
+
+    // 定义
+    定义在分配多余空间前，该项先占据指定空间大小，再按flex-grow这个比例占据剩余空间
+    
+    // 注
+    设置了flex-basis后width无效，flex-basis优先级 > width
+    设置了width没设置flex-basis，flex-basis为auto
+    
+    // 示例
+    #main {
+        display: flex;
+        width: 300px;
+        height: 300px;
+        margin: 20px 0 0 20px;
+        border: 1px solid #000;
+    }
+    .child{
+        box-sizing: border-box;
+        width: 60px; // 其他div 宽度60px
+        height: 60px;
+        border: 1px solid red;
+    }
+    .child:nth-child(1) {
+        flex-basis: 50px; // div1 flex-basis为50px
+    }
+    
+![Alt text](./imgs/21-29.png) 
+
+    // 设置flex-grow
+    .child{
+        ...
+        flex-grow: 1; // 每个div设置flex-grow: 1
+    }
+    
+![Alt text](./imgs/21-30.png) 
+
+### align-self单独控制某个子元素的align-items对齐方式
+
+    // 取值（与父级特性align-items一致）
+    1、flex-start 子元素在y轴上顶端对齐
+    2、flex-end 子元素在y轴上底部对齐
+    3、center 子元素在y轴上居中对齐
+    4、baseline 子元素在y轴上基线对齐，和文字有关
+    5、stretch （默认值）子元素在y轴上没有设置高度(有设置还是按设置的)时，会拉升自身去填满父级容器高度（如果剩余空间的负值或设置了高度，相当于flex-start）
+    
+    // 示例
+    #main {
+        display: flex;
+        ...
+    }
+    .child{
+        ...
+    }
+    .child:nth-child(2) {
+        align-self: center;
+    }
+    
+![Alt text](./imgs/21-31.png) 
+
+### flex属性的复合样式写法
+    
+    flex: none;
+    flex: flex-grow flex-basis
+    flex: flex-shrink flex-basis
