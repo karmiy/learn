@@ -128,6 +128,19 @@
         rem();
     </script>
     
+    // css
+    div.nav {
+        width: 4rem; // 需要手动计算或使用calc计算属性
+        height: 3rem;
+    }
+    
+    // scss（推荐）
+    $rem: 750/10rem; // 设置变量
+    div.nav {
+        width: 300/$rem; // 设计稿长度/$rem
+        height: 225/$rem;
+    }
+    
     
     
     
