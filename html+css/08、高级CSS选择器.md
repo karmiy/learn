@@ -222,7 +222,7 @@
     }
     优先级一样
 
-3、伪元素选择器优先级与class一致
+3、伪类选择器优先级与class一致
 
     #wrap:hover {
         background-color: skyblue;
