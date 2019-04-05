@@ -149,6 +149,10 @@ p的margin-top会传递给div（**第一个子元素的margin会传递给父级�
 
 div设置overflow: hidden触发BFC
 
+> &#9733; 贴士 
+
+    给父元素设置border也可以防止父子元素的垂直外边距合并喔
+
 2. 上下元素
 ``````
 <div></div>
