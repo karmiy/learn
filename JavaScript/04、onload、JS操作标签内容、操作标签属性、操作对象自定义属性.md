@@ -61,6 +61,7 @@
     // 区别
     innerText和textContent都不解析HTML标签
     innerText在低版本（2016年版本）火狐不支持，只支持textContent（都兼容）
+    textContent不会输出如\n这样的转义符
     
 ## JS操作标签属性
 
