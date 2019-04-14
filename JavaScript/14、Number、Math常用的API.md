@@ -1,4 +1,4 @@
-## Number相关的API
+## Number常用的API
 
 ### isNaN
 
@@ -97,7 +97,7 @@
     一般更多不会这样写，会：
     Number.prototype.toFixed.call(12.1, 2); // '12.10'
     
-## Math相关的API
+## Math常用的API
     
 ### 圆周率π
 
