@@ -81,6 +81,7 @@ border-color: red green pink yellow;
 
 ``````
 border-width: 20px 40px;
+border-style: solid;
 border-color: transparent transparent transparent pink;
 ``````
 
