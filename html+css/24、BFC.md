@@ -172,3 +172,94 @@ BFC是 (Block Formatting context)的简称，即块格式化上下文
     }
     
 ![Alt text](./imgs/24-07.png) 
+
+## BFC与常规布局？
+
+通过上述介绍，我们知道BFC让容器的子元素和外界互不影响，即容器内部不会影响容器附近的元素。
+
+这个概念可能使我们对常规布局的理念产生模糊感：
+
+BFC让容器内部子元素不影响容器附近的元素，是不是反过来可以说，我们常规父容器内部元素在一些情况（如超出父容器高度）一定会影响外部布局？
+
+或者说，因为平时开发中我们都会让父容器自适应高度，或者尽量不让子元素不超出父容器，并没有考虑过这个问题？
+
+    // DOM结构
+    <div id="wrap">
+        <div class="child"></div>
+    </div>
+    
+    // 样式
+    #wrap {
+        width: 200px;
+        height: 200px;
+        border: 5px solid greenyellow;
+    }
+    .child {
+        height: 400px;
+        border: 5px solid palevioletred; // 子元素高度超出父元素
+    }
+    
+![Alt text](./imgs/24-08.png) 
+
+**疑问：**
+
+这时wrap下面有一个兄弟元素，它是会正常排列在下方，还是因为.child元素挤到下面？
+
+    // DOM结构
+    <div id="wrap">
+        <div class="child"></div>
+    </div>
+    <div class="next"></div> // 新增wrap兄弟元素
+    
+    // 样式
+    .next {
+        width: 200px;
+        height: 100px;
+        border: 5px solid royalblue;
+    }
+    
+    
+![Alt text](./imgs/24-09.png) 
+
+**疑问：**
+
+那外边距会影响吗？
+
+    // DOM结构
+    <div id="wrap">
+        <div class="child"></div>
+    </div>
+    <div class="next"></div>
+    
+    // 样式
+    #wrap {
+        display: inline-block; // 1、水平排列
+        width: 200px;
+        height: 200px;
+        border: 5px solid greenyellow;
+    }
+    .child {
+        width: 300px; // 2、子元素宽度超出
+        height: 200px;
+        border: 5px solid palevioletred;
+        margin-right: 100px; // 3、带右margin
+    }
+    .next {
+        display: inline-block; // 兄弟元素靠wrap右侧排列
+        width: 200px;
+        height: 200px;
+        border: 5px solid royalblue;
+    }
+    
+![Alt text](./imgs/24-10.png) 
+
+    // 注
+    BFC主要是解决前面提到的点，并不是指只有BFC触发了，子元素和外部才不会有影响。
+    本身像子元素宽高超出，存在外边距但不发生合并，就不会影响外部布局
+    
+    // 用途
+    知道了子元素布局在一些情况下本身就不会去影响外部，除了有个概念，还有什么用途呢？
+    确实，在实际开发中我们布局一般不会让这种子元素超出的情况出现，但是之后涉及到封装工具JS库，
+    这些细节可能就会推翻很多理念
+    
+    之后，我们在JavaScript的的第20节，会提及这个问题产生的一个应用
