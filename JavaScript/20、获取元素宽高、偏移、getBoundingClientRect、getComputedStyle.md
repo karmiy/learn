@@ -28,8 +28,9 @@
 
     // 说明
     获取元素内容的实际宽高
-    没有滚动条时scrollWidth === clientWidth
-    当元素内部过宽，出现滚动条时，scrollWidth是其实际内容的宽度
+    width + padding（不包括边框）
+    正常情况下时scrollWidth === clientWidth
+    当元素内部过宽过高时，scrollWidth是其实际内容的宽度
     只能获取，不能赋值，返回number数值
     
     console.log(wrap.scrollWidth);
@@ -156,4 +157,102 @@
     window.getComputedStyle = 
         window.getComputedStyle || function(dom) {
         return dom.currentStyle;
+    }
+    
+## 判断一个元素是否有滚动条
+
+**用途？**
+
+假如你正在开发一个弹框组件，思路是创建一个div，添加到父级里**最近有滚动条**的元素上，绝对定位。该滚动条元素相对定位，找不到添加到body下，这样当滚动元素在滚动时，弹框就可以始终保持在原位
+
+**如何去判断？**
+
+    function hasScroll(target) {
+        return target.scrollHeight > target.clientHeight;
+    }
+
+网上提供的思路，几乎全是利用clientHeight与scrollHeight去比较，当scrollHeight > clientHeight时，返回true。
+
+这样一看确实非常合理，当没有滚动条时，好像都是height + padding，滚动高度等于可视高度，出现滚动条时滚动高度大于可视高度，然而这样的做法是错的。
+
+**还记得BFC那节提到过的子元素高度超出父容器是否影响外部的问题吗？**
+
+    // DOM结构
+    <div id="wrap">
+        <div class="child"></div>
+    </div>
+    
+    // 样式
+    #wrap {
+        width: 200px;
+        height: 200px;
+        border: 5px solid greenyellow;
+    }
+    .child {
+        height: 400px;
+        border: 5px solid palevioletred;
+    }
+    
+    // JS
+    console.log(wrap.clientHeight, wrap.scrollHeight);
+
+![Alt text](./imgs/20-10.png)
+
+可以看到，即使元素没有滚动条，在子元素高度超出的情况下，scrollHeight也是大于clientHeight的，所以单纯这样判断并不严谨。
+
+**其他情况**
+
+我们可能会觉得，一般不会让这种情况出现，即我们不会定死父元素的高度并且还让子元素超出。
+
+确实，但是如果是下面这种情况呢？
+
+    // DOM结构
+    <div id="wrap">
+        <div class="child"></div>
+    </div>
+    
+    // 样式
+    #wrap {
+        width: 200px;
+        border: 5px solid greenyellow;
+    }
+    .child {
+        position: relative;
+        height: 400px;
+        border: 5px solid palevioletred;
+        top: 1px;
+    }
+    
+    // JS
+    console.log(wrap.clientHeight, wrap.scrollHeight);
+    
+![Alt text](./imgs/20-11.png)
+
+父元素没有设置高度，由子元素撑开，但是子元素relative定位后，有1px的top值，导致scrollHeight比clientHeight大了1px。
+
+这是一些页面开发、组件开发中很容易遇到的一种BUG产生原因：我们不给所有层级的父元素设置宽高，由最内部撑开，却发现最外层的容器宽高与内部不一致。
+
+除了这种情况，子元素超出，即使设置overflow: hidden，scrollHeight依旧也是大于clientHeight的。
+
+**如何更严谨的判断一个元素是否有滚动条？**
+
+排除\<body>和\<html>，这是2个非常特殊的元素，下面我们在提及它们。那么，一个元素要出现滚动条，需要什么？
+
+常规元素滚动条的出现，并不是单纯内部超出自动产生的，而是需要我们去设置overflow为scroll或auto。反过来说，一个元素有滚动条，那它应该要有overflow是auto或scroll的样式，判断函数如下：
+    
+    /**
+     * des：是否有滚动条（这里我们只判断垂直滚动条）
+     * params: target: DOMElement 
+     */
+    function isScrollTarget(target) {
+        if(!target)
+          return false;
+        
+        // 只取overflowY，不管样式是设置overflow: auto/scroll，还是overflowY: auto/scroll，取overflowY都可以得到解果
+        var overflowY = DOMComputedStyle(target).overflowY;
+        return (overflowY === 'auto' || overflowY === 'scroll') && (target.scrollHeight > target.clientHeight);
+    }
+    
+    function DOMComputedStyle(dom) {
+        return getComputedStyle ? getComputedStyle(dom) : dom.currentStyle;
     }
