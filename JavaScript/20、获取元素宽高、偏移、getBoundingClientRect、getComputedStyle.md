@@ -256,3 +256,23 @@
     function DOMComputedStyle(dom) {
         return getComputedStyle ? getComputedStyle(dom) : dom.currentStyle;
     }
+    
+**关于body、html的滚动条**
+
+平时我们说的如“页面上body的滚动条”是错误的说法，严谨的来说，这是浏览器本身的滚动条，既不是body，也不是html的。
+
+一个元素如果有滚条，我们在开发者工具Elements鼠标选中它时，是呈现这种效果：
+
+![Alt text](./imgs/20-12.png)
+
+可以看到，开发者工具为了我们提供的蓝色蒙层，是包括滚动条的区域的。
+
+再看浏览器出现滚动条时，body的情况（内部元素height: 2000px）：
+
+![Alt text](./imgs/20-13.png)
+
+可以看到，body的蓝色蒙层不包括这个滚动条，更主要的是，body的高度也是2000px。假如这是body的滚动条，那body的高度应该是浏览器的innerHeight高度，剩余高度产生出这个滚动条才对，可见这个滚动条严格来说并不是body的，html也同理。
+
+但是非常矛盾的是，我们给body或html标签设置overflow: hidden的时候，滚动条却消失了。
+
+可见html与body是非常特殊的标签，可以想象为浏览器把滚动条的操作权交给了它们来代理，滚动条并不属于它们，却有权利去操作。
