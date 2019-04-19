@@ -21,6 +21,18 @@
 - overflow-x、overflow-y
 
     水平、垂直方向
+
+**注：**
+
+只设置一边，如overflow-x
+
+设置hidden，另一边overflowY自动变为auto；
+
+设置scroll，另一边overflowY自动变为auto；
+
+设置auto，另一边overflowY自动变为auto；
+
+即只要一边设置auto/hidden/scroll，另一边自动变为auto
     
 ## 元素类型display
 

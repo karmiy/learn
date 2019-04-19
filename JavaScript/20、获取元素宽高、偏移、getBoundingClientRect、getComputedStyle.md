@@ -61,13 +61,21 @@
     
 ![Alt text](./imgs/20-04.png)
 
-    // 获取浏览器滚动高度
+    // 获取浏览器滚动高度(有的浏览器通过body可以获取，有的通过html)
     Math.max(document.documentElement.scrollTop, document.body.scrollTop);
     
     // 页面滚动到400px的位置
     document.documentElement.scrollTop = document.body.scrollTop = 400;
     或
     window.scrollTop(0, 400);
+    
+### pageXOffset、pageYOffset
+
+    // 获取window的滚动高度、水平滚动偏移
+    兼容性 >= IE9，IE8及以下用上例document.body、document.documentElement的滚动距离
+    
+    console.log(window.pageXOffset, window.pageYOffset);
+    
 
 ### offsetLeft/offsetTop
 

@@ -371,6 +371,69 @@ Array的API存在着会改变原数组的效果，这在开发中经常引起BUG
     // 注
     some是性能最好的，因为它找到了条件符合项就停止遍历了
     
+#### reduce
+
+    // 说明
+    对累加器和数组中的每个元素（从左到右）应用一个函数，将其简化为单个值
+    
+    参数说明：
+    callback（回调接收4个参数）：
+        1、accumulator 累加器加回调的返回值
+        2、currentValue 当前数组正在处理的元素
+        3、currentIndex 数组中正在处理的当前元素的索引，可选
+        4、array 数组本身，可选
+        
+     initialValue：初始值，可选
+     
+     // 示例一，数字求和
+     var arr = [1, 2, 3, 4, 5, 6];
+     var total = arr.reduce(function(sum, current) {
+        return sum + current;
+     }, 0);
+     console.log(total); // 21
+     
+     // reduce回调的流程：
+     第一次：如果有初始值，先将初始值和数组第1项给回调的参数，没有则把数组第1、2项给回调参数；
+     第二次：上一个的返回值和数组的下一项给回调参数；
+     。。。
+     
+     sum         current     返回
+     0           1           1
+     1           2           3
+     3           3           6
+     6           4           10
+     10          5           15
+     15          6           21
+     
+    // 示例二，聚合对象
+    var arr = [{
+      id: 1,
+      type: 'A',
+      total: 3
+    }, {
+      id: 2,
+      type: 'B',
+      total: 5
+    }, {
+      id: 3,
+      type: 'C',
+      total: 7
+    }];
+    var result = arr.reduce(function(res, current) {
+        res[current.id] = {
+            type: current.type,
+            total: current.total,
+        };
+        return res;
+    }, {});
+    console.log(result);
+    /*
+        {
+            1: {type: 'A', total: 3},
+            2: {type: 'B', total: 5},
+            3: {type: 'C', total: 7},
+        }
+    */
     
     
     
