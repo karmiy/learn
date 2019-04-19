@@ -73,5 +73,3 @@
 ### 日期格式化
 
 参考 [utils/date.js](./utils/date.js) 里的formatDate函数
-
-参考 <a href='./utils/date.js' target='_blank'>utils/date.js</a> 里的formatDate函数
