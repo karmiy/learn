@@ -39,7 +39,7 @@ export function isScrollTarget(target, direction = '') {
 
 /**
  * 获取浏览器的滚动条宽度
- * @param fresh: boolean，传真值重新计算滚动条宽度，反之取缓存值
+ * @param fresh: boolean，true重新计算滚动条宽度，false取缓存值
  * @returns {number}
  */
 let cached;
@@ -79,4 +79,40 @@ export function getScrollBarSize(fresh) {
         cached = widthContained - widthScroll;
     }
     return cached;
+}
+
+/**
+ * 滚动条到可视区域
+ * @param container: DOMElement，滚动容器
+ * @param selected: DOMElement，容器的某个子元素，selected为undefined时container滚动到0的位置，否则滚动到使selected可视的区域
+ */
+export function scrollIntoView(container, selected) {
+    if (!selected) {
+        container.scrollTop = 0;
+        return;
+    }
+    let transientPosition = false;
+    if (getComputedStyle(container).position === 'static') {
+        container.style.position = 'relative';
+        transientPosition = true;
+    }
+    const offsetParents = [];
+    let pointer = selected.offsetParent;
+    while (pointer && container !== pointer && container.contains(pointer)) {
+        offsetParents.push(pointer);
+        pointer = pointer.offsetParent;
+    }
+    const top = selected.offsetTop + offsetParents.reduce((prev, curr) => (prev + curr.offsetTop), 0);
+    const bottom = top + selected.offsetHeight;
+    const viewRectTop = container.scrollTop;
+    const viewRectBottom = viewRectTop + container.clientHeight;
+
+    if (top < viewRectTop) {
+        container.scrollTop = top;
+    } else if (bottom > viewRectBottom) {
+        container.scrollTop = bottom - container.clientHeight;
+    }
+    if (transientPosition) {
+        container.style.position = '';
+    }
 }

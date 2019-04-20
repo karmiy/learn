@@ -85,6 +85,8 @@
     
 ![Alt text](./imgs/20-05.png)
 
+![Alt text](./imgs/20-05-01.png)
+
     // 如何获取元素到body的距离
     function getOffset(dom) {
         var offset = {
@@ -123,6 +125,8 @@
     }
     
 ![Alt text](./imgs/20-07.png)
+
+![Alt text](./imgs/20-07-01.png)
 
     // 应用场景
     非常多，大多与滚动有关的计算都会用到，如图片懒加载等

@@ -41,7 +41,11 @@
     // 最多6位：年、月、日、时、分、秒，
     // 最少2位：年、月
     // 只传1位：会认为传入的是毫秒数，会在1970年的基础上加上毫秒数
+    // 月、日都为0时，算去年的最后一天
+    // 日为0时，算上个月最后一天
     console.log(new Date(2019, 4-1, 18, 10, 10, 10)); // Thu Apr 18 2019 10:10:10 GMT+0800 (中国标准时间)
+    console.log(new Date(2019, 0, 0)); // Mon Dec 31 2018 00:00:00 GMT+0800 (中国标准时间)
+    console.log(new Date(2019, 2, 0)); // Thu Feb 28 2019 00:00:00 GMT+0800 (中国标准时间)
     
     // 传字符串
     console.log(new Date('2019-04-18 10:10:10'));
@@ -64,12 +68,31 @@
     
     console.log(new Date() + new Date()); // 'Thu Apr 18 2019 23:29:19 GMT+0800 (中国标准时间)Thu Apr 18 2019 23:29:19 GMT+0800 (中国标准时间)'
     
-### 关于写法不同的影响
+### 关于写法不同的影响（GMT与UTC）
     
     // 省略时分秒时，传递的月、日，如01与1得到的结果是不同的
     console.log(new Date('2019-01-01')); // Tue Jan 01 2019 08:00:00 GMT+0800 (中国标准时间)
     console.log(new Date('2019-1-1')); // Tue Jan 01 2019 00:00:00 GMT+0800 (中国标准时间)
-    
-### 日期格式化
 
-参考 [utils/date.js](./utils/date.js) 里的formatDate函数
+    // 原因
+    GMT（格林尼治标准时间）是一些欧洲和非洲国家正式使用的时间，UTC是国际标准。这两个时间一般情况是相等的。
+    中国处于东八区，与UTC时间相差8个小时，也就是说UTC时间00:00:00的时候，我们的时间是08:00:00
+    
+    我们new Date()是GMT本地时间
+    
+    // GMT转UTC
+    function DateUTC(date) {
+        var localDate = new Date(date)
+        if (date && /^\d{4}(-\d{2}){0,2}$/.test(date))  {
+          let timeZoneOffset = localDate.getTimezoneOffset()
+          let utcTimeStamp = localDate.getTime() + timeZoneOffset * 60 * 1000
+          return new Date(utcTimeStamp)
+        }
+        return localDate;
+    }
+    
+    console.log(DateUTC('2019-01-01')); // Tue Jan 01 2019 00:00:00 GMT+0800 (中国标准时间)
+        
+### 更多实现
+
+参考 [utils/date.js](./utils/date.js)

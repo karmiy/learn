@@ -96,6 +96,29 @@
     
     一般更多不会这样写，会：
     Number.prototype.toFixed.call(12.1, 2); // '12.10'
+    或封装一个函数
+    function fn(num, n) {
+        return num.toFixed(n);
+    }
+    
+    // 注
+    toFixed大家都认为是四舍五入，其实不是
+    toFixed主要以四舍六入五成双
+    4舍去，6进一
+    5分两种情况：
+        5后有数时，进1
+        5后没有数时，再分两种：
+            5前是奇数，进1
+            5前是偶数，舍去
+    但是为什么说‘主要’，因为5后面没有数的情况时，也不一定准确，如下示例
+    // 示例
+    console.log(fn(12.35, 1)); // '12.3'（5前是奇数，却没进1）
+    
+    // 为了满足小数的四舍五入，可以自定义函数
+    function toFixed(number, fractionDigits){  
+        return Math.round(number * Math.pow(10, fractionDigits)) / Math.pow(10, fractionDigits);  
+    }  
+    
     
 ## Math常用的API
     
