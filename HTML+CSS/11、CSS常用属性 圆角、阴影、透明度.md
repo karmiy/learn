@@ -7,7 +7,7 @@
 写法：
     
     // 4个值
-    border-radius: 10px 10px 10px 10px; // 左上 右上 右下 右下
+    border-radius: 10px 10px 10px 10px; // 左上 右上 右下 左下
     
     // 2个值
     border-radius: 10px 10px // 左上右下  右上左下
