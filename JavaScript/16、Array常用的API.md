@@ -342,6 +342,12 @@ Array的API存在着会改变原数组的效果，这在开发中经常引起BUG
     }); 
     console.log(newArr); // [4, 5, 6]
     
+    // 使用filter去重
+    var arr = [1, 2, 3, 4, 5, 4, 6, 2, 3];
+    var newArr = arr.filter((item, i, self) => item && self.indexOf(item) === i);
+    console.log(newArr);
+
+    
 #### every
 
     // 说明
