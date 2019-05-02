@@ -153,7 +153,7 @@ JavaScript引擎对这个问题的解决是：使用setInterval时，只有在�
 
 但是这也会导致被跳过的问题：
 
-![Alt text](./imgs/17-03.png)
+![Alt text](./imgs/17-04.png)
 
 解决方案：
 
