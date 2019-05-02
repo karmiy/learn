@@ -170,7 +170,7 @@ JavaScript引擎对这个问题的解决是：使用setInterval时，只有在�
 
 setTimeout、setInterval只能设定一个固定间隔，还是不准确的，不一定和屏幕刷新频率步调一致，从而就会引起丢帧。
 
-假如屏幕刷新频率16.7ms一次，setTimeout每个10ms做一个操作：将div向右移动1px。这会出现如下绘制过程：
+假如屏幕刷新频率16.7ms一次，setTimeout每隔10ms做一个操作：将div向右移动1px。这会出现如下绘制过程：
 
 0ms：屏幕未刷新，setTimeout未执行
 
