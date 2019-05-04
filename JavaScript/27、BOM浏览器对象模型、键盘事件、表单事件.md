@@ -189,6 +189,15 @@ which在IE8即以下不兼容
     
 ![Alt text](./imgs/27-06.png)
 
+### 打印键盘模型
+
+用JS打印出键盘模型
+
+    (_=>[..."`1234567890-=~~QWERTYUIOP[]\\~ASDFGHJKL;'~~ZXCVBNM,./~"].map(x=>(o+=`/${b='_'.repeat(w=x<y?2:' 667699'[x=["BS","TAB","CAPS","ENTER"][p++]||'SHIFT',p])}\\|`,m+=y+(x+'    ').slice(0,w)+y+y,n+=y+b+y+y,l+=' __'+b)[73]&&(k.push(l,m,n,o),l='',m=n=o=y),m=n=o=y='|',p=l=k=[])&&k.join`
+    `)()
+    
+![Alt text](./imgs/27-08.png)
+
 ## 表单事件
 
 ### onfocus、focus()
