@@ -298,7 +298,7 @@
   
 ### 捕获组
     
-### 捕获组\X
+#### 捕获组\X
     // 说明
     每个组()，都有自己的序号：1、2、3...，捕获组即是用\1、\2、\3...去匹配每一个组
     
@@ -411,4 +411,54 @@
     // 7、邮箱
     /^[1-9a-z_]\w*@[a-z0-9]{2,}\.[a-z]{2,6}(\.cn)?$/i
     
+## Cookie
+
+    // 说明
+    Cookie是前端存储数据的一种方式
+    不是很安全
+    一般用来存储某些校验信息同数据一起发送给后端做判断
+    存储的是字符串（很关键，不要以为是对象，经常有人以为可以存对象，导致存取出错）
+    大部分浏览器需要在服务器环境下才能存储（webstorm打开的HTML页面默认是个服务器），火狐可以不在
+    以域名（不同域名不共享）为单位存储
+    存在磁盘里
+    不同浏览器不共用
+    关闭浏览器也在，时间到了才会消失，或手动清除
     
+![Alt text](./imgs/28-01.png)
+
+
+    // 存储
+    document.cookie = 'name=karmiy'; // 默认浏览会话结束失效（关闭浏览器）
+    
+    // 设置时长
+    var date = new Date(Date.now() + 24 * 60 * 60 * 1000); // 设置时长一天
+    document.cookie = 'name=karmiy;expires=' + date.toUTCString(); // 要转为格林威治时间
+
+    // 取值
+    console.log(document.cookie); // "name=karmiy"，是个字符串
+    
+    // 封装Cookie的get、set方法
+    const Cookie = {
+      /**
+       * set Cookie
+       * @param json: object(如{name: 'karmiy'})
+       * @param time: number，天数
+       * @param path: string，路径
+       */
+      set : function(json, time, path) {
+        let date = new Date(Date.now() + (time ? time : 0) * 24 * 60 * 60 * 1000);
+        for (let key in json){
+          document.cookie = (key + '=' + json[key] + ';')
+            + (time ? ('expires=' + date.toUTCString() + ';') : '')
+            + (path ? ('path=' + path + ';'): 'path=/');
+        }
+      },
+      /**
+       * get Cookie
+       * @param key: string
+       */
+      get : function(key){
+        const val = document.cookie.match(new RegExp("(^|\\s)" + key + "=([^;]*)(;|$)"));
+        return val && val[2];
+      }
+    }
