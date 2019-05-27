@@ -441,5 +441,81 @@ Array的API存在着会改变原数组的效果，这在开发中经常引起BUG
         }
     */
     
+## Array的去重
+
+这里提供一些性能较好的方法
+
+    // 以10W条数据为例
+    const arr = [];
+    for (let i = 0; i < 100000; i++) {
+      arr.push(0 + Math.floor((100000 - 0 + 1) * Math.random()))
+    }
+
+    // 1、先对数组排序，再进行元素比较
+    // 130ms左右
+    function unique(arr) {
+      const _arr = [];
+      arr.sort();
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] !== arr[i + 1]) {
+          _arr.push(arr[i]);
+        }
+      }
+      return _arr;
+    }
     
+    或---------------
     
+    // 150ms左右
+    function unique(arr) {
+        const _arr = [];
+        arr.sort();
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i] !== _arr[_arr.length - 1]) {
+                _arr.push(arr[i]);
+            }
+        }
+        return _arr;
+    }
+    
+    // 2、reduce去重
+    // 140ms左右
+    function unique(arr) {
+        return arr.sort().reduce((init, current) => {
+            if(init.length === 0 || init[init.length - 1] !== current){
+              init.push(current);
+            }
+            return init;
+        }, []);
+    }
+    
+    // 3、利用对象键值唯一去重
+    // 300ms左右
+    function unique(arr) {
+        const _arr = [];
+        const tmp = {};
+        for (let i = 0; i < arr.length; i++) {
+            // 使用JSON.stringify()进行序列化
+            if (!tmp[typeof arr[i] + JSON.stringify(arr[i])]) {
+              // 将对象序列化之后作为key来使用
+              tmp[typeof arr[i] + JSON.stringify(arr[i])] = 1;
+              _arr.push(arr[i]);
+            }
+        }
+        return _arr;
+    }
+    
+    // 4、ES6 Map去重
+    // 30ms左右（很快）
+    function unique(arr) {
+        const tmp = new Map();
+        return arr.filter(item => {
+            return !tmp.has(item) && tmp.set(item, 1);
+        })
+    }
+    
+    // 5、ES6 Set去重
+    // 40ms左右（很快）
+    function unique(arr) {
+        return [...new Set(arr)];
+    }
