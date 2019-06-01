@@ -24,7 +24,7 @@ ES6引入了模板字符串\`${}\`的概念（`反引号是键盘Tab上面的按
     // 示例四
     alert`123`;
 
-### includes、startsWith、endsWith
+### String.prototype.includes / startsWith / endsWith
 
 ES6新增String的API，用于包含关系检测
 
@@ -48,14 +48,14 @@ ES6新增String的API，用于包含关系检测
     const str = 'karmiy';
     console.log(str.endsWith('arm', 2)); // true，从后往前的下标2开始算起，以'ary'结尾
     
-### repeat
+### String.prototype.repeat
 
 ES6新增String的API，重复内容
 
     // 示例
     console.log('ab*'.repeat(5)); // 'ab*ab*ab*ab*ab*'，重复5次
     
-### padStart、padEnd
+### String.prototype.padStart / padEnd
 
 ES8新增String的API，补全内容
  
@@ -77,7 +77,7 @@ ES8新增String的API，补全内容
     // 应用场景（补全日期如：'8' => '08'）
     console.log('8'.padStart(2, '0')); // '08'
     
-### trimStart、trimEnd
+### String.prototype.trimStart / trimEnd
 
 ES10新增String的API，去除开头（结尾）的空格
 
@@ -89,7 +89,7 @@ ES10新增String的API，去除开头（结尾）的空格
     
 ## Number的扩展
 
-### isFinite
+### Number.isFinite
 
 ES6新增Number的API，是否是有限数值，ES6严格区分正0与负-0
 
@@ -104,7 +104,7 @@ ES6新增Number的API，是否是有限数值，ES6严格区分正0与负-0
     
         注：isFinite只要是非数值类型的，都是false，不会隐式转换
         
-### isNaN
+### Number.isNaN
 
 ES6新增Number的API，是否是NaN
 
@@ -121,14 +121,14 @@ ES5，因为NaN === NaN是false，window.isNaN也不是只有NaN才是true，导
     
         注：这个API，只有NaN才是true，其他都是false
         
-### parseInt、parseFloat
+### Number.parseInt / parseFloat
 
 这两个方法与全局方法parseInt()和parseFloat()一致，目的是**逐步减少全局性的方法，让语言更模块化**
     
     Number.parseInt === parseInt; // true
     Number.parseFloat === parseFloat; // true
     
-### isInteger
+### Number.isInteger
 
 ES6新增Number的API，是否是整数
     
@@ -140,7 +140,7 @@ ES6新增Number的API，是否是整数
     
 ## Math的扩展
 
-### trunc
+### Math.trunc
     
 ES6新增Number的API，强制取整
     
@@ -164,7 +164,7 @@ ES6新增Number的API，强制取整
         return x < 0 ? Math.ceil(x) : Math.floor(x);
     }
     
-### sign
+### Math.sign
 
 ES6新增Number的API，判断正负数还是正负0，返回1、-1判断正负数，0、-0判断正负0
 
@@ -198,7 +198,7 @@ ES6新增Number的API，判断正负数还是正负0，返回1、-1判断正负�
         return x > 0 ? 1: -1;
     }
 
-### cbrt
+### Math.cbrt
 
 ES6新增Number的API，求立方根
 
@@ -219,7 +219,7 @@ ES6新增Number的API，求立方根
         return x < 0 ? -y : y;
     }
     
-### hypot
+### Math.hypot
 
 ES6新增Number的API，求平分和的平方根，即勾股定理
     
