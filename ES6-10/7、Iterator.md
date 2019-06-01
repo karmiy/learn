@@ -6,22 +6,22 @@ Iterator是迭代器，是一种机制
 
 它为不同的数据结构提供统一的访问机制。任何数据结构部署了Iterator接口，就可以完成遍历操作
 
-#### Iterator的作用：
+### Iterator的作用：
 
 - 为各种数据结构，提供一个**统一简便的访问接口**
 - 使得数据结构的成员能够**按某次次序排列**
 - 主要供**for ... of**消费
 
-#### Iterator的本质：
+### Iterator的本质：
 
 指针对象
 
-#### 谁拥有Iterator：
+### 谁拥有Iterator：
 
 **Array String NodeList arguments Map Set**
 
 
-#### 如何访问Iterator：
+### 如何访问Iterator：
 
 **XX\[Symbol.iterator]()访问**
 
