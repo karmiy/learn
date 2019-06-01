@@ -32,6 +32,7 @@ Iterator的本质：
 - Set：SetIterator 
 - Map：MapIterator 
 
+Iterator的应用：
 
     // 示例一
     const arr = [1, 2, 3, 4];
