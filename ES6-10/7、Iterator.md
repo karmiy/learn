@@ -32,7 +32,7 @@ Iterator是迭代器，是一种机制
 - Set：SetIterator 
 - Map：MapIterator 
 
-#### Iterator的应用：
+### Iterator的应用：
 
     // 示例一
     const arr = [1, 2, 3, 4];
