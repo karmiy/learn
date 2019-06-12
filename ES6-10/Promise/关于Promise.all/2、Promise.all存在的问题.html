@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>08-karmiy</title>
+  <meta name="description" content="karmiy">
+  <style type='text/css'>
+    body, dl, dd, p, h1, h2, h3, h4, h5, h6 {
+      margin: 0;
+    }
+
+    ol, ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    img {
+      border: none;
+    }
+  </style>
+</head>
+<body>
+<script>
+  let p1 = new Promise(resolve => {
+    setTimeout(()=>{
+      resolve();
+    },1000);
+  });
+  let p2 = new Promise(resolve => {
+    setTimeout(()=>{
+      resolve();
+    },1000);
+  });
+  let arr = [p1, p2];
+  Promise.all(arr).then(()=>{
+    console.log('success');
+  });
+  let p3 = new Promise(resolve => {
+    setTimeout(()=>{
+      resolve();
+    },5000);
+  });
+  arr.push(arr);
+
+
+
+
+  //数组push并不会改变arr的引用，但是Promise.all却没有等待p3执行完成
+</script>
+</body>
+</html>

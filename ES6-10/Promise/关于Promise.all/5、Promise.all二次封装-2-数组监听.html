@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>08-karmiy</title>
+  <meta name="description" content="karmiy">
+  <style type='text/css'>
+    body, dl, dd, p, h1, h2, h3, h4, h5, h6 {
+      margin: 0;
+    }
+
+    ol, ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    img {
+      border: none;
+    }
+  </style>
+</head>
+<body>
+<script>
+  /*
+  思考：
+    要做到的是：每次arr push新的值，函数都能知道；
+    即需要做到对数组arr的监听；
+  */
+  const SustainedPromise = (function(){
+    const ArrayListener = (...rest) => {
+      //promiseArr即原来的arr，引用一样，解构赋值是浅拷贝
+      const [promiseArr] = rest;
+      let o = {};
+      o.__proto__ = Array.prototype;
+      promiseArr.__proto__ = o;
+      promiseArr.__proto__.push = function(...values){
+        //....要做的逻辑
+        Array.prototype.push.call(this, ...values);
+        //....要做的逻辑
+      }
+    };
+    return (arr)=>{
+      return new Promise((resolve, reject) => {
+        ArrayListener(arr, resolve, reject);
+      })
+    }
+  }())
+</script>
+</body>
+</html>

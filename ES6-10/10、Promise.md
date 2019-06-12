@@ -493,3 +493,42 @@ ES9新增Promise.prototype.finally
     }).then(data => {
         console.log(data); // 11
     })
+    
+### 原生JS实现Promise
+
+[Promise实现的封装(仅实现resolve，未实现reject版本)](./Promise/Promise的实现/6、then返回Promise对象-2.html)
+
+### Promise.all个人拓展
+
+经过实验，我们可以发现：**Promise.all不能监听新加入数组的Promise实例**
+
+我们从如下示例理解这个问题：
+
+    const p1 = new Promise(resolve => {
+        setTimeout(() => {
+            resolve(1);
+        }, 4000); // 4s后resolve
+    })
+    const p2 = new Promise(resolve => {
+        setTimeout(() => {
+            resolve(2);
+        }, 5000); // 5s后resolve
+    })
+    const arr = [p1, p2];
+
+    // 2s后添加一个持续10s的p3，并插入数组中
+    const p3 = new Promise(resolve => {    Promise.all(arr).then(data => console.log(data));
+                                           
+        setTimeout(() => {
+            resolve(3);
+        }, 10000); // 10s后resolve
+    });
+    arr.push(p3); // 放入Promise.all的数组中
+    
+经过测试发现，5s后Promise.all就输出了，并没有因为中途插入了p3而持续12s
+
+在有些场景下，这可能不是我们想要的，我们希望Promise.all可以监听到新插入的p3，并作用于它
+
+以下封装了函数**SustainedPromise**，实现可持续性的Promise.all：
+
+[可持续性的Promise.all](./Promise/关于Promise.all/6、Promise.all二次封装-3-监听后的逻辑.html)

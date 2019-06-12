@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>08-karmiy</title>
+  <meta name="description" content="karmiy">
+  <style type='text/css'>
+    body, dl, dd, p, h1, h2, h3, h4, h5, h6 {
+      margin: 0;
+    }
+
+    ol, ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    img {
+      border: none;
+    }
+  </style>
+</head>
+<body>
+<script>
+  /*思路：
+    仿Promise.all(arr).then，创建一个函数fn(arr).then；
+    fn可以.then，返回的应该是个Promise实例
+
+  */
+  const SustainedPromise = (function(){
+    //可能会需要闭包存有一些变量
+    return (arr)=>{
+      return new Promise((resolve, reject) => {
+        //....
+      })
+    }
+  }())
+</script>
+</body>
+</html>

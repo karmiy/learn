@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>08-karmiy</title>
+  <meta name="description" content="karmiy">
+  <style type='text/css'>
+    body, dl, dd, p, h1, h2, h3, h4, h5, h6 {
+      margin: 0;
+    }
+
+    ol, ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    img {
+      border: none;
+    }
+  </style>
+</head>
+<body>
+<script>
+  /*
+  想法：
+      既然Promise.all不能做到对arr push的变化后重新延续功能，
+      那就可以监听到push操作，则对现在的arr生成新的Promise.all
+  */
+  const SustainedPromise = (function(){
+    let count = 0; //用一个变量来比较，每次Promise.all后是否中途有push操作
+    const PromiseAllBuilder = (...rest) => {
+      const [promiseArr, resolve, reject, index] = rest;
+      Promise.all(promiseArr).then(data => {
+        //如果Promise.all后发现count与原来不一致，表示中途有push，则这次的Promise.all直接抛弃
+        count === index && (promiseArr.__proto__.push = Array.prototype, resolve(data));
+      }).catch(err => {
+        count === index && (promiseArr.__proto__.push = Array.prototype, reject(err));
+      })
+    };
+    const ArrayListener = (...rest) => {
+      //promiseArr即原来的arr，引用一样，解构赋值是浅拷贝
+      const [promiseArr] = rest;
+      let o = {};
+      o.__proto__ = Array.prototype;
+      promiseArr.__proto__ = o;
+      promiseArr.__proto__.push = function(...values){
+        //一进行push操作，就把count累加
+        count++;
+        Array.prototype.push.call(this, ...values);
+        //一进行push操作，重新生成新的Promise.all
+        PromiseAllBuilder(...rest, count);
+      }
+      //............如果需要监听其他方法也可以这样重写
+      PromiseAllBuilder(...rest, count);
+    };
+    return (arr)=>{
+      return new Promise((resolve, reject) => {
+        ArrayListener(arr, resolve, reject);
+      })
+    }
+  }());
+  //-----------------------------------
+  //试验
+  const startDate = Date.now();
+  let p1 = new Promise((resolve,reject) =>{
+    setTimeout(()=>{
+      resolve(1);
+    },3000);
+  });
+  let p2 = new Promise((resolve,reject) =>{
+    setTimeout(()=>{
+      resolve(2);
+      //reject(2);
+    },1000);
+  });
+  let PromiseArr = [p1, p2];
+  SustainedPromise(PromiseArr).then(data=>{
+    console.log(data, Date.now() - startDate);
+  }).catch(err=>{
+    console.log(err, Date.now() - startDate);
+  });
+  /*setTimeout(()=>{
+    let p3 = new Promise((resolve,reject) =>{
+      setTimeout(()=>{
+        resolve(3);
+      },6000);
+    });
+    PromiseArr.push(p3);
+  },500);*/
+</script>
+</body>
+</html>

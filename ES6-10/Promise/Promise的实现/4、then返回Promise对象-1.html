@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>08-karmiy</title>
+  <meta name="description" content="karmiy">
+  <style type='text/css'>
+    body, dl, dd, p, h1, h2, h3, h4, h5, h6 {
+      margin: 0;
+    }
+
+    ol, ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    img {
+      border: none;
+    }
+  </style>
+</head>
+<body>
+<script>
+  function Promise(fn){
+    let handler = null; //then接收的回调、return的promise的resolve
+    //2
+    const resolve = ($value)=>{
+      this.value = $value;
+      this.status = 'resolved';
+      handler && handle(handler);
+    };
+    const handle = ($handler)=>{
+      if(this.status === 'pendding'){
+        handler = $handler;
+        return;
+      }
+      if(!$handler.callback){ //p.then()没传参
+        $handler.resolve(this.value);
+        return;
+      }
+      let nextValue = $handler.callback(this.value);
+      $handler.resolve(nextValue);
+    };
+    //1
+    this.then = ($callback)=>{
+      return new Promise(resolve => {
+        handle({
+          callback: $callback,
+          resolve
+        })
+      });
+    }
+    Object.assign(this,{
+      status: 'pendding', //promise状态
+      value: undefined //resolve需接收要传递给then的数据
+    });
+    fn(resolve);
+  }
+  /*let p = new Promise(resolve => {
+    resolve(11111);
+  });
+  p.then().then(data=>{
+    console.log(data);
+  })*/
+  /*let p = new Promise(resolve => {
+    resolve(11111);
+  });
+  setTimeout(()=>{
+    p.then(data => {
+      console.log(data);
+    });
+  },1000);*/
+
+  /*new Promise(resolve => {
+    setTimeout(()=>{
+      resolve(22222);
+    },1000);
+  }).then(data => {
+    console.log(data);
+  });*/
+
+  let p = new Promise(resolve => {
+    resolve(11111);
+  });
+  p.then(data => {
+    console.log(data);
+    return 22222;
+  }).then(data => {
+    console.log(data);
+    return 33333;
+  }).then(data => {
+    console.log(data);
+  });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>08-karmiy</title>
+  <meta name="description" content="karmiy">
+  <style type='text/css'>
+    body, dl, dd, p, h1, h2, h3, h4, h5, h6 {
+      margin: 0;
+    }
+
+    ol, ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    img {
+      border: none;
+    }
+  </style>
+</head>
+<body>
+<script>
+  //1、resolve和then谁先谁后不可知
+  //2、resolve时需要改变状态为resolved
+  //3、resolve()接收需要传递的数据需要随时可以传递给then，也需要一个变量存储
+  function Promise(fn){
+    let callback = null; //then接收的回调
+    const resolve = ($value)=>{
+      this.value = $value;
+      this.status = 'resolved';
+      callback && handle(callback);
+    };
+    const handle = ($callback)=>{
+      if(this.status === 'pendding'){
+        callback = $callback;
+        return;
+      }
+      $callback(this.value);
+    };
+    Object.assign(this,{
+      status: 'pendding', //promise状态
+      value: undefined //resolve需接收要传递给then的数据
+    });
+    this.then = ($callback)=>{
+      handle($callback);
+    }
+    fn(resolve);
+  }
+  /*let p = new Promise(resolve => {
+    resolve(11111);
+  });
+  setTimeout(()=>{
+    p.then(data => {
+      console.log(data);
+    });
+  },2000);*/
+  new Promise(resolve => {
+    setTimeout(()=>{
+      resolve(22222);
+    },2000);
+  }).then(data => {
+    console.log(data);
+  });
+
+
+</script>
+</body>
+</html>

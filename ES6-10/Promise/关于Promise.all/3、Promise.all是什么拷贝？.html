@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>08-karmiy</title>
+  <meta name="description" content="karmiy">
+  <style type='text/css'>
+    body, dl, dd, p, h1, h2, h3, h4, h5, h6 {
+      margin: 0;
+    }
+
+    ol, ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    img {
+      border: none;
+    }
+  </style>
+</head>
+<body>
+<script>
+  let p1 = new Promise(resolve => {
+    setTimeout(()=>{
+      resolve(p1.custom);
+    },3000);
+  });
+  //给p1设置自定义属性
+  p1.custom = 1;
+  setTimeout(()=>{
+    p1.custom =2;
+  },1000);
+  let arr = [p1];
+  Promise.all(arr).then(data=>{
+    console.log(data);
+  });
+
+</script>
+</body>
+</html>
