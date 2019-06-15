@@ -139,13 +139,15 @@
     writable: 是否可写，默认false
     enumerable: 是否可被枚举(for in)，默认false
     configurable: 是否可被删除，默认false
+    set：监听器，给属性提供setter方法，默认undefined
+    get：监听器，给属性提供getter方法，默认undefined
     
-    // 示例
+    // 示例一
     var obj = {};
     Object.defineProperty(obj, 'name', {
         enumerable: false, // 不可枚举
         writable: false, // 不能被写入
-        configuralble: false, // 不可被删除
+        configuralble: false, // 不可被删除或修改
         value: 'karmiy'
     })
     obj.name = 'karloy'; // 1、失败，因为writable为false
@@ -157,6 +159,26 @@
     
     delete obj.name; // 3、false，因为configuralble为false不可删除
     
+        
+    // 示例二
+    var obj = {firstName: 'kar', lastName: 'miy'};
+    Object.defineProperty(obj, 'fullName', {
+        get: function() {
+            return this.firstName + this.lastName;
+        },
+        set: function(value) {
+            this.firstName = value;
+            this.lastName = 'loy';
+        },
+    })
+    console.log(obj); // {firstName: 'kar', lastName: 'miy'}
+    obj.fullName; // 'karmiy';
+    obj.fullName = 'kau';
+    console.log(obj); // {firstName: 'karu', lastName: 'loy'}
+    
+        注：get、set不能与value或writable同时存在
+    
+    
 ### defineProperties
 
     // 说明
@@ -166,13 +188,13 @@
         age: {
             enumerable: false, // 不可枚举
             writable: false, // 不能被写入
-            configuralble: false, // 不可被删除
+            configuralble: false, // 不可被删除或修改
             value: 18.
         },
         level: {
             enumerable: false, // 不可枚举
             writable: false, // 不能被写入
-            configuralble: false, // 不可被删除
+            configuralble: false, // 不可被删除或修改
             value: 30,
         },
     })
