@@ -259,8 +259,9 @@ Reflect对象上有13个方法，基本都是从Object上搬过来的
     Reflect.set(obj, 'name', 'karloy', {id: 1}); // set中输出{id: 1}
     
     
-    13、Reflect.setPrototypeOf
+    13、Reflect.setPrototypeOf(target, prototype)
     说明：等同于Object.setPrototypeOf，设置成功返回true，失败返回false
+    参数：目标对象（非对象会报错）、原型
     
     const r1 = Reflect.setPrototypeOf({}, {id: 1});
     console.log(r1); // true
