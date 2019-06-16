@@ -136,9 +136,10 @@
     // 说明
     给对象添加属性
     value: 值，默认undefined
-    writable: 是否可写，默认false
+    writable: 是否可写（即可否如obj.id = 1赋值），默认false
     enumerable: 是否可被枚举(for in)，默认false
-    configurable: 是否可被删除，默认false
+    configurable: 是否可被删除（即是否可delete obj.id）
+                  或修改特性（即如果这个属性configurable: false，则不能再次调用Object.defineProperty修改它），默认false
     set：监听器，给属性提供setter方法，默认undefined
     get：监听器，给属性提供getter方法，默认undefined
     
@@ -147,8 +148,8 @@
     Object.defineProperty(obj, 'name', {
         enumerable: false, // 不可枚举
         writable: false, // 不能被写入
-        configuralble: false, // 不可被删除或修改
-        value: 'karmiy'
+        configurable: false, // 不可被删除或修改特性
+        value: 'karmiy' // 如果是value是函数，可以value: function() {return 'karmiy'}
     })
     obj.name = 'karloy'; // 1、失败，因为writable为false
     console.log(obj.name); // 'karmiy'
@@ -157,7 +158,7 @@
         console.log(key); // 2、不会有输出内容，因为enumerable为false不可枚举
     }
     
-    delete obj.name; // 3、false，因为configuralble为false不可删除
+    delete obj.name; // 3、false，因为configurable为false不可删除
     
         
     // 示例二
@@ -188,13 +189,13 @@
         age: {
             enumerable: false, // 不可枚举
             writable: false, // 不能被写入
-            configuralble: false, // 不可被删除或修改
+            configurable: false, // 不可被删除或修改特性
             value: 18.
         },
         level: {
             enumerable: false, // 不可枚举
             writable: false, // 不能被写入
-            configuralble: false, // 不可被删除或修改
+            configurable: false, // 不可被删除或修改特性
             value: 30,
         },
     })
