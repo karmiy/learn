@@ -40,6 +40,14 @@ JSON.stringify 对象转字符串
     const arr = ['karmiy', 18];
     console.log(JSON.stringify(arr)); // '["karmiy",18]'
     
+    // 可以接受3个参数，第2个是个回调，用来改变返回值，用的不多，第3个参数是缩进空格数，在node中常用于格式化
+    const obj = {id: 7, name: 'karmiy'};
+    console.log(JSON.stringify(obj, null, 4));
+    输出：
+    {
+        "id": 7,
+        "name": "karmiy"
+    }
     
     // 应用场景
     常用于深拷贝对象
