@@ -473,5 +473,19 @@ Ajax2添加了一个新的接口FormData
 
 ![Alt text](./imgs/04-07.png)
 
+### onprogress显示上传进度
+
+    <input id='file' type='file'>
     
-    
+    const fileInput = document.getElementById('file');
+    fileInput.onchange = function() {
+        const xhr = new XMLHttpRequest();
+        xhr.open('post', 'XXX' ,true);
+        const formData = new FormData();
+        formData.append('file', this.files[0]);
+        xhr.upload.onprogress = function(e) {
+            // e.loaded: 当前字节; e.total: 总字节
+            console.log(e.loaded, e.total, ((e.loaded / e.total) * 100).toFixed(2) + '%')
+        }
+        xhr.send(formData);
+    }
