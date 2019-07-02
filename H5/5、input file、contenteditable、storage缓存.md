@@ -100,9 +100,95 @@ H5可以对元素添加contenteditable属性使其可编辑
     sessionStorage不仅需要同源，且需要窗口是顶层页面打开的，如www.a/1.html，超链接打开www.a/2.html这样的2.html才能与1.html共享，直接URL打开www.a/2.html
     则无法共享
     
+## Web Worker
 
-    
-    
+### 概述
 
+我们知道，JavaScript使用的是单线程，这意味着前面的任务尚未完成，后面的任务唯有等待
 
+随着计算器的发展，多核CPU的出现，单线程带来的很大的不便，无法充分发挥计算机的计算能力
+
+Web Worker为JavaScript**创建多线程环境**，允许主线程创建Woker线程，主线程运行的同时，Worker线程在后台运行**互不干扰**，等Worker线程完成任务，再把结果返回给主线程
+
+Worker较为耗费资源，不应过度使用，**一旦使用完毕就要关闭**
+
+### Work线程中的限制内容
+
+#### 同源
+
+Worker线程运行的脚本需要与主线程的脚本同源
+
+#### 对象
+
+Worker线程的全局对象与常规主线程不同，无法读取主线程页面的DOM、document、window、parent，可以使用self、navigator、location
     
+#### 通讯
+
+Worker线程与主线程需要通过message通讯的形式完成数据交互
+
+#### 脚本
+
+Worker线程不能执行alert、confirm，可以使用XMLHttpRequest发请求
+
+#### 文件
+
+Worker线程不能读取本地文件(file\://XXX)，它加载的脚本需要来自网络
+
+### 基本用法
+
+![Alt text](./imgs/05-06.png)
+    
+    // web-worker.html的js部分
+    const worker = new Worker('./work.js'); // 1、新建worker线程
+    worker.postMessage({name: "karmiy"}); // 2、postMessage向worker线程发送信息
+    worker.onmessage = function(e) { // 3、onmessage监听worker线程发送过来的数据
+        console.log(e.data); // 4、e.data接收数据
+    }
+    
+    // work.js
+    self.addEventListener('message', function(e) { // 5、worker线程的全局对象是self，onmessage监听主线程发送过来的数据
+        console.log(e.data);
+        self.postMessage('This is worker thread')
+    })
+    
+    // 输出
+    {name: "karmiy"} (work.js)
+    'This is worker thread' (web-worker.html)
+    
+    注：
+        1、worker线程的脚本需来自网络，即这个web-worker.html用如webstorm打开是可以的（webstorm会将文件运行在如http://localhost:63342），
+           无法在直接打开的file:///C/XXX/web-worker.html使用
+        2、self是线程自身，是个全局对象，所以与以下2种写法等价
+            this.addEventListener('message', function(e) {
+                ...
+            })
+            addEventListener('message', function(e) {
+                ...
+            })
+
+### 加载外部脚本
+
+worker线程内部，提供了importScripts方法可以引入外部JS文件，相当于\<script>标签引入
+
+![Alt text](./imgs/05-07.png)
+    
+    // imports.js
+    const code = 99;
+    function fn() {
+        console.log(code + 1);
+    }
+    
+    // work.js
+    self.addEventListener('message', function() {
+        importScripts('./imports.js'); // 1、引入imports.js
+        fn(); // 2、引入后可以使用外部JS的函数
+        console.log(code); // 3、引入后可以使用外部JS的变量
+    })
+    
+    // 输出
+    100、99
+    
+    // 引入多个
+    importScripts('./imports.js', './imports2.js');
+    
+### 错误处理
