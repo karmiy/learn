@@ -112,7 +112,7 @@ Web Worker为JavaScript**创建多线程环境**，允许主线程创建Woker线
 
 Worker较为耗费资源，不应过度使用，**一旦使用完毕就要关闭**
 
-### Work线程中的限制内容
+### Worker线程中的限制内容
 
 #### 同源
 
@@ -138,14 +138,14 @@ Worker线程不能读取本地文件(file\://XXX)，它加载的脚本需要来�
 
 ![Alt text](./imgs/05-06.png)
     
-    // web-worker.html的js部分
+    // web-worker.html的js部分(主线程)
     const worker = new Worker('./work.js'); // 1、新建worker线程
     worker.postMessage({name: "karmiy"}); // 2、postMessage向worker线程发送信息
     worker.onmessage = function(e) { // 3、onmessage监听worker线程发送过来的数据
         console.log(e.data); // 4、e.data接收数据
     }
     
-    // work.js
+    // work.js(worker线程)
     self.addEventListener('message', function(e) { // 5、worker线程的全局对象是self，onmessage监听主线程发送过来的数据
         console.log(e.data);
         self.postMessage('This is worker thread')
@@ -172,13 +172,13 @@ worker线程内部，提供了importScripts方法可以引入外部JS文件，�
 
 ![Alt text](./imgs/05-07.png)
     
-    // imports.js
+    // imports.js(外部JS)
     const code = 99;
     function fn() {
         console.log(code + 1);
     }
     
-    // work.js
+    // work.js(worker线程)
     self.addEventListener('message', function() {
         importScripts('./imports.js'); // 1、引入imports.js
         fn(); // 2、引入后可以使用外部JS的函数
@@ -192,3 +192,79 @@ worker线程内部，提供了importScripts方法可以引入外部JS文件，�
     importScripts('./imports.js', './imports2.js');
     
 ### 错误处理
+
+主线程和worker线程，都可以监听error事件来捕获worker的错误
+
+    // 主线程
+    const worker = new Worker('./work.js');
+    worker.postMessage({name: "karmiy"});
+    worker.onmessage = function(e) {
+        console.log(e.data);
+    }
+    worker.addEventListener('error', function(e) { // 1、主线程监听错误
+        console.log(e);
+    })
+    
+    // worker线程
+    self.addEventListener('message', function(e) {
+        console.log(e.data);
+        throw 500; // 2、worker现场抛出500错误
+        self.postMessage('This is worker thread')
+    })
+    self.addEventListener('error', function(e) { // 3、worker现场监听错误
+        console.log(e);
+    })
+
+    // 输出
+    {name: "karmiy"}
+    ErrorEvent (worker的onerror处输出)
+    ErrorEvent (主线程的onerror处输出)
+    Uncaught 500
+
+### 关闭Worker
+
+当worker使用结束后，必须关闭，否则会占用系统资源
+
+    // 主线程
+    worker.terminate();
+    
+    // worker线程
+    self.close();
+    
+### 数据通信与二进制数据
+
+主线程与worker之间的通信内容，可以是文本，也可以是对象
+
+需要注意的是，这种通信是**拷贝关系，而不是传递引用**，即主线程传递一个对象过去后，在worker现场内对其进行修改，不会影响主线程的对象
+
+事实上，通信机制是：先将内容串行化，将串行化的数据发送给worker，再对其进行还原
+
+主线程和worker之间还可以传递二进制数据(File、Blob、ArrayBuffer等)，但是拷贝二进制数据，容易造成性能问题(发送一个几百M的文件)
+
+而Web Worker在postMessage时提供了传递二进制的方式如下
+
+    worker.postMessage(arrayBuffer, [arrayBuffer]); // 这种写法用于传递二进制数据
+
+### 同页面Worker
+
+通常都会把worker单独分离一份JS文件，但如果想和主线程在同一个页面也是可以的
+    
+    // 方式一
+    <body>
+        <!-- 单独用个js文件存在worker脚本 -->
+        <script type="app/worker" id="worker">
+            self.addEventListener('message', function(e) {
+                console.log(e.data);
+                self.postMessage('This is worker thread')
+            })
+        </script>
+        <script>
+            const blob = new Blob([document.getElementById('worker').textContent]);
+            const url = window.URL.createObjectURL(blob);
+            const worker = new Worker(url);
+            worker.postMessage('This is main thread');
+            worker.onmessage = function(e) {
+                console.log(e.data);
+            }
+        </script>
+    </body>
