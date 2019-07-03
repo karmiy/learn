@@ -251,11 +251,11 @@ worker线程内部，提供了importScripts方法可以引入外部JS文件，�
     
     // 方式一
     <body>
-        <!-- 单独用个js文件存在worker脚本 -->
+        <!-- 单独用个script标签存载worker脚本 -->
         <script type="app/worker" id="worker">
             self.addEventListener('message', function(e) {
                 console.log(e.data);
-                self.postMessage('This is worker thread')
+                self.postMessage('This is worker thread');
             })
         </script>
         <script>
@@ -268,3 +268,56 @@ worker线程内部，提供了importScripts方法可以引入外部JS文件，�
             }
         </script>
     </body>
+    
+        // 输出：
+        'This is main thread'
+        'This is worker thread'
+        
+    // 方式二
+    <body>
+        <script>
+        <!-- worker脚本放置在字符串中 -->
+        const workerContent = `
+            self.addEventListener('message', function(e) {
+                console.log(e.data);
+                self.postMessage('This is worker thread');
+            })
+        `;
+        const blob = new Blob([workerContent]);
+        const url = window.URL.createObjectURL(blob);
+        const worker = new Worker(url);
+        worker.postMessage('This is main thread');
+        worker.onmessage = function(e) {
+            console.log(e.data);
+        }
+        </script>
+    </body>
+    
+        // 输出：
+        'This is main thread'
+        'This is worker thread'
+        
+    // 方式三
+    <body>
+        <script>
+        <!-- worker脚本放置在函数中，转换字符串自执行 -->
+        function work() {
+            self.addEventListener('message', function(e) {
+                console.log(e.data);
+                self.postMessage('This is worker thread');
+            })
+        }
+        // toString将函数转换为字符串，并自执行
+        const blob = new Blob([`(${work.toString()})()`]);
+        const url = window.URL.createObjectURL(blob);
+        const worker = new Worker(url);
+        worker.postMessage('This is main thread');
+        worker.onmessage = function(e) {
+            console.log(e.data);
+        }
+        </script>
+    </body>
+    
+        // 输出：
+        'This is main thread'
+        'This is worker thread'
