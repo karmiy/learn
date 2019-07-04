@@ -321,3 +321,32 @@ worker线程内部，提供了importScripts方法可以引入外部JS文件，�
         // 输出：
         'This is main thread'
         'This is worker thread'
+        
+### Worker线程实现轮询更新
+
+通常为了用户提现更好，我们可能在一些场景中做缓存数据
+
+例如一些可视化图表，后台数据可能是实时变化的，我们需要隔一段时间重新发起请求，在检查到数据发生改变后替换新数据
+
+这时就可以使用worker线程来做这个轮询更新的操作
+
+    // 创建worker
+    function workerFactory(fn) {
+        const blob = new Blob([`(${fn.toString()})()`]);
+        const url = window.URL.createObjectURL(blob);
+        const worker = new Worker(url);
+        return worker;
+    }
+    const worker = workerFactory(function () {
+        setInterval(async () => {
+            const data = await fetch(...)
+            self.postMessage(data);
+        }, 1000); // 每10s做一次轮询
+    })
+    worker.onmessage = function({data}) { // 监听每次轮询结果
+        console.log(data);
+    }
+    
+### Worker线程内嵌Worker线程
+
+    
