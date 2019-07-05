@@ -220,6 +220,10 @@ worker线程内部，提供了importScripts方法可以引入外部JS文件，�
     ErrorEvent (worker的onerror处输出)
     ErrorEvent (主线程的onerror处输出)
     Uncaught 500
+    
+    
+除了error事件监听错误，还可以使用messageerror监听发送的数据无法序列化错误，此处不示例
+    
 
 ### 关闭Worker
 
@@ -349,4 +353,52 @@ worker线程内部，提供了importScripts方法可以引入外部JS文件，�
     
 ### Worker线程内嵌Worker线程
 
+    // 主线程
+    const worker = new Worker('./work.js');
+    worker.postMessage('main');
+    worker.onmessage = function({data}) {
+        console.log(`main.onmessage: ${data}`);
+    }
+    
+    // worker线程(work.js 子线程)
+    self.onmessage = function ({data}) {
+        console.log(data);
+    }
+    Array(5).fill('').forEach((_, index) => {
+        // 1、worker线程又内嵌worker线程
+        const worker = new Worker('./_work.js');
+        worker.postMessage({mes: `work.js post: ${index + 1}`, index: index + 1});
+        worker.onmessage = function({data}) {
+            console.log(data);
+        }
+    })
+    
+    // worker线程(_work.js 子子线程)
+    self.onmessage = function ({data}) {
+        console.log(data.mes);
+        self.postMessage(`_work.js post: ${data.index}`);
+    }
+    
+    // 输出(输出'main'，其他顺序不固定)
+    'main'
+    'work.js post: 1'
+    'work.js post: 2'
+    'work.js post: 3'
+    'work.js post: 4'
+    'work.js post: 5'
+    '_work.js post: 1'
+    '_work.js post: 2'
+    '_work.js post: 3'
+    '_work.js post: 4'
+    '_work.js post: 5'
+    
+### API
+
+    // 主线程
+    const worker = new Worker('./work.js', {name: 'myWork'});
+    // worker线程
+    console.log(self.name);  // 'myWork'
+    
+    
+    
     
