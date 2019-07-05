@@ -392,12 +392,6 @@ worker线程内部，提供了importScripts方法可以引入外部JS文件，�
     '_work.js post: 4'
     '_work.js post: 5'
     
-### API
-
-    // 主线程
-    const worker = new Worker('./work.js', {name: 'myWork'});
-    // worker线程
-    console.log(self.name);  // 'myWork'
     
     
     
