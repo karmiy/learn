@@ -480,6 +480,8 @@ ES6 class里，除了constructor，其他定义的方法，都会被挂载到pro
         }
     }
     
+    注：个人感觉私有变量的实现还是WeakMap的做法更优雅
+    
 ## BigInt
 
 ES10新增第7种基本数据类型BigInt
