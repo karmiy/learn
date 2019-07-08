@@ -102,6 +102,10 @@ H5可以对元素添加contenteditable属性使其可编辑
     
 ## Web Worker
 
+### 学习来源
+
+整理至阮一峰的网络日志 [Web Worker 使用教程](http://www.ruanyifeng.com/blog/2018/07/web-worker.html)
+
 ### 概述
 
 我们知道，JavaScript使用的是单线程，这意味着前面的任务尚未完成，后面的任务唯有等待
