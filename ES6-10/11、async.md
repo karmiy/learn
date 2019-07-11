@@ -205,6 +205,9 @@ await可以自执行
                     reject(98);
                 }, 2000);
             });
+            const a2 = await new Promise((resolve, reject) => {
+                resolve(99);
+            });
         }catch(err) {
             console.log('try catch error');
         }
@@ -217,12 +220,13 @@ await可以自执行
     // 输出1，两秒后输出'try catch error'、100、101
     
         注：await被try catch包起时，在其后的Promise对象没有自己的catch时（有自己的catch还是会按示例一走自己的，此处略过举例），
-            将由try catch接收错误，但不会阻碍下面的代码继续执行，也不会走async函数执行后的catch
+            将由try catch接收错误，会阻碍try内部代码继续执行，但不会阻碍catch下面的代码继续执行，也不会走async函数执行后的catch
             
     
     总结：
         优先级：await后Promise对象的catch > try catch > async执行后的catch
-        await后Promise对象的catch与try catch不阻碍函数继续执行
+        await后Promise对象的catch不阻碍其之后函数继续执行
+        try catch捕获错误时，阻碍try内部代码继续执行，但不阻碍catch下方的内容继续执行
         async内部没有捕获，而让async执行后的catch捕获会阻碍函数继续执行
         
 ### 在循环中使用async/await
