@@ -174,11 +174,37 @@ await可以自执行
         console.log('outside err is: ' + err);
     })
     
-    // 输出1，两秒后输出'inside err is: 98'、99，没有走f()的catch
+        // 输出1，两秒后输出'inside err is: 98'、99，没有走f()的catch
     
-        注：如果await后的Promise对象有自己的catch，则会自己catch捕获，不会交给async函数执行后的catch
-        
+        注：如果await后的Promise对象有自己的catch，则会自己catch捕获，不会立即交给async函数执行后的catch。
+            这里catch后继续往下走，是因为catch里return 99，会得到一个Promise.resolve(99)即resolved状态的Promise给await，
+            对await而言这是resolved成功状态的。
+            有疑问的话看下一个示例
+    
     // 示例二
+    async function f() {
+        console.log(1);
+        const a1 = await new Promise((resolve, reject) => {
+            setTimeout(() => {
+                reject(98);
+            }, 2000);
+        }).catch(err => {
+            console.log('inside err is: ' + err);
+            return Promise.reject(99); // 这里返回一个reject状态的Promise
+        });
+        console.log(a1);
+    }
+    f().catch(err => {
+        console.log('outside err is: ' + err);
+    })
+    
+        // 输出1，两秒后输出'inside err is: 98'、'outside err is: 99'，没有console.log(a1);
+        
+        注：如果catch返回一个reject状态的Promise，会停止执行接下来的函数内容，直接抛出async函数，交给async函数执行后的catch
+            
+        结论：从示例一、二可以看出，async函数内部直接抛出去执行async函数执行后的catch，取决于内部是否await有接收reject状态的Promise
+        
+    // 示例三
     async function f() {
         console.log(1);
         const a1 = await new Promise((resolve, reject) => {
@@ -192,18 +218,16 @@ await可以自执行
         console.log('outside err is: ' + err);
     })
     
-    // 输出1，两秒后输出'outside err is: 98'，没有执行到console.log(a1)
+        // 输出1，两秒后输出'outside err is: 98'，没有执行到console.log(a1)
     
-        注：如果await后的Promise对象没有自己的catch捕获，则由async函数执行后的catch捕获，且终止后续代码执行！！！
+        原因：await后的Promise对象没有自己的catch捕获，且返回的是reject状态的Promise，证实上面的结论，await遇到reject状态的Promise后会抛出
         
-    // 示例三
+    // 示例四
     async function f() {
         console.log(1);
         try{
             const a1 = await new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    reject(98);
-                }, 2000);
+                reject(98);
             });
             const a2 = await new Promise((resolve, reject) => {
                 resolve(99);
@@ -217,17 +241,72 @@ await可以自执行
     f().then(data => console.log(data))
         .catch(err => console.log('outside err is: ' + err));
         
-    // 输出1，两秒后输出'try catch error'、100、101
+        // 输出1、'try catch error'、100、101
     
-        注：await被try catch包起时，在其后的Promise对象没有自己的catch时（有自己的catch还是会按示例一走自己的，此处略过举例），
-            将由try catch接收错误，会阻碍try内部代码继续执行，但不会阻碍catch下面的代码继续执行，也不会走async函数执行后的catch
+        注：await被try catch包起时，当await后的Promise是reject状态时，不会直接抛出整个async函数，
+            而是由try的catch接收。
+            如果catch里没有return，则不影响代码继续执行！
+            这个点要特别注意，我们在下一个示例看看，如果catch中有return会怎么样
+            
+    // 示例五
+    async function f() {
+        console.log(1);
+        try{
+            const a1 = await new Promise((resolve, reject) => {
+                reject(98);
+            });
+            const a2 = await new Promise((resolve, reject) => {
+                resolve(99);
+            });
+        }catch(err) {
+            console.log('try catch error');
+            return 777;
+        }
+        console.log(100);
+        return 101;
+    }
+    f().then(data => console.log(data))
+        .catch(err => console.log('outside err is: ' + err));
+    
+        // 输出1、'try catch error'、777
+        
+        注：如果try catch的catch中有return，其实就相当于给async函数内部执行return操作，直接返回
+            这里return 777，相当于async函数return Promise.resolve(777)，所以会走fn().then输出777
+            让我们在下一个示例返回reject状态的Promise验证
+            
+    // 示例六
+    async function f() {
+        console.log(1);
+        try{
+            const a1 = await new Promise((resolve, reject) => {
+                reject(98);
+            });
+            const a2 = await new Promise((resolve, reject) => {
+                resolve(99);
+            });
+        }catch(err) {
+            console.log('try catch error');
+            return Promise.reject(888);
+        }
+        console.log(100);
+        return 101;
+    }
+    f().then(data => console.log(data))
+        .catch(err => console.log('outside err is: ' + err));
+        
+        // 输出1、'try catch error'、'outside err is: 888'，证实了上述说法
+        
             
     
     总结：
-        优先级：await后Promise对象的catch > try catch > async执行后的catch
-        await后Promise对象的catch不阻碍其之后函数继续执行
-        try catch捕获错误时，阻碍try内部代码继续执行，但不阻碍catch下方的内容继续执行
-        async内部没有捕获，而让async执行后的catch捕获会阻碍函数继续执行
+        在没有try catch的情况下：
+        async的抛出取决对await接收到reject状态的Promise对象
+        
+        在使用try catch的情况下：
+        当await接收到reject状态的Promise对象时，会由try的catch捕获
+        如果catch中没有做任何return操作，async内部继续执行不抛出
+        如果catch中做了return操作，会根据return的是什么状态的Promise来决定是什么状态的抛出
+        
         
 ### 在循环中使用async/await
     
