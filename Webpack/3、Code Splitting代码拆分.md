@@ -368,34 +368,71 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
 
 **关于maxAsyncRequests:**
 
-maxAsyncRequests是最大的按需(异步)加载次数，默认为 5
+maxAsyncRequests是最大的按需(异步)加载次数，默认为 5，可以设置Infinity
 
 很少需要对maxAsyncRequests和maxInitialRequests进行修改，这里我们稍作了解，以免遇到与之相关的问题
 
-    // 入口文件index.js
-    setTimeout(() => {import('./big.js') }, 4000) 
-    setTimeout(() => {import('./help1.js') }, 3000)
-    setTimeout(() => {import('./help2.js') }, 2000)
-    setTimeout(() => {import('./help3.js') }, 1000)
+    // src/index.js
+    import('./a.js');
+    import('./b.js');
+    import('./c.js');
+    import('./d.js');
     
-    //big.js>30kb
-    import s1 from 'help1.js'
+    // a.js
+    console.log('a');
+    import './b.js'
     
-    //'help1.js >30kb
-    import s2 from 'help2.js'
+    // b.js
+    console.log('b');
+    import './c.js'
     
-    //'help2.js >30kb
-    import s3 from 'help3.js'
+    // c.js
+    console.log('c');
+    import './d.js'
     
-    //'help3.js  >30kb
+    // d.js
+    console.log('d');
+    
+    // webpack.config.js
+    optimization: {
+        splitChunks: {
+            maxAsyncRequests: 5,
+            minSize: 0, // 设置最小0就拆，否则默认30kb
+        }
+    }
     
     当maxAsyncRequests: 5时:
-    按需加载import('./big.js')时,会并发请求 big.js ,help1.js, help2.js,help3.js 4个文件
-    按需加载import('./help1.js')时,会并发请求 help1.js, help2.js,help3.js 3个文件
-    按需加载import('./help2.js')时,会并发请求 help2.js,help3.js 2个文件
-    按需加载import('./help3.js')时,会并发请求 help3.js 1个文件
+    执行 npm run dev
     
-    当我们设置maxAsyncRequests: 1时:
+![Alt text](./imgs/03-15-03.png)
+    
+    注:
+    打出4个文件，是因为我们入口4个异步的import，和maxAsyncRequests无关
+    
+    可以看到这4个文件大小较小的，我们可以依次打开这4个文件进行分析:
+    0.js中含有我们d.js中的 console.log('d')
+    1.js中含有我们d.js中的 console.log('c')
+    2.js中含有我们d.js中的 console.log('b')
+    3.js中含有我们d.js中的 console.log('a')
+    
+    即a、b、c、d.js这4个文件被拆成了4份:
+    按需加载import('a.js')时，会并发请求4个文件(0.js、1.js、2.js、3.js)
+    按需加载import('b.js')时，会并发请求3个文件(0.js、1.js、2.js)
+    按需加载import('c.js')时，会并发请求2个文件(0.js、1.js)
+    按需加载import('d.js')时，会并发请求1个文件(0.js)
+    
+    
+    // webpack.config.js
+    optimization: {
+        splitChunks: {
+            maxAsyncRequests: 1,
+            minSize: 0,
+        }
+    }
+    当maxAsyncRequests: 1时
+    
+    执行 npm run dev
+    
     按需加载import('./big.js')时,会并发请求 1个文件 (big.js ,help1.js, help2.js,help3.js 合并而成)
     按需加载import('./help1.js')时,会并发请求  1个文件(help1.js, help2.js,help3.js 合并而成)
     按需加载import('./help2.js')时,会并发请求 1个文件 (help2.js,help3.js 合并而成)
