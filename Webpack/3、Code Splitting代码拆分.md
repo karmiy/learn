@@ -90,6 +90,14 @@ webpack4之前使用**commonsChunkPlugin**拆分公共代码，现在使用**spl
 
 ![Alt text](./imgs/03-05.png)
 
+**为什么打出的包名是vendors~main:**
+
+webpack默认在cacheGroups中有vendors组，这个组匹配的是node_modules第三方库，都会打在这个组中
+
+而vendors组默认没有加name名称，因为lodash在index.js中引入的，index.js作为入口打出的是main.bundle.js，所以衔接在一起是**vendors~main**
+
+下面我们修改vendors组的name:
+
     // 配置打出来的vendor包的名称
     optimization: {
         splitChunks: {
@@ -118,6 +126,8 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
     
     // src/index.js
     import _ from 'lodash'
+    
+    console.log(_.join(['a', 'b', 'c']))
     
     // webpack.config.js
     
@@ -172,6 +182,7 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
     
 ![Alt text](./imgs/03-10-01.png)
 
+    如上图表述，因为lodash包也算vendors组的，且vendors组没有设置name(这个要注意，下面会示例设置name的情况)
     如果我们将cacheGroups的vendors组去掉，就可以得到我们想要的lodash.js包了:
     
     optimization: {
@@ -182,7 +193,32 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
         }
     },
     
+    
 ![Alt text](./imgs/03-10-02.png)
+
+
+如果匹配的组设置了name，则webpackChunkName就会无效
+
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                vendors: {
+                    name: 'vendors', // 给vendors组设置了name
+                    test: /[\\/]node_modules[\\/]/,
+                    priority: -10
+                },
+            }
+        }
+    },
+    
+![Alt text](./imgs/03-10-03.png)
+
+    // 总结
+    异步import:
+    1、cacheGroups里匹配的组没有设置name，且没有设置webpackChunkName，打出的包会以id为编号，如0.js
+    2、cacheGroups里匹配的组没有设置name，但设置webpackChunkName，打出的包以设置group~webpackChunkName
+    3、cacheGroups里匹配的组有设置name，且设置webpackChunkName，打出的包以设置cacheGroups的name为主
+    
     
 ### dynamicImport 打包可能会报错的问题
 
@@ -215,7 +251,7 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
 
 方法二: publicPath修改为./
 
-### 分析splitChunks配置、细致拆分第三方包
+### 进一步拆分第三方包
 
 现在我们将默认配置拷贝至webpack.config.js中进行分析
 
@@ -253,7 +289,13 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
 例如默认配置中的vendors组，是将**node_modules**中所有第三方库打包都**vendors.js**中
 
 我们也可以继续分割，单独把lodash分割出一个包
-
+    
+    // src/index.js
+    import('lodash').then(({ default: _ }) => {
+        console.log(_.join(['hello', 'world'], '-'));
+    })
+    
+    // webpack.config.js
     cacheGroups: {
         lodash: {
             name: 'lodash',
@@ -276,6 +318,53 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
     
 ![Alt text](./imgs/03-15.png)
 
+**注意:**
+
+这里打出了一个0.js，网上说这是我们lodash业务部分代码，我觉得不是很正确，我们的业务部分代码console.log(_.join(\['hello', 'world'], '-'))是在main.bundle.js中的
+
+我的理解是这个0.js是因为lodash内部引用了node_modules/lodash/之外的内容，这部分内容与我们test不匹配，导致生成的文件
+
+为了试验，我们将import添加webpackChunkName:
+
+    // src/index.js
+    import(/* webpackChunkName: 'lodash-chunk'*/ 'lodash').then(({ default: _ }) => {
+        console.log(_.join(['hello', 'world'], '-'));
+    })
+    
+    运行npm run dev
+
+![Alt text](./imgs/03-15-01.png)
+
+我们换jquery来试验
+
+    执行 npm install jquery --save
+    
+    // src/index.js
+    import(/* webpackChunkName: 'jquery-chunk'*/ 'jquery').then(({ default: $ }) => {
+        console.log($);
+    })
+    
+    // webpack.config.js
+    cacheGroups: {
+        jquery: {
+            name: 'jquery',
+            test: /[\\/]node_modules[\\/]jquery[\\/]/,
+            priority: 5
+        },
+        vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            priority: -10
+        },
+        default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true
+        }
+    }
+    
+    执行 npm run dev
+    
+![Alt text](./imgs/03-15-02.png)
 
 **关于maxAsyncRequests:**
 
@@ -321,5 +410,4 @@ maxAsyncRequests是最大的按需(异步)加载次数，默认为 5
 当同一个模块被多个模块import时，我们可以把它打包成common模块
 
 
-    
     
