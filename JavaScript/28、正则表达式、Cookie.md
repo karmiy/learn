@@ -437,6 +437,18 @@
     // 取值
     console.log(document.cookie); // "name=karmiy"，是个字符串
     
+    // 关于存值是否覆盖
+    我们设置document.cookie时，并不会将之前的cookie覆盖
+    document.cookie = 'name=karmiy';
+    document.cookie = 'code=7';
+    
+    后者并不会覆盖前者
+    不要当做普通对象一样: obj.a = 1; obj.a = 2; console.log(obj.a);  --- 输出2
+    cosnole.log(document.cookie); // 'name=karmiy; code=7'
+    
+    // 删除
+    document.cookie = 'name=;expires=Thu, 01 Jan 1970 00:00:01 GMT'; // 内容置空，过期时间设置在当前时间之前
+    
     // 封装Cookie的get、set方法
     const Cookie = {
       /**
@@ -460,5 +472,21 @@
       get : function(key){
         const val = document.cookie.match(new RegExp("(^|\\s)" + key + "=([^;]*)(;|$)"));
         return val && val[2];
+      },
+      /**
+       * delete Cookie
+       * @param key: string
+       */
+      delete : function(key){
+        document.cookie = key + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT';
       }
     }
+    
+    // 用法示例
+    Cookie.set({
+        name: 'karmiy',
+        code: 379,
+    })
+    console.log(Cookie.get('code')); // '379'
+    Cookie.delete('code');
+    console.log(Cookie.get('code')); // null
