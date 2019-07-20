@@ -660,9 +660,5 @@ maxAsyncRequests是最大的按需(异步)加载次数，默认为 5，可以设
 而maxInitialRequests改变为1时，原本应该打出的4个chunks，导致每个入口引用数为3，超过1，所以包没有分离，而是被打到了一起
 
 
-### 拆分Common模块
-
-当同一个模块被多个模块import时，我们可以把它打包成common模块
-
 
     
