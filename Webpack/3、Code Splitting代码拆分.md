@@ -366,7 +366,151 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
     
 ![Alt text](./imgs/03-15-02.png)
 
-**关于maxAsyncRequests:**
+### 配置解析
+
+#### minChunks
+
+很重要，但网上解释的简单模糊的一个属性
+
+minChunks表示一个模块被引用一定次数，就会被拆包
+
+也就是说: a.js与b.js同时引入了c.js，那c.js就会被单独拆出一个包
+
+可是，真的仅仅是这样吗？
+    
+    示例: index.js引入a.js、b.js，其中a.js与b.js同时引入c.js
+    
+    // index.js
+    import './a.js'
+    import './b.js'
+    
+    // a.js
+    import './c.js';
+    console.log('a');
+    
+    // b.js
+    import './c.js';
+    console.log('b');
+    
+    // c.js
+    console.log('common');
+    
+    // webpack.config.js
+    optimization: {
+        splitChunks: {
+            chunks: "all",
+            minSize: 0, // 设置最小0就拆，否则默认30kb
+            cacheGroups: {
+                common: {
+                    name: 'common',
+                    minChunks: 2, // 被引用2次则被分到common组
+                    priority: 5,
+                }
+            }
+        }
+    },
+    
+    执行npm run dev
+    按理解而言，这时c.js被引用了2次，会被分入common组，拆出一个common.js的包供引用
+    
+![Alt text](./imgs/03-15-02-01.png)
+
+    ???????????????
+    为什么只有一个包，c.js是被引用了2次的，chunks也设成'all'，minSize也是0，为什么没有被分入common.js?
+
+minChunks表示一个模块被引用一定次数，这个解释并不是非常准确
+
+minChunks更进一步的定义，应该是指被**不同chunk包**引用的次数
+
+    示例: a.js与b.js同时引入c.js，且以a.js与b.js作为入口
+    
+    // a.js
+    import './c.js';
+    console.log('a');
+    
+    // b.js
+    import './c.js';
+    console.log('b');
+    
+    // c.js
+    console.log('common');
+    
+    // webpack.config.js
+    module.exports = {
+        entry: {
+            a: './src/a.js', // 需要打包的文件入口1
+            b: './src/b.js', // 需要打包的文件入口2
+        },
+        optimization: {
+            splitChunks: {
+                chunks: "all",
+                minSize: 0, // 设置最小0就拆，否则默认30kb
+                cacheGroups: {
+                    common: {
+                        name: 'common',
+                        minChunks: 2, // 被引用2次则被分到common组
+                        priority: 5,
+                    }
+                }
+            }
+        },
+        ...
+    }
+    
+    执行npm run dev
+    
+![Alt text](./imgs/03-15-02-02.png)
+
+(可见，minChunks指的应该是被chunk引用的次数，这里被chunk a和b同时引用)
+
+也就是表示，需要多入口才能打出minChunks: 2的组吗？
+
+并不是，再看下面这个示例
+
+    示例: index.js异步引入a.js、b.js，其中a.js与b.js同时引入c.js
+    // index.js
+    import('./a.js')
+    import('./b.js')
+    
+    // a.js
+    import './c.js';
+    console.log('a');
+    
+    // b.js
+    import './c.js';
+    console.log('b');
+    
+    // c.js
+    console.log('common');
+    
+    // webpack.config.js
+    module.exports = {
+        entry: {
+            main: './src/index.js', // 需要打包的文件入口
+        },
+        optimization: {
+            splitChunks: {
+                chunks: "all",
+                minSize: 0, // 设置最小0就拆，否则默认30kb
+                cacheGroups: {
+                    common: {
+                        name: 'common',
+                        minChunks: 2, // 被引用2次则被分到common组
+                        priority: 5,
+                    }
+                }
+            }
+        },
+        ...
+    }
+    
+![Alt text](./imgs/03-15-02-03.png)
+
+    总结: minChunks并不是单单指被模块引用2次，而是被Chunks最小引用次数
+    
+#### maxAsyncRequests
+
+这是比较让人比较难以捉摸的配置，网上很少有清楚的介绍
 
 maxAsyncRequests是最大的按需(异步)加载次数，默认为 5，可以设置Infinity
 
@@ -411,17 +555,18 @@ maxAsyncRequests是最大的按需(异步)加载次数，默认为 5，可以设
     
     可以看到这4个文件大小较小的，我们可以依次打开这4个文件进行分析:
     0.js中含有我们d.js中的 console.log('d')
-    1.js中含有我们d.js中的 console.log('c')
-    2.js中含有我们d.js中的 console.log('b')
-    3.js中含有我们d.js中的 console.log('a')
+    1.js中含有我们c.js中的 console.log('c')
+    2.js中含有我们b.js中的 console.log('b')
+    3.js中含有我们a.js中的 console.log('a')
     
     即a、b、c、d.js这4个文件被拆成了4份:
-    按需加载import('a.js')时，会并发请求4个文件(0.js、1.js、2.js、3.js)
-    按需加载import('b.js')时，会并发请求3个文件(0.js、1.js、2.js)
-    按需加载import('c.js')时，会并发请求2个文件(0.js、1.js)
-    按需加载import('d.js')时，会并发请求1个文件(0.js)
+    按需加载import('a.js')时，需要并发请求4个文件(0.js、1.js、2.js、3.js)
+    按需加载import('b.js')时，需要并发请求3个文件(0.js、1.js、2.js)
+    按需加载import('c.js')时，需要并发请求2个文件(0.js、1.js)
+    按需加载import('d.js')时，需要并发请求1个文件(0.js)
     
     
+    接着我们设置maxAsyncRequests: 1
     // webpack.config.js
     optimization: {
         splitChunks: {
@@ -429,19 +574,92 @@ maxAsyncRequests是最大的按需(异步)加载次数，默认为 5，可以设
             minSize: 0,
         }
     }
-    当maxAsyncRequests: 1时
     
     执行 npm run dev
     
-    按需加载import('./big.js')时,会并发请求 1个文件 (big.js ,help1.js, help2.js,help3.js 合并而成)
-    按需加载import('./help1.js')时,会并发请求  1个文件(help1.js, help2.js,help3.js 合并而成)
-    按需加载import('./help2.js')时,会并发请求 1个文件 (help2.js,help3.js 合并而成)
-    按需加载import('./help3.js')时,会并发请求 1个文件 help3.js 1个文件
+![Alt text](./imgs/03-15-04.png)
+
+    再次打开这4个文件进行分析:
+    打开0.js，里面同时含有4个文件a、b、c、d.js中的console.log('a')/log('b')/log('c')/log('d')
+    打开1.js，里面同时含有3个文件b、c、d.js中的console.log('b')/log('c')/log('d')
+    打开2.js，里面同时含有2个文件c、d.js中的console.log('c')/log('d')
+    打开3.js，里面同时含有1个文件d.js中的console.log('d')
+    
+    即a、b、c、d.js这4个文件被重复打包了:
+    按需加载import('./a.js')时,只会并发请求1个文件(0.js)，这个文件同时包含了a、b、c、d.js的内容
+    按需加载import('./b.js')时,只会并发请求1个文件(1.js)，这个文件同时包含了b、c、d.js的内容
+    按需加载import('./c.js')时,只会并发请求1个文件(2.js)，这个文件同时包含了c、d.js的内容
+    按需加载import('./d.js')时,只会并发请求1个文件(3.js)，这个文件同时包含了d.js的内容
+    
+    可以看到maxAsyncRequests: 1 限制了公共代码的分离，使得只能并发请求1个文件
     
     maxAsyncRequests起的便是这样的作用:
     当maxAsyncRequests: 1时，公共代码没有分离，虽然只请求了1次，但是重复加载了公共的代码，严重冗余
-    当maxAsyncRequests: 5时，代码没有冗余，但请求big.js时发起4次请求，在这个示例中，maxAsyncRequests: 5更优
+    当maxAsyncRequests: 5时，代码没有冗余，但请求a.js时发起4次请求，以增加请求数换取代码冗余
     
+    一般而言，以增加请求来公共代码分离是更优的，不过没有最好的方案，只有最合适的做法
+
+#### maxInitialRequests
+
+与maxAsyncRequests有所不同，maxInitialRequests是指**entry文件请求的chunks不应超过的值**，默认是3
+
+    // a.js(入口1)，引入了c.js与jquery
+    import './c.js';
+    import 'jquery';
+    console.log('a');
+    
+    // b.js(入口2)，也引入了c.js与jquery
+    import './c.js';
+    import 'jquery';
+    console.log('b');
+    
+    // c.js
+    console.log('common');
+    
+    // webpack.config.js
+    module.exports = {
+        entry: {
+            a: './src/a.js',
+            b: './src/b.js',
+        },
+        optimization: {
+            splitChunks: {
+                chunks: "all",
+                minSize: 0,
+                maxInitialRequests: 3, // 入口请求的最大chunks数是3
+                cacheGroups: {
+                    vendors: {
+                        test: /[\\/]node_modules[\\/]/,
+                        name: 'vendors',
+                        priority: -10
+                    },
+                    common: {
+                        test: /[\\/]src[\\/]/,
+                        name: 'common',
+                        minChunks: 2,
+                        priority: 5,
+                    }
+                }
+            }
+        },
+        ...
+    }
+    
+    执行npm run dev
+    
+![Alt text](./imgs/03-16.png)
+
+这时我们将maxInitialRequests修改为1，再打包
+
+![Alt text](./imgs/03-17.png)
+
+这就是maxInitialRequests的作用，限制入口最多请求的**chunks**
+
+原来maxInitialRequests是3，可以正常的打出4个chunks，每个入口都引用了3个，没有超过maxInitialRequests的限制
+
+而maxInitialRequests改变为1时，原本应该打出的4个chunks，导致每个入口引用数为3，超过1，所以包没有分离，而是被打到了一起
+
+
 ### 拆分Common模块
 
 当同一个模块被多个模块import时，我们可以把它打包成common模块

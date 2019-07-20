@@ -135,6 +135,39 @@ webpack默认配置文件是根目录下的webpack.config.js，可以在配置�
 
 ![Alt text](./imgs/01-13.png)
 
+
+### 多入口
+
+上面我们演示的是单入口，webpack允许我们使用有多个入口
+    
+    // webpack.config.js
+    const path = require('path')
+        
+    console.log('__dirname: ', __dirname)
+    console.log('path.resolve: ', path.resolve(__dirname, 'dist'))
+    
+    module.exports = {
+        entry: {
+            a: './src/a.js', // 1、入口a
+            b: './src/b.js', // 2、入口b
+        },
+        output: {
+            publicPath: __dirname + '/dist/',
+            path: path.resolve(__dirname, 'dist'),
+            filename: '[name].bundle.js' // 3、打包后的文件用name命名
+    }
+    
+    // a.js
+    console.log('a');
+    
+    // b.js
+    console.log('b');
+    
+![Alt text](./imgs/01-14.png)
+
+![Alt text](./imgs/01-15.png)
+    
+
 ## 清理文件clean-webpack-plugin
 
 每次打包时，应该先清理原来的dist文件夹，否则打出不同文件名的文件，会都堆积在dist文件夹中
