@@ -368,6 +368,83 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
 
 ### 配置解析
 
+| 配置项 | 说明 | 示例 |
+| ------ | ------ | ------ |
+| chunks | 匹配的块的类型 | initial（初始块），async（按需加载的异步块），all（所有块） |
+| name | 用以控制分离后代码块的命名 | name: 'common' |
+| test | 用于规定缓存组匹配的文件位置 | test: /\[\\\\/]node_modules\[\\\\/]/ |
+| priority | 分离规则的优先级，优先级越高，则优先匹配 | priority: 5 |
+| minSize | 模块超过多少大小，就拆分、分组 | minSize: 30000，默认值是 30kb |
+| minChunks | 最少被chunks的引用次数 | minChunks: 2 |
+| reuseExistingChunk | 如果当前块已从主模块拆分出来，则将重用它而不是生成新的块，一般公共组要设为true | reuseExistingChunk: true |
+
+**注意:**
+
+cacheGroups 会继承和覆盖splitChunks的配置项，但是**test、priorty和reuseExistingChunk**只能用于配置缓存组
+
+更多的配置可了解 [官方文档](https://webpack.js.org/plugins/split-chunks-plugin/)
+
+#### name
+
+cacheGroups里的组设置name与否影响了该组打出的包是否会整合在一起
+    
+    // 1、没有设置name的情况
+    // pageA.js
+    import './a.js';
+    import './b.js';
+    
+    // pageB.js
+    import './b.js';
+    import './c.js';
+    
+    // pageC.js
+    import './b.js';
+    import './c.js';
+    
+    module.exports = {
+        entry: {
+            pageA: './src/pageA.js', // 入口pageA
+            pageB: './src/pageB.js', // 入口pageB
+            pageC: './src/pageC.js', // 入口pageC
+        },
+        optimization: {
+            splitChunks: {
+                chunks: "all",
+                minSize: 0, // 设置最小0就拆，否则默认30kb
+                cacheGroups: {
+                    common: {
+                        test: /[\\/]src[\\/]/,
+                        minChunks: 2, // 被引用2次则被分到common组
+                        priority: 5,
+                    },
+                }
+            }
+        },
+    }
+    
+    执行npm run dev
+    
+![Alt text](./imgs/03-18.png)
+
+    // 2、设置name的情况
+    optimization: {
+        splitChunks: {
+            chunks: "all",
+            minSize: 0, // 设置最小0就拆，否则默认30kb
+            cacheGroups: {
+                common: {
+                    test: /[\\/]src[\\/]/,
+                    name: 'common', // 设置了name
+                    minChunks: 2, // 被引用2次则被分到common组
+                    priority: 5,
+                },
+            }
+        }
+    },
+    
+![Alt text](./imgs/03-19.png)
+    
+
 #### minChunks
 
 很重要，但网上解释的简单模糊的一个属性
@@ -601,7 +678,7 @@ maxAsyncRequests是最大的按需(异步)加载次数，默认为 5，可以设
 
 #### maxInitialRequests
 
-与maxAsyncRequests有所不同，maxInitialRequests是指**entry文件请求的chunks不应超过的值**，默认是3
+与maxAsyncRequests有所不同，maxInitialRequests是指**entry文件请求的chunk数不应超过的值**，默认是3
 
     // a.js(入口1)，引入了c.js与jquery
     import './c.js';
@@ -655,10 +732,76 @@ maxAsyncRequests是最大的按需(异步)加载次数，默认为 5，可以设
 
 这就是maxInitialRequests的作用，限制入口最多请求的**chunks**
 
-原来maxInitialRequests是3，可以正常的打出4个chunks，每个入口都引用了3个，没有超过maxInitialRequests的限制
+原来maxInitialRequests是3，可以正常的打出4个chunk，每个入口都引用了3个，没有超过maxInitialRequests的限制
 
-而maxInitialRequests改变为1时，原本应该打出的4个chunks，导致每个入口引用数为3，超过1，所以包没有分离，而是被打到了一起
+而maxInitialRequests改变为1时，原本应该打出的4个chunk，导致每个入口引用数为3，超过1，所以包没有分离，而是被打到了一起
 
 
+### runtimeChunk
 
+webpack打出的包，含有一小部分管理模块执行的代码，这小部分代码在chunk id和匹配的文件之间生成一个映射
+
+为了充分利用浏览器的缓存策略，可以把它单独抽出，否则可能导致: 一个文件内容发生改动，另一个文件并没有修改，却导致没有修改的文件hash值也发生改变
+
+    // webpack.config.js
+    entry: {
+        main: './src/index.js', // 需要打包的文件入口
+    },
+    output: {
+        publicPath: './dist/',
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].[contentHash].bundle.js',
+        chunkFilename: '[name].[contentHash].js'
+    },
+        注：以contentHash作为文件名，内容没有修改，打出的文件名不变，充分利用浏览器环境
+
+    // src/index.js
+    import (/* webpackChunkName: 'a'*/ './a.js')
+    import (/* webpackChunkName: 'b'*/ './b.js')
     
+    // a.js
+    console.log('a');
+    
+    // b.js
+    console.log('b');
+    
+    执行npm run dev    
+    
+![Alt text](./imgs/03-20.png)
+
+    这时我们修改a.js
+    // a.js
+    console.log('aaaaaaa');
+    
+![Alt text](./imgs/03-21.png)
+
+    存在的问题:
+    我们只修改了a.js，而index.js是没有做修改的，但是却导致index.js打出的main.bundle.js的hash值发生了变化
+    这样对于浏览器缓存策略来说，就要重新请求一次根本没有发生变化的main.bundle.js
+    
+    原因:
+    我们打开main.bundle.js可以看到如下部分代码
+    
+![Alt text](./imgs/03-22.png)
+
+    解决:
+    我们应该把文件清单的这部分代码单独抽离出来
+    webpack4允许我们在optimization配置runtimeChunk
+    
+    // webpack.config.js
+    optimization: {
+        runtimeChunk: {
+            name: 'manifest'
+        },
+        // runtimeChunk: true, 或者这样配置
+    },
+    
+    执行npm run dev
+    
+![Alt text](./imgs/03-23.png)
+
+    这时我们修改a.js
+    // a.js
+    console.log('aaaaaaabbb');
+    
+![Alt text](./imgs/03-24.png)
