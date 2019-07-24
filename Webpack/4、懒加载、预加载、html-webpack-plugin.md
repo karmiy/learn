@@ -71,3 +71,12 @@ webpack的**Prefetching/Preloading**
 上面我们使用的是prefetch，prefetch会等待核心代码加载完后，有空闲再去加载，更推荐使用
 
 而preload会和核心代码并行加载
+
+## html-webpack-plugin
+
+在前面的操作中，我们每次都需要手动去index.html中引入打出的js包，非常的不方便
+
+webpack提供了html-webpack-plugin来自动生成html与引入打包后的包
+    
+    // 1、安装依赖
+    npm i html-webpack-plugin --save-dev
