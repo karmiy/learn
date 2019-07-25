@@ -25,7 +25,6 @@
             publicPath: __dirname + '/dist/', // js 引用的路径或者 CDN 地址
             path: path.resolve(__dirname, 'dist'), // 打包文件的输出目录
             filename: '[name].bundle.js', // 代码打包后的文件名
-            chunkFilename: '[name].js' // 代码拆分后的文件名
         },
         plugins: [
             new CleanWebpackPlugin() // 默认情况下，此插件将删除 webpack output.path目录中的所有文件，以及每次成功重建后所有未使用的 webpack 资产。

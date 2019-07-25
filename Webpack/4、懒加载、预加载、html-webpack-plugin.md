@@ -80,3 +80,51 @@ webpack提供了html-webpack-plugin来自动生成html与引入打包后的包
     
     // 1、安装依赖
     npm i html-webpack-plugin --save-dev
+    
+    // 2、在根目录下新建index.html作为模板 (htmlWebpackPlugin.options.title接收之后配置的title)
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title><%= htmlWebpackPlugin.options.title %></title>
+    </head>
+    <body>
+    </body>
+    </html>
+    
+    // 3、配置webpack.config.js
+    const path = require('path')
+    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+    const HtmlWebpackPlugin = require('html-webpack-plugin')
+    
+    module.exports = {
+        entry: {
+            main: './src/index.js',
+        },
+        output: {
+            path: path.resolve(__dirname, 'dist'),
+            filename: '[name].bundle.js',
+        },
+        plugins: [
+            new CleanWebpackPlugin(),
+            new HtmlWebpackPlugin({
+                title: 'webpack-demo', // HTML中的title
+                minify: {
+                    // 压缩 HTML 文件
+                    removeComments: true, // 移除 HTML 中的注释
+                    collapseWhitespace: true, // 删除空白符与换行符
+                    minifyCSS: true // 压缩内联 css
+                },
+                filename: 'index.html', // 生成后的文件名
+                template: 'index.html' // 根据此模版生成 HTML 文件
+            })
+        ],
+    }
+    
+    执行npm run build
+    
+![Alt text](./imgs/04-08.png)
+
+![Alt text](./imgs/04-09.png)
+
+![Alt text](./imgs/04-10.png)
