@@ -77,6 +77,18 @@ webpack的**Prefetching/Preloading**
 在前面的操作中，我们每次都需要手动去index.html中引入打出的js包，非常的不方便
 
 webpack提供了html-webpack-plugin来自动生成html与引入打包后的包
+
+### 常用API
+
+| 配置项 | 说明 | 示例 |
+| ------ | ------ | ------ |
+| title | 打包后生成 html 的 title | title: 'webpack-demo' |
+| filename | 打包后的 html 文件名称 | filename: 'index.html' |
+| template | 模板文件 | template: 'index.html'（如根目录下的 index.html） |
+| chunks | 和 entry 配置中相匹配，支持多页面、多入口 | chunks: \['app'] |
+| minify | 压缩选项 | - |
+
+### 基本用法
     
     // 1、安装依赖
     npm i html-webpack-plugin --save-dev
@@ -128,3 +140,145 @@ webpack提供了html-webpack-plugin来自动生成html与引入打包后的包
 ![Alt text](./imgs/04-09.png)
 
 ![Alt text](./imgs/04-10.png)
+
+### publicPath
+
+为所有资源指定一个基础路径
+
+在上面的示例中，可以看到打出的包是以当前文件夹的相对路径引入html中的
+
+![Alt text](./imgs/04-11.png)
+
+当我们修改output的配置，添加 publicPath: __dirname + '/dist/'
+
+    output: {
+        publicPath: __dirname + '/dist/',
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js',
+    },
+    
+    执行npm run build
+    
+![Alt text](./imgs/04-12.png)
+
+可以看出，publicPath是用来添加基础路径的
+
+**作用:**
+
+一般用在矫正路径和设置CDN路径前缀
+
+### chunks指定入口、多页面
+
+chunks属性用于指定打出的index.html所引入的包
+
+这意味着我们可以利用**多入口**配合**chunks指定入口**来实现多页面
+
+要实现多页面，我们需要配置多个HtmlWebpackPlugin:
+
+    const path = require('path')
+    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+    const HtmlWebpackPlugin = require('html-webpack-plugin')
+    
+    module.exports = {
+        entry: {
+            a: './src/a.js', // 1、入口a
+            b: './src/b.js', // 2、入口b
+        },
+        output: {
+            path: path.resolve(__dirname, 'dist'),
+            filename: '[name].bundle.js',
+            chunkFilename: '[name].chunk.js',
+        },
+        plugins: [
+            new CleanWebpackPlugin(),
+            // 3、页面pageA
+            new HtmlWebpackPlugin({
+                title: 'webpack-demo',
+                minify: {
+                    removeComments: true,
+                    collapseWhitespace: true,
+                    minifyCSS: true,
+                },
+                filename: 'pageA.html',
+                template: 'index.html',
+                chunks: ['a'], // 4、配置pageA引入的是入口a打出的包
+            }),
+            // 5、页面pageB
+            new HtmlWebpackPlugin({
+                title: 'webpack-demo',
+                minify: {
+                    // 压缩 HTML 文件
+                    removeComments: true,
+                    collapseWhitespace: true,
+                    minifyCSS: true,
+                },
+                filename: 'pageB.html',
+                template: 'index.html',
+                chunks: ['b'], // 6、配置pageB引入的是入口b打出的包
+            })
+        ],
+    }
+    
+    执行npm run build
+    
+![Alt text](./imgs/04-13.png)
+
+![Alt text](./imgs/04-14.png)
+
+![Alt text](./imgs/04-15.png)
+
+### 内联runtimeChunk
+
+在Code Splitting篇，我们知道分割的runtimeChunk是个很小的文件
+
+但是作为chunk清单，它又经常会改变，我们每次请求它，http耗时远大于它的执行时间，把它单独拆包并不是特别合适
+
+优化的做法，可以将它内联到我们的index.html中(index.html本身每次打包都会变)
+
+这里我们使用 **script-ext-html-webpack-plugin** 来完成内联
+
+    // webpack.config.js
+    const path = require('path')
+    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+    const HtmlWebpackPlugin = require('html-webpack-plugin')
+        // 1、引入script-ext-html-webpack-plugin
+    const ScriptExtHtmlWebpackPlugin = require("script-ext-html-webpack-plugin");
+    
+    module.exports = {
+        entry: {
+            main: './src/index.js',
+        },
+        output: {
+            path: path.resolve(__dirname, 'dist'),
+            filename: '[name].bundle.js',
+            chunkFilename: '[name].chunk.js',
+        },
+        optimization: {
+            // 2、配置runtimeChunk
+            runtimeChunk: {
+                name: 'manifest'
+            },
+        },
+        plugins: [
+            new CleanWebpackPlugin(),
+            new HtmlWebpackPlugin({
+                title: 'webpack-demo',
+                minify: {
+                    removeComments: true,
+                    collapseWhitespace: true,
+                    minifyCSS: true,
+                },
+                filename: 'index.html',
+                template: 'index.html',
+            }),
+            // 3、配置script-ext-html-webpack-plugin
+            new ScriptExtHtmlWebpackPlugin({
+                //`runtime` must same as runtimeChunk name. default is `runtime`
+                inline: /manifest\..*\.js$/
+            })
+        ],
+    }
+    
+    执行npm run build
+
+![Alt text](./imgs/04-16.png)

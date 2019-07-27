@@ -250,6 +250,48 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
 
 方法二: publicPath修改为./
 
+
+### chunkFilename
+
+示例中我们在output设置了chunkFilename属性，这个属性用来配置打出的chunk包的名称
+    
+    // src/index.js
+    import('lodash')
+    
+    // 1、不配置chunkFilename
+    output: {
+        publicPath: __dirname + '/dist/',
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js',
+    },
+    
+    执行npm run build
+    
+![Alt text](./imgs/03-14-01.png)
+
+    // 2、配置chunkFilename
+    output: {
+        publicPath: __dirname + '/dist/',
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js',
+        chunkFilename: '[name].chunk.js', // 代码拆分后的文件名
+    },
+    
+    执行npm run build
+    
+![Alt text](./imgs/03-14-02.png)
+
+    // 3、异步import加webpackChunkName配置解析
+        // src/index.js
+        import(/* webpackChunkName: 'lodash'*/  'lodash')
+        
+    执行npm run build
+    
+![Alt text](./imgs/03-14-03.png)
+
+可以看出，chunkFilename主要作用于为被拆分的包命名，当没有配置这个属性时，拆分的包与主文件共用filename，配置后遵循chunkFilename
+    
+
 ### 进一步拆分第三方包
 
 现在我们将默认配置拷贝至webpack.config.js中进行分析
@@ -804,3 +846,9 @@ webpack打出的包，含有一小部分管理模块执行的代码，这小部�
     console.log('aaaaaaabbb');
     
 ![Alt text](./imgs/03-24.png)
+
+**注:**
+
+这里我们将runtime单独拆成一个包，可以看到这部分代码很小，可以考虑内联到html中
+
+实现方法可以了解 [内联runtimeChunk](./4、懒加载、预加载、html-webpack-plugin.md)
