@@ -146,4 +146,33 @@ mini-css-extract-plugin的loader允许配置publicPath，通常作用于backgrou
     执行npm run build
     
 ![Alt text](./imgs/05-06.png)
+
+### HMR
+
+mini-css-extract-plugin可以配置hmr功能，一般作用于开发环境开启，此处不演示
     
+    {
+        test: /\.css$/,
+        use: [
+            {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                    // only enable hot in development
+                    hmr: process.env.NODE_ENV === 'development', // development环境开启
+                    // if hmr does not work, this is a forceful method.
+                    reloadAll: true,
+                },
+            },
+            'css-loader'
+        ]
+    }
+    
+### 压缩CSS
+
+可以看到，单独分离出来的CSS文件是没有被压缩的
+
+可以引入**optimize-css-assets-webpack-plugin**来实现CSS的压缩
+
+    // 1、安装依赖
+    npm install optimize-css-assets-webpack-plugin --save-dev
+
