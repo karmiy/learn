@@ -175,4 +175,183 @@ mini-css-extract-plugin可以配置hmr功能，一般作用于开发环境开启
 
     // 1、安装依赖
     npm install optimize-css-assets-webpack-plugin --save-dev
+    
+    // 2、配置webpack.config.js
+    ...
+    const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin') // 压缩 css
+    
+    module.exports = {
+        ...
+        plugins: [
+            ...
+            new OptimizeCssAssetsPlugin({
+                assetNameRegExp: /\.css$/g,
+                cssProcessor: require('cssnano'), //用于优化\最小化 CSS 的 CSS处理器，默认为 cssnano
+                cssProcessorOptions: { safe: true, discardComments: { removeAll: true } }, //传递给 cssProcessor 的选项，默认为{}
+                canPrint: true //布尔值，指示插件是否可以将消息打印到控制台，默认为 true
+            }),
+        ],
+    }
+    
+    执行npm run build
 
+![Alt text](./imgs/05-07.png)
+
+### 处理SCSS
+
+    // 1、安装依赖
+    npm i node-sass sass-loader --save-dev
+    
+    // 2、配置webpack.config.js
+    {
+        test: /\.(scss|css)$/, // 针对 .css 后缀的文件设置 loader
+        use: [
+            {
+                loader: MiniCssExtractPlugin.loader,
+            },
+            'css-loader',
+            'sass-loader' // 使用 sass-loader 将 scss 转为 css
+        ]
+    },
+    
+        注：
+        webpack解析顺序是从后往前: sass-loader => css-loader => MiniCssExtractPlugin.loader
+        
+    // 3、修改.css为.scss
+    // base.scss
+    @import '1.scss';
+    body {
+        margin: 0;
+    }
+    
+    // 1.scss
+    $theme: #1394ff;
+    body {
+        background-color: $theme;
+    }
+    
+    执行npm run build
+    
+![Alt text](./imgs/05-08.png)
+
+### CSS浏览器兼容前缀
+
+    // 1、安装依赖
+    npm install postcss-loader autoprefixer --save-dev
+    
+    // 2、修改1.scss
+    $theme: #1394ff;
+    div {
+        background-color: $theme;
+        user-select: none;
+    }
+
+    
+    配置postcss有两种方式
+    
+    方式一:
+    // 配置webpack.config.js
+    {
+        test: /\.(scss|css)$/,
+        use: [
+            {
+                loader: MiniCssExtractPlugin.loader,
+            },
+            'css-loader',
+            // 使用 postcss 为 css 加上浏览器前缀
+            {
+                loader: 'postcss-loader',
+                options: {
+                    plugins: [require('autoprefixer')]
+                }
+            },
+            'sass-loader'
+        ]
+    },
+    
+    方式二:
+    // 在 webpack.config.js 同级目录下，新建 postcss.config.js 配置文件
+    module.exports = {
+        plugins: [require('autoprefixer')]
+    }
+    
+![Alt text](./imgs/05-09.png)
+
+    // 配置webpack.config.js
+    {
+        test: /\.(scss|css)$/,
+        use: [
+            {
+                loader: MiniCssExtractPlugin.loader,
+            },
+            'css-loader',
+            'postcss-loader', // 使用 postcss 为 css 加上浏览器前缀
+            'sass-loader'
+        ]
+    },
+    
+    执行npm run build
+    
+![Alt text](./imgs/05-10.png)
+
+### importLoaders
+
+在上例的配置中:
+
+    {
+        test: /\.(scss|css)$/,
+        use: [
+            {
+                loader: MiniCssExtractPlugin.loader,
+            },
+            'css-loader',
+            'postcss-loader', // 使用 postcss 为 css 加上浏览器前缀
+            'sass-loader'
+        ]
+    },
+    
+如果我们的样式不是SCSS，而是普通的CSS:
+
+    // base.css
+    @import '1.css';
+    body {
+        margin: 0;
+    }
+    
+    // 1.css
+    div {
+        background-color: #1394ff;
+        user-select: none;
+    }
+    
+    执行npm run build
+    
+![Alt text](./imgs/05-11.png)
+
+**解决方案:**
+
+配置**importLoaders**
+
+    {
+        test: /\.(scss|css)$/,
+        use: [
+            {
+                loader: MiniCssExtractPlugin.loader,
+            },
+            {
+                loader: 'css-loader',
+                options: {
+                    importLoaders: 1, // 配置importLoaders
+                }
+            },
+            'postcss-loader',
+            'sass-loader'
+        ]
+    },
+    
+    importLoaders: n 表示：在一个css中引入了另一个css，也会执行之前n个loader，这里importLoaders: 1，即postcss-loader，如果是2，则是postcss-loader和sass-loader
+    
+    
+    执行npm run build
+    
+![Alt text](./imgs/05-12.png)
