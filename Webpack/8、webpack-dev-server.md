@@ -169,6 +169,8 @@
 
 修改js/scss文件，会发现**页面自动刷新**
 
+我们发现**没有生成dist文件夹**，因为webpack-dev-server是将打包文件的相关内容**存储在内存之中的**
+
 接着我们对上述的配置进行分析
 
 ### 模块热更新
@@ -218,4 +220,159 @@
 ![Alt text](./imgs/08-02.png)
 
 会发现页面**没有重新刷新，只更新了我们修改的部分**，达到了热更新的效果
+
+### 跨域代理
+
+随着前后端分离开发的普及，跨域请求变得越来越常见。为了快速开发，可以利用 **devServer.proxy** 做一个代理转发，来绕过浏览器的跨域限制
+
+devServer模块的底层是使用了 [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) 
+
+假如我们本地想请求一个跨域地址:
+    
+    // 安装axios依赖
+    npm i axios --save
+    
+    // src/index.js
+    import axios from 'axios'
+    
+    axios.get('https://www.wangsucloud.com/base-portal/frontpages/help/menu/HELP').then(res => {
+        console.log(res);
+    })
+    
+    执行npm run dev打开本地8080服务
+    
+![Alt text](./imgs/08-03.png)
+
+
+配置devServer
+
+    devServer: {
+        ...
+        proxy: {
+            // 跨域代理转发
+            '/help': {
+                target: 'https://www.wangsucloud.com/base-portal/frontpages/help/menu/HELP',
+                changeOrigin: true,
+                ws: false,
+                pathRewrite: {
+                    [`^/help`]: '/'
+                },
+                logLevel: 'debug',
+                headers: {
+                    Cookie: ''
+                }
+            }
+        },
+    },
+    
+    主要配置解析:
+    proxy是个对象:
+        key: 项目中请求的地址，这里是请求 '/help'，即我的接口是/help开头才用代理
+        value: 是对象
+            changeOrigin: 将主机标头的原点更改为目标URL(是否跨域)
+            ws: 是否代理websockets
+            target: 代理的目标URL地址
+            pathRewrite: 重定向路径
+                            如果这里不配置这个，当请求 '/help'时，会变成'https://www.wangsucloud.com/base-portal/frontpages/help/menu/HELP/help'
+                            可是这样路径不对，我们只想代理到'https://www.wangsucloud.com/base-portal/frontpages/help/menu/HELP'，后面不需要加'/help'
+                            所以我们将'/help'重置为'/'
+                            
+    
+    // 修改src/index.js的请求
+    axios.get('/help').then(res => {
+        console.log(res);
+    })
+                            
+![Alt text](./imgs/08-04.png)
+
+### source-map
+
+开启source-map可以方便我们调试代码
+
+    module.exports = {
+        devtool: 'source-map', // 开启调试        
+    }
+    
+![Alt text](./imgs/08-05.png)
+
+### contentBase与publicPath
+
+可以发现，在devServer中，我们配置了**contentBase**
+
+contentBase与publicPath是比较容易弄乱的配置，下面我们一个个去分析
+
+#### output.publicPath
+
+先去掉devServer中的contentBase与publicPath，仅仅配置output的publicPath为 '/aaa'后启动项目
+
+    output: {
+        publicPath: '/aaa', // js 引用的路径或者 CDN 地址
+        path: path.resolve(__dirname, 'dist'), // 打包文件的输出目录
+        filename: '[name].bundle.js', // 代码打包后的文件名
+        chunkFilename: '[name].chunk.js', // 代码拆分后的文件名
+    },
+    
+![Alt text](./imgs/08-05-01.png)
+    
+打开localhost:8080，会发现只有html页面，没有加载任何资源
+
+![Alt text](./imgs/08-06.png)
+
+打开localhost:8080/aaa，页面、资源正常加载
+
+![Alt text](./imgs/08-07.png)
+    
+> output的publicPath，会为资源加上前缀，在devServer没有配置publicPath时，webpack-dev-server打包时生成的静态文件所在位置及index.html里引用的资源前缀都是output.publicPath
+
+#### devServer.publicPath
+
+保留output的publicPath，配置devServer的publicPath
+
+    devServer: {
+        ...
+        publicPath: '/bbb'
+    }
+
+![Alt text](./imgs/08-07-01.png)
+    
+这时访问localhost:8080/aaa只会html页面，没有加载任何资源
+
+打开localhost:8080/bbb，页面正常打开，资源加载报错
+
+![Alt text](./imgs/08-08.png)
+
+> devServer的publicPath是打包后生成静态文件所在的位置(即打包后的main.bundle.js、index.html放在/bbb下)，但引用资源的路径前缀，还是会取output.publicPath的
+
+#### devServer.contentBase
+
+修改output和devServer的publicPath都是 './bbb'
+
+在根目录下新建kkk/index.html
+
+![Alt text](./imgs/08-09.png)
+
+    output: {
+        publicPath: '/bbb',
+        ...
+    },
+    devServer: {
+        ...
+        contentBase: './kkk',
+        publicPath: '/bbb'
+    }
+    
+![Alt text](./imgs/08-09-01.png)
+
+打开localhost:8080，会发现打开了我们kkk/index.html
+
+![Alt text](./imgs/08-10.png)
+
+![Alt text](./imgs/08-11.png)
+
+> contentBase指不是由webpack打包生成的静态文件，默认是根目录，当访问localhost:8080时，在根目录下找不到index.html，所以会去contentBase指定的./kkk下寻找，即会打开我们另外写好的那份html
+
+**注:**
+
+通常情况下，开发模式配置output.publicPath为'/'就可以了，让资源放于根目录下，不需要配置devServer.publicPath，这样可以与资源路径一直，也不需要配置contentBase
+
 
