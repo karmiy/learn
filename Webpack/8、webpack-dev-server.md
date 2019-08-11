@@ -333,7 +333,7 @@ contentBase与publicPath是比较容易弄乱的配置，下面我们一个个�
         publicPath: '/bbb'
     }
 
-![Alt text](./imgs/08-07-01.png)
+![Alt text](./imgs/08-07-02.png)
     
 这时访问localhost:8080/aaa只会html页面，没有加载任何资源
 
@@ -345,7 +345,7 @@ contentBase与publicPath是比较容易弄乱的配置，下面我们一个个�
 
 #### devServer.contentBase
 
-修改output和devServer的publicPath都是 './bbb'
+修改output和devServer的publicPath都是 '/bbb'
 
 在根目录下新建kkk/index.html
 
