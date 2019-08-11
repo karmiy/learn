@@ -51,7 +51,6 @@ Webpack并不知道如何转换，但是可以使用loader
        [
          "@babel/preset-env",
          {
-           "useBuiltIns": "usage",
            "corejs": 3
          }
        ]
