@@ -115,6 +115,7 @@ Webpack并不知道如何转换，但是可以使用loader
     }).then(() => console.log('support'))
     
 ![Alt text](./imgs/02-03.png)
+    
 
 ### .browserslistrc配置文件
 
@@ -131,7 +132,14 @@ browserslistrc 用于在不同前端工具之间共享目标浏览器和 Node.js
 
 ![Alt text](./imgs/02-04.png)
 
-    也可以单独创建 .browserslistrc 文件单独写配置
+    也可以单独创建 .browserslistrc 文件单独写配置:
     
+    # 所支持的浏览器版本
+    
+    > 1% # 全球使用情况统计选择的浏览器版本
+    
+    last 2 version # 每个浏览器的最后两个版本
+    
+    not ie <= 8 # 排除小于 ie8 以下的浏览器
 
     

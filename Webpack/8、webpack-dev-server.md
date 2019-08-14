@@ -213,6 +213,14 @@
         console.log('multi(1, 2) = ', multi(1, 2))
     })
     
+    
+    还可以只针对文件做热更新处理
+    if (module.hot) {
+        module.hot.accept('./utils', function() {
+            console.log('/utils/index.js is changed')
+        });
+    }
+    
 这时我们修改代码:
 
     console.log('sum(1, 2) = ', sum(1, 4111111))
