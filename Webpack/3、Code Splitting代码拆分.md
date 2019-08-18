@@ -327,7 +327,7 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
 
 根据**cacheGroup**配置的组决定将两个文件合并到一个文件打包，还是单独分开打包
 
-例如默认配置中的vendors组，是将**node_modules**中所有第三方库打包都**vendors.js**中
+例如默认配置中的vendors组，是将**node_modules**中所有第三方库打包到**vendors.js**中
 
 我们也可以继续分割，单独把lodash分割出一个包
     
