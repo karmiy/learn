@@ -1,7 +1,5 @@
 ## 打包Library函数库
 
-https://www.babeljs.cn/docs/babel-plugin-transform-runtime
-
 ### 生成umd的Library
 
 我们可以开发自己的函数库，发布到npm上，通过npm install的形式安装到自己的项目中使用，也可以供他人安装使用
@@ -283,3 +281,5 @@ https://www.babeljs.cn/docs/babel-plugin-transform-runtime
 为什么配置externals，可以使library.js自动去引用本地项目的jQuery？
 
 externals配置中的commonjs、commonjs2、amd、root是什么意思？
+
+...
