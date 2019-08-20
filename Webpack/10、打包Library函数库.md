@@ -198,7 +198,7 @@
 
 所以我们需要配置**externals**，将jQuery包排除，使我们的library.js也去引用用户自己的jQuery，而不是一起打进包中
 
-    // 配置webpack.lib.js
+    // 配置webpack.lib.conf.js
     const path = require('path');
     const { CleanWebpackPlugin } = require('clean-webpack-plugin')
     
@@ -276,10 +276,98 @@
 
 #### 分析externals配置
 
-问题:
+**问题:**
 
 为什么配置externals，可以使library.js自动去引用本地项目的jQuery？
 
 externals配置中的commonjs、commonjs2、amd、root是什么意思？
 
-to test1
+从如下配置分析:
+
+    externals: {
+        "jquery": {
+            commonjs: "jQuery",
+            commonjs2: "jQuery",
+            amd: "jQuery",
+            root: "$",
+        }
+    },
+    
+    执行npm run lib
+    
+![Alt text](./imgs/10-14.png)
+
+可以看到，**externals**排除jQuery后，jQuery的**相关代码没有被打包进**librarys，而是**根据用户本地环境，以引入的形式**存在于代码中
+
+commonJS: require引入用户本地安装的jQuery
+
+amd: define引入用户本地安装的jQuery
+
+script: 全局使用window下的jQuery
+
+**问题:**
+
+    externals: {
+        jquery: 'jQuery',
+    },
+
+为什么经常会见到这样配置，要配置为: jquery: 'jQuery'，而不是: jquery: 'jquery' ?
+
+因为如果配置的是jquery: 'jquery'，那会是等于如下配置:
+
+    externals: {
+        "jquery": {
+            commonjs: "jquery",
+            commonjs2: "jquery",
+            amd: "jquery",
+            root: "jquery",
+        }
+    },
+    
+root配置就会存在问题，因为全局引入的jQuery.min.js文件，挂载到window下的变量是jQuery与$，就会导致删除导出的library.js中，最后的factory(root\["jquery"])为undefined，所以需要配置为jQuery或$，才能保证root下代码正常运行
+
+**示例:**
+
+我们使用如下配置去验证externals中的root选项
+    
+    // webpack.lib.conf.js
+    ...
+    output: {
+        path: path.resolve(__dirname, 'lib'),
+        filename: 'library.js',
+        libraryTarget: 'umd',
+        library: 'lib',
+    },
+    externals: {
+        "jquery": {
+            commonjs: "jquery",
+            commonjs2: "jquery",
+            amd: "jquery",
+            root: "KKK", // 配置为KKK
+        }
+    },
+    ...
+    
+    // src/index.js
+    import $ from 'jquery'
+    
+    const jQueryObj = (text) => {
+        return $(text)
+    }
+    
+    
+    export default {
+        jQueryObj,
+    }
+    
+    执行npm run lib
+    将打包后的library.js使用一个HTML引入
+    
+![Alt text](./imgs/10-15.png)
+
+![Alt text](./imgs/10-16.png)
+
+![Alt text](./imgs/10-17.png)
+
+![Alt text](./imgs/10-18.png)
+
