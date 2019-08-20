@@ -283,3 +283,4 @@ https://www.babeljs.cn/docs/babel-plugin-transform-runtime
 为什么配置externals，可以使library.js自动去引用本地项目的jQuery？
 
 externals配置中的commonjs、commonjs2、amd、root是什么意思？
+
