@@ -5,7 +5,7 @@
 可以根据定制的规范去矫正代码写法，配置具体可了解 [eslint配置规则](https://cn.eslint.org)
 
 ### 常规配置
-
+    
     // 1、安装依赖
     npm i eslint eslint-loader --save-dev
     

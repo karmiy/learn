@@ -78,7 +78,7 @@
 TypeScript是JavaScript的超集，可以编译成JavaScript，主要给JavaScript添加语言扩展，类型校验体系让代码更有规范性
 
 ### 常规配置
-
+    
     // 1、安装依赖
     npm i ts-loader typescript --save-dev
     
