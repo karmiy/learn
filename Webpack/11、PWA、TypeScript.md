@@ -6,7 +6,7 @@
     npm run build 打包项目，生成dist文件夹，里面是打包后的代码
     
     // 2、安装本地服务器
-    npm i http-server -D
+    npm i http-server --save-dev
     
     // 3、配置package.json
     "scripts": {
@@ -31,7 +31,7 @@
 而PWA，则可以在第一次访问成功时，做一个缓存，在服务器挂掉后依然可以访问这个页面
 
     // 安装插件
-    npm i workbox-webpack-plugin -D
+    npm i workbox-webpack-plugin --save-dev
     
     // 配置webpack.prod.conf.js
     const WorkboxPlugin = require('workbox-webpack-plugin') // 引入 PWA 插件
