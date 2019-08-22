@@ -110,7 +110,7 @@ ES6新增数据结构
     
     set.delete(1);
     set.delete(NaN);
-    console.log([...set]); // [NaN]
+    console.log([...set]); // [2]
     
     set.has(2); // true
     
@@ -140,7 +140,7 @@ ES6新增数据结构
     const set = new Set(['a', 'b', 'c', 'd']);
     const [x, y, ...z] = set;
     console.log(x); // 'a'
-    console.log(y); // 'c'
+    console.log(y); // 'b'
     console.log(z); // ['c', 'd']
     
     // 示例七（Interator的next取值）
@@ -166,12 +166,12 @@ ES6新增数据结构
     map.set('id', 100);
     map.set('name', 'karmiy');
     console.log(map.get('id')); // 100
-    console.log(map.size); // 1
+    console.log(map.size); // 2
     
     console.log(map.has('name')); // true
     
     map.delete('name');
-    console.log([...map]); // [['id', 100], ['name', 'karmiy']]
+    console.log([...map]); // [['id', 100]]
     
     map.clear();
     console.log([...map]); // []
