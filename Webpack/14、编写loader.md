@@ -12,7 +12,7 @@
     console.log("Who is she?");
     console.log("XXX");
     
-    // 2、根目录下新建loaders文件夹，新建replace.loader.js
+    // 2、根目录下新建loaders文件夹，新建replace-loader.js
     module.exports = function(source) {
         // source为源代码，即index.js里的内容，是个字符串
         // 将字符串里的 'this' 改为 'that'
@@ -40,7 +40,7 @@
                 {
                     test: /\.js$/,
                     exclude: /node_modules/,
-                    use: path.resolve(__dirname, './loaders/replace.loader.js'), // 使用我们的自定义loader
+                    use: path.resolve(__dirname, './loaders/replace-loader.js'), // 使用我们的自定义loader
                 },
             ]
         },
@@ -77,7 +77,7 @@
                 {
                     test: /\.js$/,
                     exclude: /node_modules/,
-                    use: 'replace.loader', // 使用我们的自定义loader
+                    use: 'replace-loader', // 使用我们的自定义loader
                 },
             ]
         },
@@ -114,7 +114,7 @@
                     exclude: /node_modules/,
                     use: [
                         {
-                            loader: 'replace.loader',
+                            loader: 'replace-loader',
                             options: {
                                 name: 'karloy', // 传递参数name
                             }
@@ -128,7 +128,7 @@
         ]
     }
     
-    // 2、修改loaders/replace.loader.js
+    // 2、修改loaders/replace-loader.js
     module.exports = function(source) {
         // this.query接收options对象
         // 将JS中的 'XXX' 改为options的name配置
@@ -148,7 +148,7 @@
     // 1、安装依赖
     npm i loader-utils --save-dev
     
-    // 2、修改loaders/replace.loader.js
+    // 2、修改loaders/replace-loader.js
     const loaderUtils = require('loader-utils')
     
     module.exports = function(source) {
@@ -199,7 +199,7 @@
 官方提供**this.async**来实现loader中的异步操作，async是一个封装后的this.callback
 
 
-    // 1、新增loaders/translate.loader.js
+    // 1、新增loaders/translate-loader.js
     module.exports = function(source) {
         const callback = this.async(); // 使用async实现异步操作
         setTimeout(() => {
@@ -232,9 +232,9 @@
                     test: /\.js$/,
                     exclude: /node_modules/,
                     use: [
-                        'translate.loader', // 配置多个loader，加载顺序是从下往上，从右往左，这里是: replace => translate
+                        'translate-loader', // 配置多个loader，加载顺序是从下往上，从右往左，这里是: replace => translate
                         {
-                            loader: 'replace.loader',
+                            loader: 'replace-loader',
                             options: {
                                 name: 'karloy', // 传递参数name
                             }
