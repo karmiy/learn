@@ -145,6 +145,7 @@ TypeScript是JavaScript的超集，可以编译成JavaScript，主要给JavaScri
             "target": "es5", // 打包成es5
             "allowJs": true, // 允许在ts中也能引入js的文件
             "lib": ["es2017", "es7", "es6", "dom"], // 编译过程要引入的库
+            "esModuleInterop": true // 允许import x from 'XX'(正常引入需要import * as x from 'XX')
         }
     }
     
@@ -210,6 +211,7 @@ typescript类型校验的优势没有体现
             "declaration": true, // 生成index.d.ts
             "declarationDir": "./dist"
             "lib": ["es2017", "es7", "es6", "dom"], // 编译过程要引入的库
+            "esModuleInterop": true // 允许import x from 'XX'(正常引入需要import * as x from 'XX')
         }
     }
     
