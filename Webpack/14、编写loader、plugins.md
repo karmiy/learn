@@ -499,6 +499,12 @@ compilation钩子中，compilation.assets获取不到打包入口文件index.js
         }
     }
     
+### 其他hooks
+
+![Alt text](./imgs/14-08-01.png)
+
+[官方文档 - compiler 钩子](https://webpack.docschina.org/api/compiler-hooks/)
+    
 ### 实现plugin去除js中的console打印
 
     // src/index.js
