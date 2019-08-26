@@ -19,7 +19,7 @@
     }
     
     // 注
-    除了undefined、null、NaN、false、0、''以外，对if判断来说都是false
+    undefined、null、NaN、false、0、''在if判断中为false，除此之外，对if判断而言都是true
     
 ## 三目运算
 
