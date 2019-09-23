@@ -30,7 +30,7 @@ export function formatDate(date, fmt) {
  * @returns {Date}
  */
 export function getRelativeDate(date = new Date(), dValue, type, after) {
-    let rDate = data, time = '', cloneDate = null;
+    let rDate = date, time = '', cloneDate = null;
     switch (type) {
         case 'second':
             time = date.valueOf() + (after ? (dValue * 1000) : -(dValue * 1000));
