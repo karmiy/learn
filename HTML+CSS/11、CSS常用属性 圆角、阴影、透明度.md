@@ -51,6 +51,74 @@
 
 ![Alt text](./imgs/11-05.png)
 
+### 多层shadow实现边框与元素并排
+
+当我们需要在水平方向排列具有边框的元素时，我们可能会这么做:
+
+    <div class="wrap">
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+    </div>
+    
+    .item {
+        float: left;
+        width: 100px;
+        height: 100px;
+         border: 1px solid red;
+    }
+    
+    .item:not(:first-child) {
+        margin-left: -1px; // 通过设置左外边距为-1实现相邻元素边框合并
+    }
+    
+![Alt text](./imgs/11-09.png)
+
+其实我们可以通过**多层**的box-shadow来实现这个需求
+
+**这里先看单个元素:**
+
+![Alt text](./imgs/11-10.png)
+
+左、上的边内联，右、下的边扩散
+
+**项目中常用的最终效果:**
+
+    <div class="wrap">
+        <div class="container">
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+        </div>
+    </div>
+    
+    .wrap {
+        width: 400px;
+        border: 1px solid red;
+    }
+    
+    .container {
+        margin: -1px 0 0 -1px;
+    }
+    
+    .container:after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+    
+    .item {
+        float: left;
+        width: 25%;
+        height: 100px;
+        box-shadow: 1px 0 0 0 red, 0 1px 0 0 red, 1px 1px 0 0 red, 1px 0 0 0 red inset, 0 1px 0 0 red inset;
+    }
+    
+![Alt text](./imgs/11-11.png)
+    
 ## 透明度opacity、rgba、filter
 
 ### opacity
