@@ -227,6 +227,24 @@
     }
 ![Alt text](./imgs/21-28.png) 
 
+**利用flex-shrink实现tabs选项卡排版:**
+
+    #main {
+        display: flex;
+        width: 200px;
+        margin: 20px 0 0 20px;
+        border: 1px solid #000;
+    }
+    .child{
+        box-sizing: border-box;
+        width: 100%;
+        height: 60px;
+        border: 1px solid red;
+        flex-shrink: 0; // 让每个子元素都不伸缩
+    }
+
+![Alt text](./imgs/21-28-01.png) 
+
 ### flex-basis设置元素初始长度的像素
 
     // 定义
