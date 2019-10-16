@@ -101,6 +101,40 @@
         return offset;
     }
     
+    // 特殊情况， translate造成的偏移对offsetLeft/Top无效
+    div {
+        position: relative;
+        width: 200px;
+        height: 100px;
+        border: 1px solid #1394ff;
+    }
+    p {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        background-color: #8AC763;
+        margin-left: 50px; // 元素margin-left偏移
+    }
+    
+    <div>
+        <p></p>
+    </div>
+    
+    const p = document.querySelector('p')
+    console.log(p.offsetLeft); // 输出50
+    
+    修改样式如下:
+    p {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        background-color: #8AC763;
+        transform: translate(50px); // 改为translate偏移
+    }
+    
+    console.log(p.offsetLeft); // 输出0
+    
+    
 ## getBoundingClientRect
 
     // 获取元素全方位宽高、偏移信息，返回一个对象
