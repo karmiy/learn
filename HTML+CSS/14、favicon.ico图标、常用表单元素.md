@@ -13,6 +13,10 @@
     // type可以不写
     <link ref='shortcut icon' href='icon/favicon.ico' type='images/x-icon' />
 
+**推荐Logo设计地址:**
+
+http://www.uugai.com/
+
 ## form表单
 
     <form action='XXX.php' method='post'>
