@@ -66,6 +66,7 @@
     // 特殊
     console.log(Number(false)); // 输出0
     console.log(Number(true)); // 输出1
+    console.log(Number('')); // 输出0
     console.log(Number('10zz')); // 输出NaN
     console.log(Number(undefined)); // 输出NaN
     console.log(Number(null)); // 输出0
