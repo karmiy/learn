@@ -49,7 +49,7 @@ export function getRelativeDate(date = new Date(), dValue, type, after) {
             rDate = new Date(time);
             break;
         case 'month':
-            cloneDate = new Date(data.valueOf());
+            cloneDate = new Date(date.valueOf());
             cloneDate.setMonth(cloneDate.getMonth() + (after ? dValue : -dValue));
             rDate = cloneDate;
             break;
