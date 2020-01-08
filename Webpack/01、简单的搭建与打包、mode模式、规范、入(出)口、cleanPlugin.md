@@ -1,6 +1,6 @@
 ## 学习来源
 
-整理至掘金文章 [24 个实例入门并掌握「Webpack4」](https://juejin.im/post/5cae0f616fb9a068a93f0613)
+整理自掘金文章 [24 个实例入门并掌握「Webpack4」](https://juejin.im/post/5cae0f616fb9a068a93f0613)
 
 ## webpack基本搭建与打包
 
