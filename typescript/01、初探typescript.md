@@ -8,7 +8,7 @@
 
 JavaScript 与 TypeScript 的关系就如同下图:
 
-![Alt text](./imgs/01-01.png)
+![Alt text](imgs/01-01.png)
 
 TypeScript 可以使用一些尚在提案阶段的语法特性
 
@@ -28,7 +28,7 @@ TypeScript 是**静态弱类型语言**，并不是所谓的强类型，所以 T
 
 先看看在 JavaScript 项目中**最常见的十大错误**：
 
-![Alt text](./imgs/01-02.png)
+![Alt text](imgs/01-02.png)
 
 这些低级错误占用了大量 debug 和 google 的时间
 
@@ -40,7 +40,7 @@ TypeScript 是**静态弱类型语言**，并不是所谓的强类型，所以 T
 
 通常人员之间开发的工具库可能需要大量的文档与注释，而 TypeScript 提供的**类型提示**功能可以使我们非常舒适的调用同伴的代码
 
-![Alt text](./imgs/01-03.png)
+![Alt text](imgs/01-03.png)
 
 由于 TypeScript 的存在我们可以节省大量沟通成本、代码阅读成本等等
 
