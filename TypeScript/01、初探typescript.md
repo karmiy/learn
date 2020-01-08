@@ -1,6 +1,6 @@
 ## 学习来源
 
-学习自来掘金小册 [深入浅出TypeScript](https://juejin.im/book/5da08714518825520e6bb810)
+学习自掘金小册 [深入浅出TypeScript](https://juejin.im/book/5da08714518825520e6bb810)
 
 ## Why TypeScript ?
 
