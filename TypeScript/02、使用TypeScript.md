@@ -100,7 +100,7 @@
     
 ![Alt text](imgs/02-02.png)
 
-### 小节
+### 小结
 
 typescript 工作环境简易步骤：
 
