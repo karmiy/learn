@@ -84,4 +84,42 @@ function getStrValue(value: unknown): string {
     return String(value);
 }
 
+// never
+function err(message: string): never {
+    throw new Error(message);
+}
+
+const emptyArr: never[] = [];
+// emptyArr.push(1); // ERROR
+
+// Array
+const list: Array<Number> = [1, 2, 3];
+const group: Number[] = [4, 5, 6];
+
+// Tuple
+let options: [string, number];
+options = ['karmiy', 1]; // ok
+// options = [1]; // ERROR
+// options = ['karmiy', 1, false]; // ERROR
+// options = [1, 'karmiy']; // ERROR
+
+interface Options extends Array<string | number> {
+    0: string;
+    1: number;
+    length: 2;
+}
+
+// options.push(false); // ERROR
+options.push(2); // ok
+console.log(options); // ['karmiy', 1, 2]
+// console.log(options[2]); // ERROR: Tuple type '[string, number]' of length '2' has no element at index '2'.
+
+// object
+enum Direct {
+    Center = 1
+}
+let obj: object = [1, 2, 3];
+obj = {};
+obj = new Number(1);
+obj = Direct;
 
