@@ -123,3 +123,4 @@ obj = {};
 obj = new Number(1);
 obj = Direct;
 
+export {};

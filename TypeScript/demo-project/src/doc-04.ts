@@ -89,4 +89,70 @@ const enum Direct_8 {
 
 const c = Direct_8.Up; // 'Up'
 
+// 枚举成员类型
+enum Direct_9 {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+const d: Direct_9.Up = Direct_9.Up; 
+// const e: Direct_9.Up = Direct_9.Down; // Error
 
+// 联合枚举类型
+enum Direct_10 {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+enum Animal {
+    Dog,
+    Cat,
+}
+const f: Direct_10 = Direct_10.Up
+// const g: Direct_10 = Animal.Dog; // Error
+
+// 枚举合并
+enum Direct_11 {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+enum Direct_11 {
+    Center = 4,
+}
+
+// 为枚举添加静态方法
+enum Month {
+    January,
+    February,
+    March,
+    April,
+    May,
+    June,
+    July,
+    August,
+    September,
+    October,
+    November,
+    December,
+}
+
+namespace Month {
+    export function isSummer(month: Month) {
+        switch (month) {
+            case Month.June:
+            case Month.July:
+            case Month.August:
+                return true;
+            default:
+                return false;
+        }
+    }
+}
+
+console.log(Month.isSummer(Month.January));
+
+export {};
