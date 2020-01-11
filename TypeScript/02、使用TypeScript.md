@@ -99,16 +99,6 @@
     报错消失
     
 ![Alt text](imgs/02-02.png)
-
-### 小结 
-
-typescript 工作环境简易步骤：
-
-1. 安装 TypeScript
-
-2. npm init、tsc --init 初始化配置
-
-3. 配置tsconfig.json
     
     
     
