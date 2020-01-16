@@ -43,7 +43,7 @@ namespace doc_12 {
         method: 'create',
     };
 
-    const userReducer = (userAction: UserAction) {
+    const userReducer = (userAction: UserAction) => {
         switch(userAction.method) {
             case 'create':
                 // ...
