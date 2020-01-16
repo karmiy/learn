@@ -45,4 +45,53 @@ namespace doc_07 {
     assign(1, 2);
     // assign(1, 2, 3);
     assign(1, 2, 3, 4);
+
+    // this 参数
+    interface Card {
+        suit: string;
+        card: number;
+    }
+    interface Deck {
+        suits: string[];
+        cards: number[];
+        createCardPicker(this: Deck): () => Card;
+    }
+    const deck:Deck = {
+        suits: ["hearts", "spades", "clubs", "diamonds"],
+        cards: Array(52),
+        createCardPicker: function(this: Deck) {
+            return () => {
+                let pickedCard = Math.floor(Math.random() * 52);
+                let pickedSuit = Math.floor(pickedCard / 13);
+    
+                return {suit: this.suits[pickedSuit], card: pickedCard % 13};
+            }
+        }
+    }
+    /* const createCardPicker = deck.createCardPicker;
+    const cardPicker = createCardPicker();
+    const pickedCard = cardPicker(); */
+
+    const cardPicker = deck.createCardPicker();
+    const pickedCard = cardPicker();
+
+    // 回调中的this
+    interface UIElement {
+        addClickListener(onClick: (this:void, e:Event) => void):void;
+    }
+
+    const uiElement:UIElement = {
+        addClickListener() {},
+    }
+
+    class Handler {
+        info:string = 'info';
+        onClick(e:Event) {
+            this.info = e.type;
+        }
+    }
+    const handler = new Handler();
+    uiElement.addClickListener(handler.onClick)
+
+
 }

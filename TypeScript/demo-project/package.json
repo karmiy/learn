@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",
-  "dependencies": {},
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
+  },
   "devDependencies": {},
   "scripts": {
-      "build": "tsc",
-      "build:w": "tsc -w"
+    "build": "tsc",
+    "build:w": "tsc -w"
   },
   "author": "",
   "license": "ISC"

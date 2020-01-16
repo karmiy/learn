@@ -1,4 +1,28 @@
 namespace doc_09 {
+    // 类型推导
+    function greet(person: string) {
+        return 'Hello, ' + person;
+    }
+    const arr = [1, 'one', true];
+    // arr.push({})
+
+    const bar = [1, '2'];
+    let [a, b] = bar;
+    a = 2;
+    a = '2';
+    // a = true;
+
+    const action = {
+        type: 'update',
+        payload: {
+            id: 10,
+        }
+    }
+
+    let myFavoriteNumber;
+    myFavoriteNumber = 'k';
+    myFavoriteNumber = 2;
+
     // 类型断言
     interface User {
         id: number;
