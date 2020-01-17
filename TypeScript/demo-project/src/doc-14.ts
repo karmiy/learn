@@ -56,4 +56,32 @@ namespace doc_14 {
     }
 
     type partialPerson = partial<Person>;
+
+    /* interface k2 {
+        name:string;
+    }
+    type k1 = number;
+
+    type u1<T> = T extends k2 ? string : boolean;
+    const oo = {
+        name: '123',
+        id: 123,
+    }
+    type u2 = u1<typeof oo>; */
+
+    // 映射类型修饰符
+    interface Car {
+        id:number;
+        name:string;
+        type?:string;
+        empty?: never;
+    }
+
+    type RequiredCar = {
+        [K in keyof Car]-?:Car[K];
+    }
+
+    type PartialCar = {
+        [K in keyof Car]+?:Car[K];
+    }
 }
