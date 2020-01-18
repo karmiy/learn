@@ -47,22 +47,62 @@ namespace doc_15 {
     }[keyof T]
 
     type PartFuncNames = FunctionPropertyNames<Part>;
-    
+
+    // PartialKeys
     interface People {
-        id: string
-        name: string
-        age: number
-        from?: string
-        speak?: string
+        id: string;
+        name: string;
+        age?: number;
+        from?: string;
+        speak?: () => void;
     }
 
-    type NullableKeys<T> = { [K in keyof T]-?: undefined extends T[K] ? K : never }[keyof T]
+    // 方式一
+    type PartialKeys<T> = {
+        [K in keyof T]-?: undefined extends T[K] ? K : never; 
+    }[keyof T]
 
-    type X = NullableKeys<People>
+    type R = PartialKeys<People>;
+    
+    // 方式二 - 解析
+    interface A {
+        id:number;
+        name?:string;
+        code?:string;
+    }
+    interface B {
+        id:number;
+        name:string;
+        code:string;
+    }
+    // 将 B 的 name 置为可选
+    interface B_1 {
+        id:number;
+        name?:string;
+        code:string;
+    }
+    // 将 B 的 id 置为可选
+    interface B_2 {
+        id?:number;
+        name:string;
+        code:string;
+    }
+    type isChild_1 = B_1 extends A ? true : false; // true
+    type isChild_2 = B_2 extends A ? true : false; // false
 
+    // 方式二
+    // 是否可选
+    type isPartial<T, U extends keyof T> = {
+        [K in Exclude<keyof T, U>]-?: T[K];
+    } & { 
+        U?: T[U];
+    } extends T ? true : false;
+    type T_1 = isPartial<People, 'name'>
+    type T_2 = isPartial<People, 'age'>
 
-    type IsOptional<T, K extends keyof T> = { [K1 in Exclude<keyof T, K>]: T[K1] } & { K?: T[K] } extends T ? K : never
-    type V = IsOptional<People, 'age'>
-    type OptionalKeys<T> = { [K in keyof T]: IsOptional<T, K> };
-    type Y = OptionalKeys<People>
+    type PartialKeys_2<T> = {
+        [K in keyof T]-?: isPartial<T,K> extends true ? K : never;
+    }[keyof T];
+
+    type RR = PartialKeys_2<People>;
 }
