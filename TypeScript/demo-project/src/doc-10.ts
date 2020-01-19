@@ -43,18 +43,66 @@ namespace doc_10 {
     Log(user);
 
     // 函数类型兼容性
+    // 参数类型兼容性
+    declare let b1:{name: string};
+    declare let b2:void;
+    // b2 = b1;
+    // b1 = b2;
+
+    let v1 = (a:number, b:string) => 10;
+    let v2 = (a:number | string, b:string) => 100;
+    v1 = v2; // ok
+    // v2 = v1; 
+    
+
     // 可选参数
     let u = (a:number, b?:string) => 1;
     let v = (a:number) => 0;
     v = u;
     u = v;
 
-    // 参数类型一致
-    let o = (a:number) => ({id: 1});
+    // 参数类型一致，返回值类型兼容
+    let o = (a:number) => {({id: 1})};
     let p = (a:number) => ({id: 1, name: 'karmiy'});
 
     o = p;
     // p = o;
+
+    let c1 = (a:number) => {};
+    let c2 = (a:number) => 1;
+    c1 = c2;
+    // c2 = c1;
+
+    declare let y1:(a:number, b:string) => void;
+    declare let y2:(a:number, b:string) => never;
+    y1 = y2;
+    // y2 = y1;
+
+    let v11 = {id: 123};
+    let v22 = {id: 123,name: 'k'};
+    v11 = v22;
+
+
+    // 参数与返回值混合类型兼容性
+    let t1 = (a:number, b:string) => 1;
+    let t2 = (a:number) => '1';
+    // t1 = t2;
+    // t2 = t1;
+
+    let u1 = (a:number, b:string) => 1;
+    let u2 = (a:string) => 100;
+    // u1 = u2;
+    // u2 = u1;
+
+    let r1 = (a:number, b:string) => 1;
+    let r2 = (a:number) => 100;
+    r1 = r2;
+    // r2 = r1;
+
+    let z1 = (a:number, b:string) => 1;
+    let z2 = (a:string) => '1';
+    // z1 = z2;
+    // z2 = z1;
 
     // 分析 - 参数数量问题
     function loop(arr:number[], callback:(item:number, index:number, arr:number[]) => void) {
