@@ -144,5 +144,26 @@ namespace doc_06 {
             return 'moving';
         }
     }
+    // 如何修饰类
+    class Person {
+        id:number;
+        name:string;
+        constructor(id:number, name:string) {
+            this.id = id;
+            this.name = name;
+        }
+        move() {
+            console.log('move');
+        }
+    }
+    interface IPerson {
+        id:number;
+        name:string;
+        move():void;
+    }
+    interface IPersonConstructor {
+        new (id:number, name:string):IPerson;
+    }
+    const p:IPersonConstructor = Person;
 }
 // export {};

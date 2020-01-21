@@ -220,6 +220,17 @@ namespace doc_10 {
     // up_1 = up_2;
     // up_2 = up_1;
 
+    // 数组的兼容性
+    let arr_1:Array<number | boolean> = [1, true];
+    let arr_2:Array<number> = [1, 2, 3];
+    arr_1 = arr_2;
+    // arr_2 = arr_1;
+
+    let arr_3:Array<number | string> = [1, 2, 3];
+    let arr_4:[number, string] = [1, '2'];
+    arr_3 = arr_4;
+    // arr_4 = arr_3;
+
     // 类的类型兼容性
     // 1
     class Group {

@@ -143,3 +143,26 @@ interface Interface {
 但是指到 Alias 显示的是对象字面量 { num: number }，并没有为对象字面量创建新名称 Alias
 
 ```````````````
+
+## typeof
+
+通常我们都是先定义类型，再创建示例：
+
+    interface People {
+        code:string;
+        name:string;
+    }
+    const p: People = {
+        code: '351549',
+        name: 'karmiy',
+    }
+
+而 TypeScript 中的关键字 typeof 可以让我们从实例**反向推导类型**
+
+    const p = {
+        code: '351549',
+        name: 'karmiy',
+    }
+    type People = typeof p;
+
+![Alt text](imgs/11-02.png)

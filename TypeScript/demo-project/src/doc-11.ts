@@ -89,4 +89,11 @@ namespace doc_11 {
     interface Interface {
         num: number;
     }
+
+    // typeof
+    const p = {
+        code: '351549',
+        name: 'karmiy',
+    }
+    type People = typeof p;
 }
