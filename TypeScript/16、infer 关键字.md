@@ -80,5 +80,5 @@ infer 非常强大，由于它的存在我们可以实现许多工具类型
 
 - 第一个条件类型 U extends any 是 **分布式有条件类型**，当我们将 {id:number} | {name:string} 传入时，会被解析为：({id:number} extends any ? (k:{id:number}) => void : never) | ({name:string} extends any ? (k:{name:string}) => void : never)
 
-- 第二个条件类型 (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) 不是分布式有条件类型，所以会解析为：((k:{id:number}) => void | (k:{name:string})) => void extends ((k: infer I) => void)
+- 第二个条件类型 (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) 不是分布式有条件类型，所以会解析为：((k:{id:number}) => void | (k:{name:string}) => void) extends ((k: infer I) => void)
 
