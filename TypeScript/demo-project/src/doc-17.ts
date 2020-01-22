@@ -81,4 +81,10 @@ namespace doc_17 {
         readonly name: string;
         code: string;
     }>;
+
+    // Record
+    type Record<K extends keyof any, T> = {
+        [P in K]: T;
+    };
+    type Rd = Record<'id' | 'name' | 'code', string>; 
 }
