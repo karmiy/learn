@@ -6,7 +6,9 @@
   "dependencies": {
     "reflect-metadata": "^0.1.13"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^13.5.0"
+  },
   "scripts": {
     "build": "tsc",
     "build:w": "tsc -w"

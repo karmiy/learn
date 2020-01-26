@@ -17,10 +17,15 @@
         "lib": ["es6", "dom", "ESNext"],                      // 指定要包含在编译中的库文件
         "typeRoots": ["node_modules/@types"],
         "outDir": "./dist",
-        "rootDir": "./src"
+        "rootDir": "./src",
+        "baseUrl": "./",
+        "paths": {
+            "*": ["types/*"]
+        }
     },
     "include": [                                  // 需要编译的ts文件一个*表示文件匹配**表示忽略文件的深度问题
-        "./src/**/*.ts"
+        "./src/**/*.ts",
+        "./types/**/*.ts"
     ],
     "exclude": [
         "node_modules",
