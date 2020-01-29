@@ -7,7 +7,7 @@
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
-    "@types/node": "^13.5.0"
+    "typescript": "^3.7.5"
   },
   "scripts": {
     "build": "tsc",

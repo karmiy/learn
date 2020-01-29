@@ -17,3 +17,5 @@ declare namespace jQuery {
         function extend(obj: any): void;
     }
 }
+
+// export default jQuery;
