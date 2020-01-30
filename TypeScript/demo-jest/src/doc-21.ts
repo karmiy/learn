@@ -6,13 +6,11 @@ function foo(a: number, b: string): string {
 }
 // foo.apply(undefined, [1]);
 
-/* async function A () {
+async function A () {
     await new Promise(r => setTimeout(r, 1000));
     await new Promise(r => setTimeout(r, 1000));
     return new Promise(r => setTimeout(r, 1000));
 }
 export {
     A,
-}; */
-
-export {};
+};
