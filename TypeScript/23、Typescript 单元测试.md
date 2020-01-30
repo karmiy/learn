@@ -89,6 +89,22 @@ Jest 正是基于 Jasmine 开发而来，它比 Jasmine 更大而全，更开箱
 
 第三个问题问我们是否在测试结束后帮我们自动清除一些模拟的实例等等，我选择了“是”，避免这些东西影响我们的下次测试。
 
+
+package.json 中配置 script:
+
+    "scripts": {
+        ...
+        "test": "jest",
+        "test:c": "jest --coverage",
+        "test:w": "jest --watchAll --coverage"
+    },
+
+- jest：运行测试
+
+- coverage：运行测试，并输出覆盖率报告，会生成 coverage 文件夹
+
+- watchAll：以监控模式监控所有符合要求的文件
+
 #### 配置项
 
 这时根目录生成了 jest.config.js 的文件，里面有非常多的配置项

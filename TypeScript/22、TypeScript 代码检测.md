@@ -255,3 +255,55 @@ ESLint 具体规则的配置，我们通常情况下是使用社区比较刘的�
 有一些配置集比较松散比如：Standard，有一些配置集非常严苛比如：Airbnb，这个时候我们就需要进行二次拓展或者关闭一些不必要的选项，就需要用 rules 选项进行覆盖或者修改
 
 更多的 rules 参考 [官方rules](https://eslint.bootcss.com/docs/rules/)
+
+### 环境搭建
+
+在 react 环境下使用 eslint
+
+    npm i -D 
+    eslint 
+    eslint-plugin-react 
+    @typescript-eslint/parser 
+    @typescript-eslint/eslint-plugin
+
+- eslint：代码检查工具
+
+- eslint-plugin-react：使 eslint 支持 react
+
+- @typescript-eslint/parser：使 eslint 可以解析 TypeScript
+
+- @typescript-eslint/eslint-plugin：使 eslint 支持 TypeScript 相关规则
+
+配置 .eslintrc.js：
+
+    module.exports = {
+        parser: '@typescript-eslint/parser',
+        settings: {
+            react: {
+                version: 'detect'
+            }
+        },
+        parserOptions: {
+            project: './tsconfig.json',
+        },
+        plugins: ['@typescript-eslint'],
+        extends: [
+            'plugin:react/recommended',
+            'plugin:@typescript-eslint/recommended',
+        ],
+        rules: {
+            "@typescript-eslint/explicit-function-return-type": "off",
+        }
+    }
+
+配置 package.json 的 script：
+
+     "scripts": {
+        ...
+        "lint": "eslint \"src/**\"",
+        "lint:f": "eslint \"src/**\" --fix "
+    },
+
+- npm run lint：检测 src/ 项目的代码
+
+- npm run lint:f：检测 src/ 项目的代码并自动修复
