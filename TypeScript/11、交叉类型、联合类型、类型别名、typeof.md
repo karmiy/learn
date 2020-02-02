@@ -130,6 +130,10 @@
 
 - interface 用于定义对象类型，type 出来对象外还可以定义交叉、联合、原始类型等，适用范围更广泛
 
+- interface 只能表达 object / class / function 类型，type 还可以支持字符串、数组等
+
+- interface 同名自动合并，type 只能 & 合并
+
 - interface 可以 extends、implements，而 type 不行
 
 - interface 会创建新名字，可以在任何地方使用，而 type 并不创建新名字：
