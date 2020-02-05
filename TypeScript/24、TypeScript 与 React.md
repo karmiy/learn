@@ -281,6 +281,8 @@ webpack 的 rules 配置：
         }
     }
 
+### 事件处理
+
 可以看到，对于事件 e 的类型定义，需要用到 **React.ChangeEvent\<T>**，同样，对于表单事件需要用到 **React.FormEvent\<T>**：
 
     export default class Input extends React.Component<IInputProps, IInputState> {
@@ -311,6 +313,64 @@ webpack 的 rules 配置：
 > React 在合成事件上有这么多的定义，在遇到各种事件时应该如何搜索正确的类型？技巧：在组件上输入事件对应的名称通过提示了解事件类型
 
 ![Alt text](imgs/24-04.png)
+
+下面列出一些常用 Event 对象类型：
+
+- ClipboardEvent<T = Element> 剪贴板事件对象
+
+- DragEvent<T = Element> 拖拽事件对象
+
+- ChangeEvent<T = Element>  Change 事件对象
+
+- KeyboardEvent<T = Element> 键盘事件对象
+
+- MouseEvent<T = Element> 鼠标事件对象
+
+- TouchEvent<T = Element>  触摸事件对象
+
+- WheelEvent<T = Element> 滚轮事件对象
+
+- AnimationEvent<T = Element> 动画事件对象
+
+- TransitionEvent<T = Element> 过渡事件对象
+
+当我们定义事件处理函数时有没有更方便定义其函数类型的方式呢？
+
+React 声明文件所提供了 EventHandler 类型别名，通过不同事件的 EventHandler 的类型别名来定义事件处理函数的类型：
+
+    
+    type EventHandler<E extends SyntheticEvent<any>> = { bivarianceHack(event: E): void }["bivarianceHack"];
+    type ReactEventHandler<T = Element> = EventHandler<SyntheticEvent<T>>;
+    type ClipboardEventHandler<T = Element> = EventHandler<ClipboardEvent<T>>;
+    type DragEventHandler<T = Element> = EventHandler<DragEvent<T>>;
+    type FocusEventHandler<T = Element> = EventHandler<FocusEvent<T>>;
+    type FormEventHandler<T = Element> = EventHandler<FormEvent<T>>;
+    type ChangeEventHandler<T = Element> = EventHandler<ChangeEvent<T>>;
+    type KeyboardEventHandler<T = Element> = EventHandler<KeyboardEvent<T>>;
+    type MouseEventHandler<T = Element> = EventHandler<MouseEvent<T>>;
+    type TouchEventHandler<T = Element> = EventHandler<TouchEvent<T>>;
+    type PointerEventHandler<T = Element> = EventHandler<PointerEvent<T>>;
+    type UIEventHandler<T = Element> = EventHandler<UIEvent<T>>;
+    type WheelEventHandler<T = Element> = EventHandler<WheelEvent<T>>;
+    type AnimationEventHandler<T = Element> = EventHandler<AnimationEvent<T>>;
+    type TransitionEventHandler<T = Element> = EventHandler<TransitionEvent<T>>;
+
+即 onChange 事件可以从:
+
+    private onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            value: e.target.value,
+        })
+    }
+
+改为：
+
+    private onChange:React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        this.setState({
+            value: e.target.value,
+        })
+    }
+
 
 ### 默认属性
 
@@ -456,6 +516,216 @@ React 中有时会运用很多默认属性，我们可以直接为 defaultProps 
             )
         }
     }
+
+### Render Props
+
+实现组件复用的其中一种方式是将组件的 children 作为函数，或利用 render 属性，让复用组件的内部去调用这个函数，即 render props 的用法
+
+下面实现一个 render props 的 Togglable 组件：
+
+    import * as React from 'react';
+
+    const isFunc = (f: any): f is Function => Object.prototype.toString.call(f) === '[object Function]';
+
+    const initialState = {
+        show: false,
+    }
+
+    type State = typeof initialState;
+
+    type Props = Partial<{
+        children: RenderCb;
+        render: RenderCb;
+    }>
+
+    interface ToggleParams {
+        show: State['show'];
+        toggle: Togglable['toggle'];
+    }
+
+    type RenderCb = (args: ToggleParams) => JSX.Element;
+
+    const updateShowState = (prevState: State) => ({ show: !prevState.show });
+
+    export default class Togglable extends React.Component<Props, State> {
+        state: State = initialState;
+        
+        render() {
+            const { render, children } = this.props;
+            const renderProps = {
+                show: this.state.show,
+                toggle: this.toggle,
+            };
+
+            if(render) {
+                return render(renderProps);
+            }
+
+            return isFunc(children) ? children(renderProps) : null;
+        }
+
+        private toggle = (event: React.MouseEvent<HTMLElement>) => this.setState(updateShowState);
+    }
+
+上例中 type RenderCb = (args: ToggleParams) => JSX.Element 返回了 JSX.Element
+
+JSX.Element 与 React.ReactNode 的差别在于：React.ReactNode 可以是 React 元素，字符串，布尔值等等，而 JSX.Element 只能是 React 元素如 \<div>...\</div>，也可以是 React.Fragment
+
+使用时，提示功能非常友好：
+
+![Alt text](imgs/24-05.png)
+
+### 组件注入与泛型组件
+
+在使用 react-router 时有着组件注入的模式：
+
+    <Route path="/foo" component={MyView} />
+
+
+组件注入即将组件传入：
+
+    type Props = Partial<{
+        children: RenderCb;
+        render: RenderCb;
+        component: React.ComponentType<ToggleParams>;
+    }>;
+
+    // 用法
+    const { component: InjectComp } = this.props;
+    const renderProps = {
+        show: this.state.show,
+        toggle: this.toggle,
+    };
+    return <InjectComp {...renderProps} />;
+
+除此之外，我们可能还会传递一个 props 用于 component 中：
+
+    const { component: InjectComp, props } = this.props;
+    const renderProps = {
+        show: this.state.show,
+        toggle: this.toggle,
+    };
+    return <InjectComp {...renderProps} {...props} />;
+
+这时我们可能需要改写 type Props 为：
+
+    type Props<T extends object = {}> = Partial<{
+        children: RenderCb;
+        render: RenderCb;
+        component: React.ComponentType<ToggleParams & T>;
+        props: T
+    }>;
+
+我们期望 props 与组件 component 是对应的，即如果 component 这个组件是 ToggleParams & { name?: string }，那传入的 props 也应该只能是 { name?: string }，而不能传别的属性
+
+这就需要用到**泛型组件**
+
+    export default class Togglable<T extends object = {}> extends React.Component<Props<T>, State> {
+        ...
+    }
+
+但是我们可以在 JSX 上使用泛型类型吗？不幸的是，并不行
+
+但我们可以在泛型组件上引入一个静态方法，用于注入组件的类型：
+
+    type Constructor<T = {}> = new (...args: any[]) => T;
+
+    export default class Togglable<T extends object = {}> extends React.Component<Props<T>, State> {
+        static ofType<T extends object>() {
+            return Togglable as Constructor<Togglable<T>>;
+        }
+    }
+
+使用方式：
+
+    type ITitleProps = {
+        name?: string;
+    } & ToggleParams;
+
+    const Title: React.SFC<ITitleProps> = (props) => {
+        return (
+            <div>
+                {props.name}
+            </div>
+        )
+    }
+
+    const TogglableWithTitle = Togglable.ofType<Omit<ITitleProps, keyof ToggleParams>>();
+
+    function App() {
+        return (
+            <div>
+                <TogglableWithTitle 
+                    component={Title}
+                    props={{name: 'k'}}
+                />
+            </div>
+        )
+    }
+
+完整代码：
+
+    import * as React from 'react';
+
+    const isFunc = (f: any): f is Function => Object.prototype.toString.call(f) === '[object Function]';
+
+    const initialState = {
+        show: false,
+    }
+
+    type State = typeof initialState;
+
+    type Props<T extends object = {}> = Partial<{
+        children: RenderCb;
+        render: RenderCb;
+        component: React.ComponentType<(ToggleParams & Partial<T>) | ToggleParams>;
+        props: Partial<T>;
+    }>;
+
+
+    export type ToggleParams = {
+        show: State['show'];
+        toggle: Togglable['toggle'];
+    };
+
+    type RenderCb = (args: ToggleParams) => JSX.Element;
+
+    type Constructor<T = {}> = new (...args: any[]) => T;
+
+    const updateShowState = (prevState: State) => ({ show: !prevState.show });
+
+    export default class Togglable<T extends object = {}> extends React.Component<Props<T>, State> {
+        state: State = initialState;
+        static ofType<T extends object>() {
+            return Togglable as Constructor<Togglable<T>>;
+        }
+        render() {
+            const { render, children, component: InjectComp, props } = this.props;
+            const renderProps = {
+                show: this.state.show,
+                toggle: this.toggle,
+            };
+
+            if(InjectComp) {
+                return props ?
+                    <InjectComp {...renderProps} {...props} />
+                    :
+                    <InjectComp {...renderProps} />;
+            }
+
+            if(render) {
+                return render(renderProps);
+            }
+
+            return isFunc(children) ? children(renderProps) : null;
+        }
+
+        private toggle = (event: React.MouseEvent<HTMLElement>) => this.setState(updateShowState);
+    }
+
+![Alt text](imgs/24-06.png)
+
+可以看到，注入组件后，传 props 时也会后非常友好的提示
 
 ### 高阶组件
 
