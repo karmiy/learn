@@ -3,8 +3,16 @@
         <h1>{{ msg }}</h1>
         <p>{{ count }}</p>
         <p>{{ total }}</p>
-        <p>PropC: {{ PropC }}</p>
+        <p>PropC: {{ propC }}</p>
+        <input type="checkbox" :checked="checked" @change="$emit('change', $event.target.checked)">
         <van-button type="default" @click="add">+</van-button>
+        <p>Vuex：</p>
+        <p>todoList: {{todos}}</p>
+        <p>todoCount: {{todoCount}}</p>
+        <van-button type="primary" @click="createTodoHandler">add todo</van-button>
+        <p>Foods: {{foods}}</p>
+        <p>FoodCount: {{foodCount}}</p>
+        <van-button type="primary" @click="addFoodHandler">add food</van-button>
         <p>
             For a guide and recipes on how to configure / customize this project,
             <br />check out the
@@ -100,7 +108,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch, Emit, Model } from "vue-property-decorator";
+import { State, Mutation, Getter, Action } from 'vuex-class';
+import { ITodo } from '../store/state';
+import { IFood } from '../store/modules/cart';
 
 interface Person {
     id: number;
@@ -138,9 +149,9 @@ export default class HelloWorld extends Vue {
         type: Array,
         default: () => ["a", "b"],
         required: true,
-        validator: value => ["a", "b"].indexOf(value) !== -1
+        validator: value => value.indexOf('a') !== -1
     })
-    PropC!: Array<string>;
+    propC!: Array<string>;
 
     // Watch
     @Watch("child")
@@ -151,7 +162,64 @@ export default class HelloWorld extends Vue {
 
     @Watch("person")
     onPersonChange2(val: Person, oldVal: Person) {}
+
+    // Emit
+    mounted() {
+        this.$on('emit-todo', function(n: string) {
+            console.log(n);
+        });
+        this.f('v');
+    }
+    @Emit('emit-todo')
+    f(n: string) {
+    }
+
+    // Model
+    @Model('change', { type: Boolean })
+    checked!: boolean;
+
+    // Vuex
+    @State(state => state.todoList) private todos!: ITodo[];
+    @Mutation('createTodo') private create!: (todo: ITodo) => void;
+    @Action('doubleCreate') private doubleCreate!: (todo: ITodo) => void;
+
+    private createTodoHandler() {
+        /* this.create({
+            id: Date.now(),
+            name: 'new task',
+            isDone: false,
+        }); */
+        
+        this.doubleCreate({
+            id: Date.now(),
+            name: 'new task',
+            isDone: false,
+        });
+    }
+
+    @Getter private todoCount!: number;
+
+    @State(state => state.cart.foodList) private foods!: IFood[];
+    // @Mutation('addFood') private addF!: (food: IFood) => void;
+    @Mutation('cart/addFood') private addF!: (food: IFood) => void; // namespaced
+    @Action('doubleAdd') private doubleA!: (food: IFood) => void;
+    // @Action('cart/doubleAdd') private doubleA!: (food: IFood) => void; // namespaced
+    // @Getter('foodCount') private foodCount!: number;
+    @Getter('cart/foodCount') private foodCount!: number; // namespaced
+    private addFoodHandler() {
+        /* this.addF({
+            id: Date.now(),
+            name: 'banana',
+            price: 10,
+        }) */
+        this.doubleA({
+            id: Date.now(),
+            name: 'banana',
+            price: 10,
+        })
+    }
 }
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

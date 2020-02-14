@@ -254,7 +254,7 @@ Component 装饰器注明了此类为一个 Vue 组件，即使没有设置选�
                 type: Array,
                 default: () => ['a','b'], // 数组与对象需要以函数返回
                 required: true,
-                validator: (value) => ['a', 'b'].indexOf(value) !== -1
+                validator: value => value.indexOf('a') !== -1,
             }   
         }
     }
@@ -274,9 +274,9 @@ Component 装饰器注明了此类为一个 Vue 组件，即使没有设置选�
             type: Array,
             default: () => ['a', 'b'],
             required: true,
-            validator: value => ['a', 'b'].indexOf(value) !== -1,
+            validator: value => value.indexOf('a') !== -1,
         })
-        PropC!: Array<string>;
+        propC!: Array<string>;
     }
 
 #### @Watch
@@ -316,7 +316,7 @@ Vue 中的监听器
     }
 
     // TypeScript 中
-    import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+    import { Component, Watch, Vue } from 'vue-property-decorator';
 
     interface Person {
         id: number;
@@ -336,3 +336,651 @@ Vue 中的监听器
         onPersonChange2(val: Person, oldVal: Person) {};
     }
 
+#### @Emit
+
+Vue 中事件的监听与触发，提供了 $on 与 $emit
+
+在 vue-property-decorator 需要使用 @Emit 装饰器
+
+示例：
+
+    // JavaScript 中
+    export default {
+        mounted(){
+            this.$on('emit-todo', function(n) {
+                console.log(n);
+            })
+            this.emitTodo('world');
+        },
+        methods: {
+            emitTodo(n){
+                console.log('hello');
+                this.$emit('emit-todo', n);
+            }
+        }
+    }
+
+    // TypeScript 中
+    import { Component, Emit, Vue } from "vue-property-decorator";
+
+    @Component
+    export default class HelloWorld extends Vue {
+        mounted() {
+            this.$on('emit-todo', function(n: string) {
+                console.log(n);
+            });
+            this.emitTodo('v');
+        }
+        @Emit()
+        emitTodo(n: string) {}
+    }
+
+当调用被 @Emit 修饰的函数时，将会触发 emit 事件，被触发事件名为函数名（驼峰会转横杠写法），如上 调用 emitTodo，就会 this.$emit 触发 'emit-todo' 的事件
+
+还有一种是在 @Emit 中设置事件名，如上可以改为：
+
+    mounted() {
+        this.$on('emit-todo', function(n: string) {
+            console.log(n);
+        });
+        this.todo('v');
+    }
+    @Emit('emit-todo')
+    todo(n: string) {}
+
+小节，两种 @Emit 用法：
+
+- @Emit() 不传参数,那么它触发的事件名就是它所修饰的函数名
+
+- @Emit(name: string) 里面传递一个字符串,该字符串为要触发的事件名
+
+#### @Model
+
+Vue 提供了 model: {prop?: string, event?: string} 定制 prop 与 event
+
+默认情况下，使用 v-model 时，会将 value 作为 prop，input 事件作为 event
+
+model: {prop?: string, event?: string} 一般用于其他如单选框来达到不同的效果
+
+示例：
+
+    // src/HelloWorld.vue
+    <template>
+        <input type="checkbox" :checked="checked" @change="$emit('change', $event.target.checked)">
+    </template>
+
+    <script>
+        export default {
+            name: 'HelloWorld',
+            model: {
+                prop: 'checked',
+                event: 'change',
+            },
+            props: {
+                checked: {
+                    type: Boolean,
+                    default: false,
+                }
+            },
+        }
+    </script>
+
+在模板中使用：
+
+    // src/App.vue
+    <template>
+        <hello-world v-model="selected" />
+        Selected Status: {{ selected }}
+    </template>
+
+    <script>
+        export default {
+            data() {
+                return {
+                    selected: false,
+                }
+            }
+        }
+    </script>
+
+此模板相当于：
+
+    <hello-world :checked="selected" @change="v => selected = v" />
+
+在 TypeScript 版的 vue-property-decorator 上使用等同于：
+
+    
+    <template>
+        <input type="checkbox" :checked="checked" @change="$emit('change', $event.target.checked)">
+    </template>
+
+    <script lang="ts">
+        import { Component, Model, Vue } from "vue-property-decorator";
+
+        @Component
+        export default class HelloWorld extends Vue {
+            @Model('change', { type: Boolean })
+            checked!: boolean;
+        }
+    </script>
+
+@Model() 接收两个参数, 第一个是 event 值, 第二个是prop 的类型说明
+
+### Vuex
+
+TypeScript 下的 Vuex 往往要与 vuex-class 配合，它提供了多个装饰器
+
+    npm install vuex --save
+    npm i vuex-class -S
+
+基本使用：
+
+    // src/store/index.ts
+    import Vue from 'vue';
+    import Vuex from 'vuex';
+
+    Vue.use(Vuex);
+
+    export default new Vuex.Store({
+        state: {
+            count: 100,
+        },
+        mutations: {
+        },
+        actions: {
+        },
+        modules: {
+        },
+    });
+
+    // src/main.ts
+    import store from './store'
+
+    new Vue({
+        store,
+        ...
+    }).$mount('#app')
+
+
+    // src/App.vue
+    <template>
+        <div>
+            {{$store.state.count}}
+        </div>
+    </template>
+
+#### State
+
+    // src/store/state.ts
+    export interface ITodo {
+        id: number;
+        name: string;
+        isDone: boolean;
+    }
+
+    export interface State {
+        todoList: Array<ITodo>;
+    }
+
+    export const state: State = {
+        todoList: [],
+    }
+
+    // src/HelloWorld.vue
+    <template>
+        <div>
+            <p>todoList: {{todoList}}</p>
+        </div>
+    </template>
+    <script lang="ts">
+        import { Component, Vue } from "vue-property-decorator";
+        import { State } from 'vuex-class';
+        import { ITodo } from '../store/state';
+
+        @Component
+        export default class HelloWorld extends Vue {
+            /** 可以有如下几种写法 **/
+            @State private todoList!: ITodo[];
+            // @State('todoList') private todos!: ITodo[];
+            // @State(state => state.todoList) private todos!: ITodo[];
+        }
+    </script>
+
+#### Mutations
+
+    // src/store/mutations.ts
+    import { MutationTree } from 'vuex';
+    import { State, ITodo } from './state';
+
+    export const mutations: MutationTree<State> = {
+        createTodo(state, todo: ITodo) {
+            state.todoList.push(todo);
+        }
+    }
+
+使用：
+
+    // src/HelloWorld.vue
+    <template>
+        <div>
+            <p>todoList: {{todoList}}</p>
+            <van-button type="primary" @click="createTodoHandler">add todo</van-button>
+        </div>
+    </template>
+    <script lang="ts">
+        import { Component, Vue } from "vue-property-decorator";
+        import { State, Mutation } from 'vuex-class';
+        import { ITodo } from '../store/state';
+
+        @Component
+        export default class HelloWorld extends Vue {
+            @State private todoList!: ITodo[];
+
+            /** 可以有如下几种写法，getters 与 actions 相似 **/
+            @Mutation private createTodo!: (todo: ITodo) => void;
+            // @Mutation('createTodo') private create!: (todo: ITodo) => void;
+
+            private createTodoHandler() {
+                this.createTodo({
+                    id: Date.now(),
+                    name: 'new task',
+                    isDone: false,
+                });
+            }
+        }
+    </script>
+
+#### Getters
+
+getter 的泛型还需要传递一个 rootState，这是在后面使用到 modules 时需要用到的 state，即根状态
+
+在没有使用 modules 时，即现在使用的一直是根 state:
+
+    // src/store/index.ts
+    import { State } from './state';
+    export type RootState = State;
+
+    // src/store/getters.ts
+    import { GetterTree } from 'vuex';
+    import { State } from './state';
+    import { RootState } from '.';
+
+    export const getters: GetterTree<State, RootState> = {
+        todoCount(state): number {
+            return state.todoList.length;
+        }
+    }
+
+    // src/HelloWorld.vue
+    <template>
+        <div>
+            <p>todoCount: {{todoCount}}</p>
+        </div>
+    </template>
+    <script lang="ts">
+        import { Component, Vue } from "vue-property-decorator";
+        import { Getter } from 'vuex-class';
+
+        @Component
+        export default class HelloWorld extends Vue {
+            @Getter private todoCount!: number;
+        }
+    </script>
+
+#### Actions
+
+    // src/store/actions.ts
+    import { ActionTree, Commit, ActionContext } from 'vuex';
+    import { ITodo, State } from './state';
+    import { RootState } from './index';
+
+    export const actions: ActionTree<State, RootState> = {
+        doubleCreate(context: ActionContext<State, RootState>, todo: ITodo) {
+            for(let i = 0; i < 2; i++) {
+                context.commit('createTodo', todo);
+            }
+        }
+    }
+
+    // src/HelloWorld.vue
+    <template>
+        <div>
+            <p>todoList: {{todos}}</p>
+            <van-button type="primary" @click="createTodoHandler">add todo</van-button>
+        </div>
+    </template>
+    <script lang="ts">
+        import { Component, Vue } from "vue-property-decorator";
+        import { State, Action } from 'vuex-class';
+
+        @Component
+        export default class HelloWorld extends Vue {
+            @State(state => state.todoList) private todos!: ITodo[];
+            @Action('doubleCreate') private doubleCreate!: (todo: ITodo) => void;
+
+            private createTodoHandler() {
+                this.doubleCreate({
+                    id: Date.now(),
+                    name: 'new task',
+                    isDone: false,
+                });
+            }
+        }
+    </script>
+
+#### modules
+
+Vuex 里还有 module 的概念
+
+当有多种全局 State 时，我们不可能全部放到根 State 下，这样会导致 State 逻辑不解耦
+
+例如有用户信息与购物车的相关 State，更好的做法应该是区分开，而不是混合在一起，这时就需要用到 module
+
+下面建立一个 cart module：
+
+    // src/store/cart/index.ts
+    import { MutationTree, ActionTree, Commit, ActionContext, GetterTree } from 'vuex';
+    import { RootState } from '../../index';
+
+    export interface IFood {
+        id: number;
+        name: string;
+        price: number;
+    }
+
+    export interface State {
+        foodList: Array<IFood>;
+    }
+
+    const state: State = {
+        foodList: [{
+            id: 1,
+            name: 'apple',
+            price: 3,
+        }]
+    }
+
+    const mutations: MutationTree<State> = {
+        addFood(state, food: IFood) {
+            state.foodList.push(food);
+        }
+    }
+
+    const actions: ActionTree<State, RootState> = {
+        doubleAdd(context: ActionContext<State, RootState>, food: IFood) {
+            for(let i = 0; i < 2; i++) {
+                context.commit('addFood', food);
+            }
+        }
+    }
+
+    const getters: GetterTree<State, RootState> = {
+        foodCount(state): number {
+            console.log(state);
+            return state.foodList.length;
+        }
+    }
+
+    export default {
+        state,
+        mutations,
+        actions,
+        getters,
+    }
+
+    // src/store/index.ts
+    import Vue from 'vue';
+    import Vuex from 'vuex';
+    import { mutations } from './mutations';
+    import { state, State } from './state';
+    import { getters } from './getters';
+    import { actions } from './actions';
+    import cart from './modules/cart';
+
+    Vue.use(Vuex);
+
+    export type RootState = State;
+
+    export default new Vuex.Store({
+        state,
+        mutations,
+        getters,
+        actions,
+        modules: {
+            cart,
+        },
+    })
+
+    // src/HelloWorld.vue
+    <template>
+        <div>
+            <p>Foods: {{foods}}</p>
+            <p>FoodCount: {{foodCount}}</p>
+            <van-button type="primary" @click="addFoodHandler">add food</van-button>
+        </div>
+    </template>
+    <script lang="ts">
+        import { Component, Vue } from "vue-property-decorator";
+        import { State, Mutation, Action, Getter } from 'vuex-class';
+
+        @Component
+        export default class HelloWorld extends Vue {
+            @State(state => state.cart.foodList) private foods!: IFood[];
+            @Mutation('addFood') private addF!: (food: IFood) => void;
+            @Action('doubleAdd') private doubleA!: (food: IFood) => void;
+            @Getter('foodCount') private foodCount!: number;
+            
+            private addFoodHandler() {
+                this.addF({
+                    id: Date.now(),
+                    name: 'banana',
+                    price: 10,
+                })
+                /* this.doubleA({
+                    id: Date.now(),
+                    name: 'banana',
+                    price: 10,
+                }) */
+            }
+        }
+    </script>
+
+值得注意的是，现在 **State 是局部的**，只属于模块本身，需要使用 state.moduleName.XX 来访问
+
+但是 **mutations、action、getter 是全局的**，多个模块能够对同一 mutation 或 action 作出相应
+
+也就说 Store 根 action 在 commit 时，可以调用如 cart module 的 mutation
+
+那由于 State 是局部的，我们要**如何在 cart module 里获取根 State**：
+
+- getter 中可以利用第三个参数来获取 rootState
+
+- action 的 context 对象包含了 rootState
+
+``````````
+// src/store/cart/index.ts
+const actions: ActionTree<State, RootState> = {
+    doubleAdd(context: ActionContext<State, RootState>, food: IFood) {
+        console.log(context.rootState);
+        
+        for(let i = 0; i < 2; i++) {
+            context.commit('addFood', food);
+        }
+    }
+}
+
+const getters: GetterTree<State, RootState> = {
+    foodCount(state, getters, rootState): number {
+        console.log(rootState);
+        
+        return state.foodList.length;
+    }
+}
+
+``````````
+
+#### 命名空间
+
+前面可以知道 mutations、action、getter 默认是注册全局命名空间的，如果希望它只在当前 module 生效，可以添加 **namespaced: true** 使其成为带命名空间的模块:
+
+    // src/store/cart/index.ts
+    import { MutationTree, ActionTree, Commit, ActionContext, GetterTree } from 'vuex';
+    import { RootState } from '../../index';
+
+    export interface IFood {
+        id: number;
+        name: string;
+        price: number;
+    }
+
+    export interface State {
+        foodList: Array<IFood>;
+    }
+
+    const state: State = {
+        foodList: [{
+            id: 1,
+            name: 'apple',
+            price: 3,
+        }]
+    }
+
+    const mutations: MutationTree<State> = {
+        addFood(state, food: IFood) {
+            state.foodList.push(food);
+        }
+    }
+
+    const actions: ActionTree<State, RootState> = {
+        doubleAdd(context: ActionContext<State, RootState>, food: IFood) {
+            console.log(context.rootState);
+            
+            for(let i = 0; i < 2; i++) {
+                context.commit('addFood', food);
+            }
+        }
+    }
+
+    const getters: GetterTree<State, RootState> = {
+        foodCount(state, getters, rootState): number {
+            console.log(rootState);
+            
+            return state.foodList.length;
+        }
+    }
+
+    export default {
+        namespaced: true,
+        state,
+        mutations,
+        actions,
+        getters,
+    }
+
+    // src/HelloWorld.vue
+    <template>
+        <div>
+            <p>Foods: {{foods}}</p>
+            <p>FoodCount: {{foodCount}}</p>
+            <van-button type="primary" @click="addFoodHandler">add food</van-button>
+        </div>
+    </template>
+    <script lang="ts">
+        import { Component, Vue } from "vue-property-decorator";
+        import { State, Mutation, Action, Getter } from 'vuex-class';
+
+        @Component
+        export default class HelloWorld extends Vue {
+            @State(state => state.cart.foodList) private foods!: IFood[];
+            @Mutation('cart/addFood') private addF!: (food: IFood) => void;
+            @Action('cart/doubleAdd') private doubleA!: (food: IFood) => void;
+            @Getter('cart/foodCount') private foodCount!: number;
+            
+            private addFoodHandler() {
+                this.addF({
+                    id: Date.now(),
+                    name: 'banana',
+                    price: 10,
+                })
+                /* this.doubleA({
+                    id: Date.now(),
+                    name: 'banana',
+                    price: 10,
+                }) */
+            }
+        }
+    </script>
+
+使用 namespaced 修饰的 module 后 mutations、action、getter 将作用于当前模块内，修饰器中需要使用 **moduleName/XXX** 的形式来获取
+
+那么**如何在带命名空间的模块内访问全局内容**：
+
+- rootState（前面提过）与 rootGetter 会作为第 3、4 个参数作用于 getters
+
+- rootState 与 rootGetter 同样存在于 action 的 context 对象中
+
+`````````
+// src/store/cart/index.ts
+const actions: ActionTree<State, RootState> = {
+    doubleAdd(context: ActionContext<State, RootState>, food: IFood) {
+        console.log(context.state, context.getters, context.rootState, context.rootGetters);
+        
+        for(let i = 0; i < 2; i++) {
+            context.commit('addFood', food);
+        }
+    }
+}
+
+const getters: GetterTree<State, RootState> = {
+    foodCount(state, getters, rootState, rootGetters): number {
+        console.log(state, getters, rootState, rootGetters);
+        
+        return state.foodList.length;
+    }
+}
+`````````
+
+假如我们想要**在全局命名空间内分发 action 或提交 mutation** 的话，如在 cart module 的 action 中 context.commit 根 mutation 的 createTodo，那么我们可以将 { root: true } 作为第三个参数传给 dispatch 或 commit 即可：
+
+    // src/store/cart/index.ts
+    const actions: ActionTree<State, RootState> = {
+        doubleAdd(context: ActionContext<State, RootState>, food: IFood) {
+            console.log(context.state, context.getters, context.rootState, context.rootGetters);
+            
+            for(let i = 0; i < 2; i++) {
+                context.commit('createTodo', food, { root: true });
+            }
+        }
+    }
+
+接着**如何在带命名空间的模块内注册全局 action？**
+
+在 action 中添加 **root: true** 即可：
+
+    // src/store/cart/index.ts
+    const actions: ActionTree<State, RootState> = {
+        doubleAdd: {
+            root: true,
+            handler(context: ActionContext<State, RootState>, food: IFood) {
+                console.log(context.getters, context.rootGetters);
+                for(let i = 0; i < 2; i++) {
+                    context.commit('addFood', food);
+                }
+            }
+        }
+    }
+
+    这时 action 将变成全局下的，需要将装饰器参数从 cart/doubleAdd 变为 doubleAdd：
+
+    // src/HelloWorld.vue
+    <script lang="ts">
+        import { Component, Vue } from "vue-property-decorator";
+        import { State, Mutation, Action, Getter } from 'vuex-class';
+
+        @Component
+        export default class HelloWorld extends Vue {
+            @Action('cart/doubleAdd') private doubleA!: (food: IFood) => void;
+
+            ...
+        }
+    </script>
