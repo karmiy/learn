@@ -161,6 +161,21 @@ namespace doc_09 {
             console.log('is number');
         }
     }
+
+    // 可选链运算符
+    const v1 = {
+        fn: null,
+    };
+    const v2 = v1?.fn;
+
+    // 空值合并运算符
+    const u1 = false ?? '空';
+    const u2 = '' ?? '空';
+    const u3 = NaN ?? '空';
+    const u4 = 0 ?? '空';
+    const u5 = null ?? '空';
+    const u6 = undefined ?? '空';
+
 }
 
 // export {};
