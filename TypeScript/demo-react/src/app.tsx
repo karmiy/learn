@@ -4,6 +4,10 @@ import TodoInput from './components/todo';
 import Input from './components/input';
 import Button from './components/button';
 import Togglable, { ToggleParams } from './components/togglable';
+const img = require('./assets/imgs/logo.png');
+// import img from './assets/imgs/logo.png';
+import './assets/styles/app.scss';
+
 
 type ITitleProps = {
     name?: string;
@@ -20,9 +24,10 @@ const Title: React.SFC<ITitleProps> = (props) => {
 const TogglableWithTitle = Togglable.ofType<Omit<ITitleProps, keyof ToggleParams>>();
 
 function App() {
+    const ref:React.RefObject<HTMLDivElement> = React.createRef<HTMLDivElement>();
     return (
-        <div>
-            <Logo src={require('./assets/imgs/logo.png')} />
+        <div className={'app'}>
+            <Logo src={img} />
             <TodoInput handleSubmit={() => {}} />
             <Input />
             <Button>按钮</Button>

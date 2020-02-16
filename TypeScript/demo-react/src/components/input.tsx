@@ -34,7 +34,7 @@ const createPropsGetter = <DP extends object>(defaultProps: DP) => {
 const getProps = createPropsGetter(defaultProps);
 
 export default class Input extends React.Component<IInputProps, IInputState> {
-    public static defaultProps = new IInputProps();
+    public static defaultProps = defaultProps;
     state = {
         value: '',
     }

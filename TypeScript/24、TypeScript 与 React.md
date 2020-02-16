@@ -221,7 +221,7 @@ webpack 的 rules 配置：
     }
 
     export default class Input extends React.Component<IInputProps, IInputState> {
-        private inputRef = React.createRef<HTMLInputElement>();
+        private inputRef:React.RefObject<HTMLInputElement> = React.createRef<HTMLInputElement>();
         state = {
             currentValue: '',
         }
@@ -750,10 +750,13 @@ JSX.Element 与 React.ReactNode 的差别在于：React.ReactNode 可以是 Reac
             public static readonly UnwrappedComponent = UnwrappedComponent;
 
             public render() {
+                const props = {
+                    ...hocProps,
+                    ...this.props,
+                } as P;
                 return (
                     <UnwrappedComponent 
-                        setting={hocProps}
-                        {...this.props as P}
+                        {...props}
                     />
                 )
             }
@@ -761,6 +764,10 @@ JSX.Element 与 React.ReactNode 的差别在于：React.ReactNode 可以是 Reac
 
         return hoistNonReactStatics(WithToggleable, UnwrappedComponent)
     }
+
+render 函数中需要 **as P** 的原因，可以了解 26 节 **泛型与条件类型 extends 的保守推导问题**
+
+> 注意：如果在 export default 导出时报错，需要把 declaration: true 配置去掉
 
 ### Redux
 

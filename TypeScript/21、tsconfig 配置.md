@@ -166,7 +166,13 @@ compilerOptions 是重点配置项，可以分为六大类：
 
 - checkJs：指定是否检查与报告 js 文件的错误，默认 false
 
-- jsx：指定 jsx 代码用于的开发环境：'preserve'、'react'、'react-native'，用于编译 jsx 代码。默认 'preserve'，保留 jsx 代码，如果设为 'react'，将编译 React.createElement，输出将具有.js文件扩展名
+- jsx：指定 jsx 代码用于的开发环境：'preserve'、'react'、'react-native'，用于编译 jsx 代码。默认 'preserve'，保留 jsx 代码，以供后续的转换操作使用（比如：Babel）；如果设为 'react'，将编译 React.createElement，输出将具有.js文件扩展名；'react-native' 模式相当于 preserve，也保留 jsx 代码，但是输出文件的拓展名是 .js
+
+| 模式 | 输入 | 输出 | 输出文件扩展名 |
+| ------ | ------ | ------ | ------ |
+| preserve | \<div /> | \<div /> | .jsx |
+| react | \<div /> | React.createElement("div")	 | .js |
+| react-native	 | \<div /> | \<div /> | .js |
 
 - jsxFactory：指定生成目标为 react jsx 时，使用 jsx 工程函数，如 React.createElement 或 h，默认 React.createElement
 

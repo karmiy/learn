@@ -1,6 +1,11 @@
 import * as hoistNonReactStatics from 'hoist-non-react-statics'
 import * as React from 'react'
 
+interface Setting {
+    maxLength: number;
+    placeholder: string;
+}
+
 const hocProps = {
     setting: {
         maxLength: 30,
@@ -17,10 +22,13 @@ const withTodoInput = <P extends InjectProps>(UnwrappedComponent: React.Componen
         public static readonly UnwrappedComponent = UnwrappedComponent;
 
         public render() {
+            const props = {
+                ...hocProps,
+                ...this.props,
+            } as P;
             return (
                 <UnwrappedComponent 
-                    setting={hocProps}
-                    {...this.props as P}
+                    {...props}
                 />
             )
         }
