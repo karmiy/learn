@@ -6,7 +6,10 @@ const baseConfig = require('./webpack.base.conf');
 module.exports = merge(baseConfig, {
     mode: "development",
     devtool: 'cheap-module-eval-source-map', // 开启development调试
-    entry: ["react-hot-loader/patch"],
+    entry: {
+        'hot': 'react-hot-loader/patch',
+        'app': './src/index.tsx',
+    },
     output: {
         path: path.resolve(__dirname, '..', 'dev'),
         publicPath: '/',
