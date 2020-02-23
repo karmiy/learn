@@ -52,7 +52,7 @@ export const getTodoList: ThunkActionCreator<void, ItemState, void, GetListActio
         const action = getList(data);
         dispach(action);
     }
-}
+};
 
 /** Shop */
 export const incrementShop: ActionCreator<IncrementShopAction> = () => ({

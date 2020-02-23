@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import reducer from './reducer';
 
-import thunk, { ThunkAction } from 'redux-thunk';
+import thunk from 'redux-thunk';
 
 import createSagaMiddleware from 'redux-saga';
 import mySagas from './sagas';

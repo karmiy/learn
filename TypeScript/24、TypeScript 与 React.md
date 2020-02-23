@@ -773,133 +773,717 @@ render 函数中需要 **as P** 的原因，可以了解 26 节 **泛型与条�
 
 在项目中仅仅组件之间传递属性是不够的，经常还会涉及到对状态的管理，React 中一般用 redux 来作为状态管理工具
 
-这里简单的创建 redux 需要使用的 model、action、reducer
+    npm i --save redux
 
 #### Model
 
-在 model 中定义数据模型接口：
+在 model 中定义数据模型接口，假设有 2 个状态 Item 与 Shop：
 
-    // models/Todo.ts
-    export interface Todo {
-        id: number;
+    // src/store/model.ts
+    export interface ItemState {
+        inputValue: string;
+        list: Array<string>;
+    }
+
+    export interface ShopState {
+        count: number;
         name: string;
-        done: boolean;
+    }
+
+#### ActionType
+
+通过**枚举**定义 ActionType **常量**：
+
+    // src/store/action-type.ts
+    export enum ItemActionConstants {
+        CHANGE_INPUT_VALUE = 'changeInputValue',
+        ADD_ITEM = 'addItem',
+        GET_LIST = 'getList',
+        GET_MY_LIST = 'getMyList',
+    }
+
+    export enum ShopActionConstants {
+        INCREMENT = 'increment',
+        DECREMENT = 'decrement',
+        RENAME = 'rename',
     }
 
 #### Action
 
-定义两个函数 addTodo 与 toggleTodo，用于添加项与切换状态
+根据 ActionType 创建用于 dispatch 的 Action
 
-使用 ReturnType 获取 action 的类型：
+分别合并出 ItemAction 与 ShopAction
 
-    // actions/todo.ts
-    export enum ActionTodoConstants {
-        ADD_TODO = 'todo/add',
-        TOGGLE_TODO = 'todo/toggle',
+    // src/store/action-type.ts
+    /** ItemAction */
+    export type ChangeInputAction = {
+        type: ItemActionConstants.CHANGE_INPUT_VALUE;
+        value: string;
+    };
+
+    export type AddItemAction = {
+        type: ItemActionConstants.ADD_ITEM;
+        item: string;
+    };
+
+    export type GetListAction = {
+        type: ItemActionConstants.GET_LIST;
+        data: Array<string>;
+    };
+
+    export type ItemAction = ChangeInputAction | AddItemAction | GetListAction;
+
+    /** ShopAction */
+    export type IncrementShopAction = {
+        type: ShopActionConstants.INCREMENT;
     }
 
-    let id = 0;
+    export type DecrementShopAction = {
+        type: ShopActionConstants.DECREMENT;
+    }
 
-    const addTodo = (name: string) => ({
-        payload: {
-            todo: {
-                done: false,
-                id: id++,
-                name,
-            }
-        },
-        type: ActionTodoConstants.ADD_TODO,
+    export type RenameShopAction = {
+        type: ShopActionConstants.RENAME,
+        value: string;
+    }
+
+    export type ShopAction = IncrementShopAction | DecrementShopAction | RenameShopAction;
+
+#### ActionCreator
+
+构建 ActionCreator 函数：
+
+    // src/store/action-creator.ts
+    import { ActionCreator } from 'redux';
+    import { 
+        ItemActionConstants, 
+        ShopActionConstants,
+        ChangeInputAction,
+        AddItemAction,
+        GetListAction,
+        IncrementShopAction,
+        DecrementShopAction,
+        RenameShopAction,
+    } from './action-type';
+
+    /** Item */
+    export const changeInput: ActionCreator<ChangeInputAction> = (value) => ({
+        type: ItemActionConstants.CHANGE_INPUT_VALUE,
+        value,
     });
 
-    const toggleTodo = (id: number) => ({
-        payload: {
-            id,
-        },
-        type: ActionTodoConstants.TOGGLE_TODO,
+    export const addItem: ActionCreator<AddItemAction> = () => ({
+        type: ItemActionConstants.ADD_ITEM,
+        item: 'New Item',
     });
 
-    export type AddTodoAction = ReturnType<typeof addTodo>;
-    export type ToggleTodoAction = ReturnType<typeof toggleTodo>;
-    export type Action = AddTodoAction | ToggleTodoAction;
+    export const getList: ActionCreator<GetListAction> = (data) => ({
+        type: ItemActionConstants.GET_LIST,
+        data,
+    });
+
+    /** Shop */
+    export const incrementShop: ActionCreator<IncrementShopAction> = () => ({
+        type: ShopActionConstants.INCREMENT,
+    });
+
+    export const decrementShop: ActionCreator<DecrementShopAction> = () => ({
+        type: ShopActionConstants.DECREMENT,
+    });
+
+    export const renameShop: ActionCreator<RenameShopAction> = ({ value }) => ({
+        type: ShopActionConstants.RENAME,
+        value,
+    });
+
 
 #### Reducer
 
-创建 reducer 执行工厂：
+创建 reducer 执行工厂
 
-    // reducers/todo.ts
-    import { Todo } from '../models/todo';
-    import { ActionTodoConstants, Action } from '../actions/todo';
+利用 **combineReducers** 合并多个 reducer
 
-    // 定义State的接口
-    export interface State {
-        todos: Todo[];
-    }
+利用类型工具 **ReturnType** 获取 **rootState**
 
-    export const initialState: State = {
-        todos: [],
-    }
+    import { ItemActionConstants, ShopActionConstants, ItemAction, ShopAction } from './action-type';
+    import { Reducer, combineReducers } from 'redux';
+    import { ItemState, ShopState } from './model';
 
-    export function reducer(state: State = initialState, action: Action) {
+    // Item
+    const defaultItemState: ItemState = {
+        inputValue: 'something',
+        list: [
+            '4:00 起床',
+            '5:00 跑步'
+        ]
+    };
+
+    const itemReducer: Reducer<ItemState, ItemAction> = (state = defaultItemState, action) => {
         switch (action.type) {
-
-        case ActionTodoConstants.ADD_TODO: {
-
-            const todo = action.payload;
-            return {
-            ...state,
-            todos: [...state.todos, todo],
-            };
-        }
-
-        case ActionTodoConstants.TOGGLE_TODO: {
-
-            const { id } = action.payload;
-            return {
-            ...state,
-            todos: state.todos.map(todo => todo.id === id ? { ...todo, done: !todo.done } : todo),
-            }
-        }
-
-        default:
-            return state;
+            case ItemActionConstants.CHANGE_INPUT_VALUE:
+                return {
+                    ...state,
+                    inputValue: action.value,
+                }
+            case ItemActionConstants.ADD_ITEM:
+                return {
+                    ...state,
+                    list: [
+                        ...state.list,
+                        action.item,
+                    ]
+                }
+            case ItemActionConstants.GET_LIST:
+                return {
+                    ...state,
+                    list: action.data,
+                }
+            default:
+                return state;
         }
     }
 
-然而在 const { id } = action.payload; 处却报错
+    // Item
+    const defaultShopState: ShopState = {
+        count: 0,
+        name: 'k013'
+    };
 
-查看 action 的类型，ReturnType 将其类型推导成了：
-
-    type Action = {
-        payload: {
-            todo: {
-                done: boolean;
-                id: number;
-                name: string;
-            };
-        };
-        type: ActionTodoConstants;
-    } | {
-        payload: {
-            id: number;
-        };
-        type: ActionTodoConstants;
+    const shopReducer: Reducer<ShopState, ShopAction> = (state = defaultShopState, action) => {
+        switch (action.type) {
+            case ShopActionConstants.INCREMENT:
+                return {
+                    ...state,
+                    count: state.count + 1,
+                }
+            case ShopActionConstants.DECREMENT:
+                return {
+                    ...state,
+                    count: state.count - 1,
+                }
+            case ShopActionConstants.RENAME:
+                return {
+                    ...state,
+                    name: action.value,
+                }
+            default:
+                return state;
+        }
     }
 
-可以看到这是类型推导的错误，type: ActionTodoConstants 而不是 type: ActionTodoConstants.ADD_TODO 与 type:  ActionTodoConstants.TOGGLE_TODO
+    const rootReducer = combineReducers({
+        item: itemReducer,
+        shop: shopReducer,
+    });
 
-将 action 部分进行修改为字符串字面量类型即可：
+    export type RootState = ReturnType<typeof rootReducer>;
+    export default rootReducer;
 
-    export type AddTodoAction = {
-        type: ActionTodoConstants.ADD_TODO;
-        payload: { 
-            todo: Todo;
+#### Store
+
+构造 Store：
+
+    // src/store/index.ts
+    import { createStore } from 'redux';
+    import reducer from './reducer';
+
+    const store = createStore(reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+
+    export default store;
+
+其中 **__REDUX_DEVTOOLS_EXTENSION__** 是 Redux 调试工具 **Redux DevTools** 的变量，需要为其声明类型：
+
+    // src/types/index.ts
+    interface Window {
+        __REDUX_DEVTOOLS_EXTENSION__(): any;
+    }
+
+#### 常规使用
+
+创建组件 TodoItem，用于展示 ItemState 的内容：
+
+    // src/components/todo-item.tsx
+    import * as React from 'react';
+    import store from '../store';
+    import { changeInput, addItem } from '../store/action-creator';
+    import { RootState } from '../store/reducer';
+
+    interface ITodoItemState extends RootState {}
+    interface ITodoItemProps {}
+
+    class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
+        state = store.getState();
+        constructor(props: ITodoItemProps) {
+            super(props);
+            store.subscribe(() => {
+                this.setState(store.getState());
+            });
+        }
+
+        onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const action = changeInput(e.target.value);
+            store.dispatch(action);
+        }
+
+        addItem = () => {
+            const action = addItem();
+            store.dispatch(action);
+        }
+
+        render() {
+            return (
+                <div>
+                    这是TodoItem页面
+                    <input type="text" value={this.state.item.inputValue} onChange={this.onInputChange} />
+                    <button onClick={this.addItem}>Add list item</button>
+                    list: {this.state.item.list}
+                </div>
+            )
+        }
+    }
+
+    export default TodoItem;
+
+    // src/app.tsx
+    import * as React from 'react';
+    import TodoItem from './components/todo-item';
+
+    function App() {
+        <div className={'app'}>
+            <TodoItem />
+        </div>
+    }
+
+这时 Redux 已经可以正常使用了
+
+#### react-redux
+
+常规的 redux 使用时本身与 react 没有关系，redux 支持各种库甚至纯 JavaScript
+
+我们在使用时需要手动去 store.subscribe 中 setState 新的状态来达到组件 UI 的更新
+
+react-redux 可以以组件的形式融合对 redux 的使用，将 state 与 dispatch 合并到组件的 props 中
+
+    // src/app.tsx
+    import * as React from 'react';
+    import TodoItem from './components/todo-item';
+    import { Provider } from 'react-redux';
+    import store from './store';
+
+    function App() {
+        <div className={'app'}>
+            <Provider store={store}>
+                <TodoItem />
+            </Provider>
+        </div>
+    }
+
+    // src/components/todo-item.tsx
+    import * as React from 'react';
+    import { ItemState, ShopState } from '../store/model';
+    import { changeInput, addItem } from '../store/action-creator';
+    import { Dispatch, bindActionCreators } from 'redux';
+    import { connect } from 'react-redux';
+    import { RootState } from '../store/reducer';
+
+    interface ITodoItemState {
+    }
+
+    interface ITodoItemProps extends ItemState, ShopState {
+        onInputChange(value: string): void;
+        addItem(): void;
+    }
+
+    class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
+        constructor(props: ITodoItemProps) {
+            super(props);
+        }
+
+        onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            this.props.onInputChange(e.target.value);
+        }
+
+        render() {
+            return (
+                <div>
+                    这是TodoItem页面
+                    <input type="text" value={this.props.inputValue} onChange={this.onInputChange} />
+                    <button onClick={this.props.addItem}>Add list item</button>
+                    list: {this.props.list}
+                </div>
+            )
+        }
+    }
+
+    const stateToProps = (state: RootState)=>{
+        const { item, shop } = state;
+        return {
+            inputValue: item.inputValue,
+            list: item.list,
+            count: shop.count,
+            name: shop.name,
+        }
+    }
+
+    const dispatchToProps = (dispatch: Dispatch) => {
+        return bindActionCreators({
+            onInputChange: value => changeInput(value),
+            addItem,
+        }, dispatch);
+    }
+
+    export default connect(stateToProps, dispatchToProps)(TodoItem);
+
+#### redux-thunk
+
+redux-thunk 是中间件 middleware，它允许我们在 action 中进行异步操作，将 action 从返回对象扩展到可以是返回函数
+
+    npm i --save redux-thunk
+
+下面我们创建一个 ThunkActionCreator 为 getTodoList 函数，模拟请求后端数据，2s 后返回 2 条数据覆盖 ItemState 的 list
+
+使用 redux-thunk：
+
+    // src/store/index.ts
+    import { createStore, applyMiddleware, compose } from 'redux';
+    import reducer from './reducer';
+
+    import thunk from 'redux-thunk';
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
+    const enhancer = composeEnhancers(applyMiddleware(thunk));
+
+    const store = createStore(reducer, enhancer);
+
+    export default store;
+
+其中 __REDUX_DEVTOOLS_EXTENSION_COMPOSE__ 变量也需要定义类型：
+
+    // src/types/index.ts
+    interface Window {
+        __REDUX_DEVTOOLS_EXTENSION__(): any;
+        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__(option: object): any;
+    }
+
+新增常量 GET_LIST 为获取列表的 ActionType，并新增 GetListAction：
+
+    // src/store/action-type.ts
+    export enum ItemActionConstants {
+        CHANGE_INPUT_VALUE = 'changeInputValue',
+        ADD_ITEM = 'addItem',
+        GET_LIST = 'getList',
+    };
+
+    export type GetListAction = {
+        type: ItemActionConstants.GET_LIST;
+        data: Array<string>;
+    };
+
+    export type ItemAction = ChangeInputAction | AddItemAction | GetListAction;
+
+新增 ActionCreator：
+
+    // src/store/action-creator.ts
+    export const getList: ActionCreator<GetListAction> = (data) => ({
+        type: ItemActionConstants.GET_LIST,
+        data,
+    });
+
+创建 ThunkActionCreator，返回**异步函数**：
+
+    // src/store/action-creator.ts
+    import { Dispatch, Action, ActionCreator } from 'redux';
+    import { ThunkAction } from 'redux-thunk';
+
+    // R: return; S: State; E: extraArgument; A: Action
+    type ThunkActionCreator<R, S, E, A extends Action> = (...args: any[]) => ThunkAction<R, S ,E ,A>;
+
+    export const getTodoList: ThunkActionCreator<void, ItemState, void, GetListAction> = () => {
+        return async (dispach, getState) => {
+            const data = await new Promise<string[]>(r => {
+                setTimeout(() => {
+                    const data = [
+                        '11:00 喝水',
+                        '12:00 吃饭'
+                    ];
+                    r(data);
+                }, 2000);
+            });
+            const action = getList(data);
+            dispach(action);
         }
     };
-    export type ToggleTodoAction = {
-        type:  ActionTodoConstants.TOGGLE_TODO;
-        payload: {
-            id: number;
-        }
-    };
-    export type Action = AddTodoAction | ToggleTodoAction;
 
+reducer 补充条件：
+
+    // src/store/reducer.ts
+    const itemReducer: Reducer<ItemState, ItemAction> = (state = defaultItemState, action) => {
+        switch (action.type) {
+            case ItemActionConstants.CHANGE_INPUT_VALUE:
+                return {
+                    ...state,
+                    inputValue: action.value,
+                }
+            case ItemActionConstants.ADD_ITEM:
+                return {
+                    ...state,
+                    list: [
+                        ...state.list,
+                        action.item,
+                    ]
+                }
+            case ItemActionConstants.GET_LIST:
+                return {
+                    ...state,
+                    list: action.data,
+                }
+            default:
+                return state;
+        }
+    }
+
+组件内使用 ThunkActionCreator getTodoList 函数：
+
+    // src/components/todo-item.tsx
+    import * as React from 'react';
+    import { ItemState, ShopState } from '../store/model';
+    import { changeInput, addItem, getTodoList } from '../store/action-creator';
+    import { Dispatch, bindActionCreators } from 'redux';
+    import { connect } from 'react-redux';
+    import { RootState } from '../store/reducer';
+
+    interface ITodoItemState {
+    }
+
+    interface ITodoItemProps extends ItemState, ShopState {
+        onInputChange(value: string): void;
+        addItem(): void;
+        getList(): void;
+    }
+
+    class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
+        constructor(props: ITodoItemProps) {
+            super(props);
+        }
+
+        componentDidMount() {
+            this.props.getList();
+        }
+
+        onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            this.props.onInputChange(e.target.value);
+        }
+
+        render() {
+            return (
+                <div>
+                    这是TodoItem页面
+                    <input type="text" value={this.props.inputValue} onChange={this.onInputChange} />
+                    <button onClick={this.props.addItem}>Add list item</button>
+                    list: {this.props.list}
+                </div>
+            )
+        }
+    }
+
+    const stateToProps = (state: RootState)=>{
+        const { item, shop } = state;
+        return {
+            inputValue: item.inputValue,
+            list: item.list,
+            count: shop.count,
+            name: shop.name,
+        }
+    }
+
+    const dispatchToProps = (dispatch: Dispatch) => {
+        return bindActionCreators({
+            onInputChange: value => changeInput(value),
+            addItem,
+            getList: getTodoList,
+        }, dispatch);
+    }
+
+    export default connect(stateToProps, dispatchToProps)(TodoItem);
+
+现在刷新页面，2s 后 list 的 UI 展示结果就会从 4:00 起床 5:00 跑步 变为 11:00 喝水 12:00 吃饭
+
+#### redux-saga
+
+redux-thunk 让我们从 ActionCreator 返回一个对象，到 ThunkActionCreator 返回一个可异步函数
+
+而 redux-saga 也是进行异步处理的中间件
+
+与 redux-saga 不同的是，它的处理内容一般单独放在 saga.ts 文件中，通过在 generator 函数中监听 dispatch 的 action 完成相应操作，解耦性可能更好
+
+    npm i --save redux-saga
+
+下面我们新增一个 type 为 GET_MY_LIST 的 Action 用于让 redux-saga 监听，监听到后同样模拟请求数据 2s 后返回 2 条数据覆盖 ItemState 的 list
+
+新增常量 GET_MY_LIST 用于 redux-saga 监听，并新增 GetMyListAction：
+
+    // src/store/action-type.ts
+    export enum ItemActionConstants {
+        CHANGE_INPUT_VALUE = 'changeInputValue',
+        ADD_ITEM = 'addItem',
+        GET_LIST = 'getList',
+        GET_MY_LIST = 'getMyList',
+    }
+
+    export type GetMyListAction = {
+        type: ItemActionConstants.GET_MY_LIST;
+    };
+
+    export type ItemAction = ChangeInputAction | AddItemAction | GetListAction | GetMyListAction;
+
+新增 ActionCreator：
+
+    // src/store/action-creator.ts
+    export const getMyList: ActionCreator<GetMyListAction> = () => ({
+        type: ItemActionConstants.GET_MY_LIST,
+    });
+
+reducer 补充条件，由于 GET_MY_LIST 只用于让 redux-saga 监听，不需要在 reducer 里改变 state，返回原 state 即可：
+
+    // src/store/reducer.ts
+    const itemReducer: Reducer<ItemState, ItemAction> = (state = defaultItemState, action) => {
+        switch (action.type) {
+            case ItemActionConstants.CHANGE_INPUT_VALUE:
+                return {
+                    ...state,
+                    inputValue: action.value,
+                }
+            case ItemActionConstants.ADD_ITEM:
+                return {
+                    ...state,
+                    list: [
+                        ...state.list,
+                        action.item,
+                    ]
+                }
+            case ItemActionConstants.GET_LIST:
+                return {
+                    ...state,
+                    list: action.data,
+                }
+            case ItemActionConstants.GET_MY_LIST:
+                return state;
+            default:
+                return state;
+        }
+    }
+
+新增 saga.ts 文件执行我们的异步操作：
+
+    // src/store/saga.ts
+    import { takeEvery, put } from 'redux-saga/effects';
+    import { getList } from './action-creator';
+    import { ItemActionConstants } from './action-type';
+
+    function* getMyList() {
+        const data: string[] = yield new Promise<string[]>(r => {
+            setTimeout(() => {
+                const data = [
+                    '11:00 喝水',
+                    '12:00 吃饭'
+                ];
+                r(data);
+            }, 2000);
+        });
+        const action = getList(data);
+        yield put(action);
+    }
+
+    function* mySagas() {
+        // 监听 GET_MY_LIST 这个 action，当我们派发 GET_MY_LIST 是会触发 getMyList 函数
+        yield takeEvery(ItemActionConstants.GET_MY_LIST, getMyList);
+    }
+
+    export default mySagas;
+
+使用 redux-saga：
+
+    // src/store/index.ts
+    import { createStore, applyMiddleware, compose } from 'redux';
+    import reducer from './reducer';
+
+    import createSagaMiddleware from 'redux-saga';
+    import mySagas from './sagas';
+    const sagaMiddleware = createSagaMiddleware();
+
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+        window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
+
+    const enhancer = composeEnhancers(applyMiddleware(sagaMiddleware));
+
+    const store = createStore(reducer, enhancer);
+
+    sagaMiddleware.run(mySagas);
+
+    export default store;
+
+组件内使用常规 dispatch 派发 getMyList 即可：
+
+    // src/components/todo-item.tsx
+    import * as React from 'react';
+    import { ItemState, ShopState } from '../store/model';
+    import { changeInput, addItem, getMyList } from '../store/action-creator';
+    import { Dispatch, bindActionCreators } from 'redux';
+    import { connect } from 'react-redux';
+    import { RootState } from '../store/reducer';
+
+    interface ITodoItemState {
+    }
+
+    interface ITodoItemProps extends ItemState, ShopState {
+        onInputChange(value: string): void;
+        addItem(): void;
+        getList(): void;
+    }
+
+    class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
+        constructor(props: ITodoItemProps) {
+            super(props);
+        }
+
+        componentDidMount() {
+            this.props.getList();
+        }
+
+        onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            this.props.onInputChange(e.target.value);
+        }
+
+        render() {
+            return (
+                <div>
+                    这是TodoItem页面
+                    <input type="text" value={this.props.inputValue} onChange={this.onInputChange} />
+                    <button onClick={this.props.addItem}>Add list item</button>
+                    list: {this.props.list}
+                </div>
+            )
+        }
+    }
+
+    const stateToProps = (state: RootState)=>{
+        const { item, shop } = state;
+        return {
+            inputValue: item.inputValue,
+            list: item.list,
+            count: shop.count,
+            name: shop.name,
+        }
+    }
+
+    const dispatchToProps = (dispatch: Dispatch) => {
+        return bindActionCreators({
+            onInputChange: value => changeInput(value),
+            addItem,
+            getList: getMyList,
+        }, dispatch);
+    }
+
+    export default connect(stateToProps, dispatchToProps)(TodoItem);
+
+同样刷新页面，2s 后 list 的 UI 展示结果就会从 4:00 起床 5:00 跑步 变为 11:00 喝水 12:00 吃饭

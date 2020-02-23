@@ -19,12 +19,17 @@ class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
     // state = store.getState();
     constructor(props: ITodoItemProps) {
         super(props);
+        /* store.subscribe(() => {
+            this.setState(store.getState());
+        }); */
     }
 
     componentDidMount() {
         // redux-thunk
+        // Error ------- ignore --------
         // const action = getTodoList();
         // store.dispatch(action);
+
         this.props.getList();
     }
 
@@ -103,3 +108,4 @@ const dispatchToProps = (dispatch: Dispatch) => {
 }
 
 export default connect(stateToProps, dispatchToProps)(TodoItem);
+// export default TodoItem;

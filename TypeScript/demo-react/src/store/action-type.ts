@@ -32,7 +32,7 @@ export type GetMyListAction = {
     type: ItemActionConstants.GET_MY_LIST;
 };
 
-export type ItemAction = ChangeInputAction | AddItemAction | GetListAction;
+export type ItemAction = ChangeInputAction | AddItemAction | GetListAction | GetMyListAction;
 
 /** ShopAction */
 export type IncrementShopAction = {

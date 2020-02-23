@@ -2,6 +2,7 @@ import { ItemActionConstants, ShopActionConstants, ItemAction, ShopAction } from
 import { Reducer, combineReducers } from 'redux';
 import { ItemState, ShopState } from './model';
 
+// Item
 const defaultItemState: ItemState = {
     inputValue: 'something',
     list: [
@@ -30,11 +31,14 @@ const itemReducer: Reducer<ItemState, ItemAction> = (state = defaultItemState, a
                 ...state,
                 list: action.data,
             }
+        case ItemActionConstants.GET_MY_LIST:
+            return state;
         default:
             return state;
     }
 }
 
+// Item
 const defaultShopState: ShopState = {
     count: 0,
     name: 'k013'
