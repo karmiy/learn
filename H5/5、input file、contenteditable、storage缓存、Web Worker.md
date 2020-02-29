@@ -396,7 +396,246 @@ worker线程内部，提供了importScripts方法可以引入外部JS文件，�
     '_work.js post: 4'
     '_work.js post: 5'
     
-    
-    
-    
+## WebSorker    
+
+### 学习来源
+学习至掘金文章 [WebSocket是时候展现你优秀的一面了](https://juejin.im/post/5bc7f6b96fb9a05d3447eef8)
+
+### 概述
+
+HTTP 是客户端/服务器模式中请求响应的协议，浏览器向服务器提交 HTTP 请求，服务器响应请求
+
+而这样的数据流是单向的，只允许客户端向服务端请求后，服务端返回数据，而服务端并不能主动推送数据给客户端
+
+这在例如聊天室，实时流计算等业务时就难以实现，因为我们无法将新的数据从服务器推送回页面中实时更新
+
+为了解决做到双向通讯，我们可能会使用如下方式：
+
+-  轮询：固定间隔不断向服务端发起 ajax 请求，服务器接到后立即响应
+
+- 长轮询：向服务器发送 ajax 请求，服务器接到请求后 hold 住连接，直到有新消息才返回响应，客户端处理完响应后再向服务器发送新请求
+
+- iframe 长连接：页面嵌入隐藏 iframe，src 设为对一个长连接的请求，服务器就能源源不断往客户端输入数据，这样可以做到消息即时到达，不发无用请求
+
+而这些方式的缺点也很明显：
+
+- 轮询：请求多数是无用的，浪费带宽和服务器资源
+
+- 长轮询：服务器 hold 连接消耗资源
+
+- iframe 长连接：服务器维护一个长连接会增加开销
+
+H5 的 WebSocket 就为了解决这些问题而诞生
+
+在 WebSocket 中，浏览器和服务器只需要完成一次握手，就可以建立了一个持久性的连接，进行双方数据传输，不仅浏览器可以发请求给服务器，服务器也可以发消息
+
+WebSocket 的优势：
+
+- 支持双向通讯，实时性强
+
+- 更好二进制支持
+
+- 较少控制开销，连接创建后，客户端和服务端进行数据交互时，协议控制的数据包头部较少
+
+### 使用 WebSocket
+
+这里用一个简单的示例使用 WebSocket 的交互
+
+创建一个文件夹如 demo-websocket
+
+先展示项目结构：
+
+![Alt text](./imgs/05-08.png)
+
+新建 public 文件夹放置静态资源，新建 index.html：
+
+    // public/index.html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            // 创建 websocket 的实例
+            // 连接ws协议
+            // 对应的端口就是服务端设置的端口号
+            let ws = new WebSocket('ws://localhost:8080');
+
+            // 客户端与服务端建立连接时触发
+            ws.onopen = function() {
+                console.log('连接建立成功');
+                ws.send('connection successful');
+            };
+
+            // 客户端接收到服务端发来的消息时触发
+            ws.onmessage = function(res) {
+                // res 是个对象
+                console.log(res.data);
+            };
+        </script>
+    </body>
+    </html>
+
+这样客户端的部分都就完成了
+
+下面利用 node 搭建简单的后端服务器
+
+初始化 package.json：
+
+    npm init -y
+
+安装 ws：
+
+    npm install ws --save
+
+新建 server.js：
+
+    // server.js
+    const express = require('express');
+    const app = express();
+    const path = require('path');
+    // 设置静态文件夹，我们在打开 localhost:3000 时，打开的会是 public 下的 index.html
+    app.use(express.static(path.join(__dirname, 'public')));
+    // 监听 3000 端口
+    app.listen(3000);
+
+    // 创建 websocket 服务
+    const Server = require('ws').Server;
+    // 服务器 websocket 的端口号
+    const ws = new Server({ port: 8080 });
+
+    // 监听服务端和客户端的连接
+    ws.on('connection', function(socket) {
+        // 监听客户端发来的消息
+        socket.on('message', function(msg) {
+            // 客户端发来的 msg
+            console.log(msg);
+            // 发送消息给客户端
+            socket.send('服务端已收到消息');
+        });
+    });
+
+node 执行 server.js 启动服务：
+
+    node server.js
+
+打开 http://localhost:3000/ 这时在控制台可以看到输出了如下信息：
+
+![Alt text](./imgs/05-09.png)
+
+可以看到，WebSocket 的交互效果已经实现了
+
+### socket.io
+
+WebSocket 是 H5 标准的产物，旧版浏览器显然会存在兼容性问题
+
+我们更多的可能是用 [socket.io](http://socket.io/) 这样的库，而不是用原生的 WebSocket
+
+socket.io 的特点：
+
+- 易用性：封装了服务端和客户端，简单方便
+
+- 跨平台：支持跨平台，可以选择在服务端或是客户端开发实时应用
+
+- 自适应：会根据浏览器来决定使用 WebSocket、ajax 轮询还是 iframe 流等方式选择，甚至支持 IE5.5
+
+安装：
+
+    npm install --save socket.io
+
+修改服务端代码：
+
+    // server.js
+    const express = require('express');
+    const app = express();
+    const path = require('path');
+    // 设置静态文件夹，我们在打开 localhost:3000 时，打开的会是 public 下的 index.html
+    app.use(express.static(path.join(__dirname, 'public')));
+    // 通过 node 的 http 模块来创建一个 server 服务
+    const server = require('http').createServer(app);
+    // 监听3000端口
+    server.listen(3000);
+
+    // WebSocket 是依赖 HTTP 协议进行握手的
+    const io = require('socket.io')(server);
+    // 监听客户端与服务端的连接
+    io.on('connection', function(socket) {
+        // 监听客户端的消息是否接收成功
+        socket.on('message', function(msg) {
+            // 客户端发来的 msg
+            console.log(msg);
+            // 发送消息给客户端
+            socket.send('服务端已收到消息' );
+        });
+    });
+
+修改客户端代码：
+
+    // public/index.html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <script src="/socket.io/socket.io.js"></script>
+    </head>
+    <body>
+        <script>
+            // io 参数可以是完整的 url 如下，也可以是相对路径如 io('/')，也可以放空如 io()，放空表示默认连接当前路径
+            const socket = io('http://localhost:3000/');
+            // 客户端与服务端建立连接时触发
+            socket.on('connect', () => {
+                console.log('连接建立成功');
+                socket.send('connection successful');
+            });
+            // 监听服务端发来的消息
+            socket.on('message', msg => {
+                // msg 为服务器发来的消息，不需要 .data 获取
+                console.log(`客户端接收到的消息： ${msg}`);  
+            });
+            // 监听与服务器连接断开时触发
+            socket.on('disconnect', () => {
+                console.log('连接断开成功');
+            });
+        </script>
+    </body>
+    </html>
+
+> 注：如果 socket.io.js 服务正在监听你的 HTTP 服务，它会自动创建客户端文件给 http://localhost:XXXX/socket.io/socket.io.js。所以上方 index.html 中我们才可以 script 引入 /socket.io/socket.io.js
+
+node 执行 server.js 启动服务：
+
+    node server.js
+
+打开 http://localhost:3000/ 这时在控制台可以看到输出了如下信息：
+
+![Alt text](./imgs/05-09.png)
+
+除了利用 socket.io.js 服务器自动生成的 http://localhost:XXXX/socket.io/socket.io.js 文件，还可以自己下载 socket.io.js 到本地后引入
+
+如下，本地下载了 socket.io.js：
+
+![Alt text](./imgs/05-10.png)
+
+修改 index.html 的 script 标签为：
+
+    <script src="../socket.io.js"></script>
+
+node 执行 server.js 启动服务：
+
+    node server.js
+
+**注：**，接着直接打开 index.html，而不是打开 http://localhost:3000/
+
+这时也可以在控制台看到：
+
+![Alt text](./imgs/05-09.png)
+
+
+
+
     
