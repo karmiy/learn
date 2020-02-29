@@ -396,7 +396,7 @@ worker线程内部，提供了importScripts方法可以引入外部JS文件，�
     '_work.js post: 4'
     '_work.js post: 5'
     
-## WebSorker    
+## WebSocket
 
 ### 学习来源
 学习至掘金文章 [WebSocket是时候展现你优秀的一面了](https://juejin.im/post/5bc7f6b96fb9a05d3447eef8)
