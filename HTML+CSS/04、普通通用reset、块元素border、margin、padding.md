@@ -41,12 +41,16 @@ padding-left:10px;
 
 - 写法：
 
-    //边框宽度  线类型 颜色(注：border也同padding占宽度，如宽度200px，则宽度为202px)
-    border : 1px solid #000;  
-    
-    // 当border未设置颜色时，将会取color作为颜色
-    border: 1px solid;
-    color: #000; 
+`````````
+// 边框宽度  线类型 颜色(注：border也同padding占宽度，如宽度200px，则宽度为202px)
+border : 1px solid #000;  
+
+// 当border未设置颜色时，将会取color作为颜色
+
+border: 1px solid;
+
+color: #000; 
+`````````
     
 - 边框样式：
 
