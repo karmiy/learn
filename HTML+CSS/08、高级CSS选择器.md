@@ -213,10 +213,11 @@
 **:before和:after只能各有一个，不能多个，会被覆盖**
 
     div:before {
-        content: '' //这个是必须的
+        content: '456'; //这个是必须的，没有内容则 ''
         display: block;
-        width: 200px;
-        height: 200px;
+        width: 100px;
+        height: 100px;
+        color: red;
     }
     
 ![Alt text](./imgs/8-01.png)
