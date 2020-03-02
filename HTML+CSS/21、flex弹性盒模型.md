@@ -249,10 +249,13 @@
 
     // 定义
     定义在分配多余空间前，该项先占据指定空间大小，再按flex-grow这个比例占据剩余空间
+    默认为auto，即有width取width大小，没有则内容撑开大小
+    也可以为百分比，即父容器尺寸百分比，若父容器尺寸未定义，结果与auto相同
     
     // 注
     设置了flex-basis后width无效，flex-basis优先级 > width
     设置了width没设置flex-basis，flex-basis为auto
+    设置了0%，且没设width，如果元素有内容占宽，也会保持内容撑开的尺寸，而不是挤为0尺寸
     
     // 示例
     #main {
@@ -306,7 +309,62 @@
 ![Alt text](./imgs/21-31.png) 
 
 ### flex属性的复合样式写法
+
+    // flex是flex-grow、flex-shrink、flex-basis的缩写
+    flex: flex-grow flex-shrink flex-basis;
+
+    // flex的默认值即上面3项的默认值，即0 1 auto。同理，如下是等价的
+    flex: 2 3 200px;
+    =>
+    flex-grow: 2;
+    flex-shrink: 3;
+    flex-basis: 200px;
     
+    // flex为none时，计算值为0 0 auto
     flex: none;
-    flex: flex-grow flex-basis
-    flex: flex-shrink flex-basis
+    =>
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: auto;
+    
+    // flex为auto时，计算值为1 1 auto
+    flex: auto;
+    =>
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+
+    // flex为非负数字时，如1，计算值为1 1 0%
+    flex: 1;
+    =>
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0%;
+
+    // flex为长度或百分比时，数值为flex-basis的值，其他取1
+    flex: 0%;
+    =>
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0%;
+
+
+    flex: 24px;
+    =>
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 24px;
+
+    // flex为2个非负数字，分别为flex-grow和flex-shrink的值，flex-basis为0%
+    flex: 2 3;
+    =>
+    flex-grow: 2;
+    flex-shrink: 3;
+    flex-basis: 0%;
+
+    // flex为一个非负数字和一个长度或百分比，视为flex-grow和flex-basis的值，flex-shrink取1
+    flex: 2 200px;
+    =>
+    flex-grow: 2;
+    flex-shrink: 1;
+    flex-basis: 200px;
