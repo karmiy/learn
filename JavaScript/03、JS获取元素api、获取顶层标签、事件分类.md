@@ -27,6 +27,7 @@
     
 ### 静态获取方式
     
+    // 兼容性： >= IE8
     // 以CSS选择器查找元素，如果有多个匹配元素，取第一个
     1、document.querySelector('#app .container')
     
@@ -108,7 +109,7 @@
     onfocus 获取焦点后
     onblur 失去焦点后
     onchange 改变内容后
-    oninput 改变内容时
+    oninput 尝试输入时
     onreset 重置后
     onselect 选择后
     onsubmit 提交时
