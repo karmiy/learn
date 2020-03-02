@@ -147,7 +147,7 @@
     <p class='k'>...</p>
     <p class='k'>...</p>
     
-    var oP = document.getElementsByTagName('p'); // 动态获取p标签
+    var oP = document.getElementsByClassName('k'); // 动态获取p标签
     oP[0].className = 'x';
     // 这时第一个p的class被改了，因为getElementsByTagName是动态获取，所以oP变成只有2个了
     
