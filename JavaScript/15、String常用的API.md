@@ -91,7 +91,7 @@ String的API一般都不会改变原字符串，所以通常需要用个变量�
     console.log(s.substr(1, 2)); // 'ar'，从第1位开始，切割2位
     console.log(s.substr(1)); // 'armiy'，没有参数二，表示切割到最后
     console.log(s.substr(-4, 3)); // 'rmi'，参数一为负数，相当于(s.length - 4, 3)，即(2, 3)
-    console.log(s.substr(3, -2)); // ''，参数一为负数相当于0，即(3, 0)
+    console.log(s.substr(3, -2)); // ''，参数二为负数相当于0，即(3, 0)
     console.log(s.substr()); // 'karmiy',什么都不传，返回原字符串
     
     // 总结

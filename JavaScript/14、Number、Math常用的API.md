@@ -41,7 +41,7 @@
     Number.isNaN({}); // false
     Number.isNaN(true); // false
     
-    //如果没有ES6的Number.isNaN，有什么polyfill是可以兼容的？
+    // 如果没有ES6的Number.isNaN，有什么polyfill是可以兼容的？
 
     Number.isNaN || (Number.isNaN = function(n) {
         return n !== n; // 利用NaN === NaN 是false的特性
@@ -72,9 +72,9 @@
 
     // 说明
     强制取数，和parseInt规则一样，可以去到小数
-    console.log('10.2px20'); // 10.2
-    console.log('10px20'); // 10
-    console.log('.1'); // 0.1
+    console.log(parseFloat('10.2px20')); // 10.2
+    console.log(parseFloat('10px20')); // 10
+    console.log(parseFloat('.1')); // 0.1
     
     // 应用场景
     我们经常会取形如绝对定位的top来进行计算
