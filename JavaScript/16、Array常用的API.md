@@ -389,27 +389,27 @@ Array的API存在着会改变原数组的效果，这在开发中经常引起BUG
         3、currentIndex 数组中正在处理的当前元素的索引，可选
         4、array 数组本身，可选
         
-     initialValue：初始值，可选
+    initialValue：初始值，可选
      
-     // 示例一，数字求和
-     var arr = [1, 2, 3, 4, 5, 6];
-     var total = arr.reduce(function(sum, current) {
+    // 示例一，数字求和
+    var arr = [1, 2, 3, 4, 5, 6];
+    var total = arr.reduce(function(sum, current) {
         return sum + current;
-     }, 0);
-     console.log(total); // 21
+    }, 0);
+    console.log(total); // 21
      
-     // reduce回调的流程：
-     第一次：如果有初始值，先将初始值和数组第1项给回调的参数，没有则把数组第1、2项给回调参数；
-     第二次：上一个的返回值和数组的下一项给回调参数；
-     。。。
+    // reduce回调的流程：
+    第一次：如果有初始值，先将初始值和数组第1项给回调的参数，没有则把数组第1、2项给回调参数；
+    第二次：上一个的返回值和数组的下一项给回调参数；
+    。。。
      
-     sum         current     返回
-     0           1           1
-     1           2           3
-     3           3           6
-     6           4           10
-     10          5           15
-     15          6           21
+    sum         current     返回
+    0           1           1
+    1           2           3
+    3           3           6
+    6           4           10
+    10          5           15
+    15          6           21
      
     // 示例二，聚合对象
     var arr = [{
