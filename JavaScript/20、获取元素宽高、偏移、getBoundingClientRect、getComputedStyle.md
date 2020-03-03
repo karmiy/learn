@@ -294,7 +294,7 @@
         if(!target)
           return false;
         
-        // 只取overflowY，不管样式是设置overflow: auto/scroll，还是overflowY: auto/scroll，取overflowY都可以得到解果
+        // 只取overflowY，不管样式是设置overflow: auto/scroll，还是overflowY: auto/scroll，取overflowY都可以得到结果
         var overflowY = DOMComputedStyle(target).overflowY;
         return (overflowY === 'auto' || overflowY === 'scroll') && (target.scrollHeight > target.clientHeight);
     }
