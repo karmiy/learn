@@ -135,15 +135,15 @@
     
     // 示例一
     var a ={
-            name : "karmiy",
-            fn : function (a, b) {
-                console.log(a + b)
-            }
+        name : "karmiy",
+        fn : function (a, b) {
+            console.log(a + b)
         }
-    
-        var b = a.fn;
-        b.bind(a, 1, 2); // 没有输出，bind只改变this指向不会执行
-        b.bind(a, 1, 2); // 输出3
+    }
+
+    var b = a.fn;
+    b.bind(a, 1, 2); // 没有输出，bind只改变this指向不会执行
+    b.call(a, 1, 2); // 输出3
     
     // 示例二
     var a = {
