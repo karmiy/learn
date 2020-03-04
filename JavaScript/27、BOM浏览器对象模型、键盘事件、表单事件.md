@@ -233,7 +233,7 @@ which在IE8即以下不兼容
         ...
     }
     
-    oInput.blur(); // 手动触发input的焦点获取
+    oInput.blur(); // 手动触发input失去焦点
 
 ### onchange、oninput
 
