@@ -97,7 +97,7 @@
     
     // 示例
     var r = /\byou\b/;
-    console.log(r.test('what are youhh doing?')); // false，hhh属于\w，不是单词边界
+    console.log(r.test('what are youhh doing?')); // false，hh属于\w，不是单词边界
     console.log(r.test('what are you11 doing?')); // false，11属于\w，不是单词边界
     console.log(r.test('what are you_ doing?')); // false，_属于\w，不是单词边界
     console.log(r.test('what are you-k doing?')); // true，-是单词边界
@@ -231,9 +231,15 @@
     console.log(s.match(/[abc]/g)); // ["a", "b", "c"]，相当于a|b|c
     console.log(s.match(/[a,b,c]/g)); // ["a", "b", "c"]，相当于a|b|c
     
-    // 示例二
+    // 示例二，[...]+表示里面这些字符任意组成
     var s = 'abbbcde';
     console.log(s.match(/[abc]+/g)); // ["abbbc"]
+
+    var s = 'a123bd';
+    console.log(s.match(/[ab]+/g)); // ["a", "b"]
+
+    var s = 'a123bd';
+    console.log(s.match(/[a31b]+/g)); // ["a1", "3b"]，因为a能在[a31b]里找到，1也可以，2不行，所以先得出a1，接着3可以在[a31b]里找到，b也可以，d不行，所以得出3b
     
     // 示例三，[^...]表示除了[]里的字符
     var s = 'abcdef';
@@ -338,11 +344,15 @@
 #### 不捕获组?=、?<=
 
     // 说明
-    (?=XXX) 匹配以XXX结尾的字符串，并且不捕获到分组中
+    (?=XXX) 匹配以某字符结尾的字符串，该字符以XXX开头，并且不捕获到分组中
     
     // 示例一：?=
     var s = 'Windows10';
     var r = /Windows(?=10)/; // 匹配10结尾，但是不把(10)放到匹配到的结果里
+    console.log(s.match(r)); // ["Windows"]
+
+    var s = 'Windows10ab291';
+    var r = /Windows(?=10)/; // 匹配10XXX结尾，但是不把(10XXX)放到匹配到的结果里
     console.log(s.match(r)); // ["Windows"]
     
     // 示例二：?=
@@ -357,7 +367,7 @@
     3、这个组也不会被编号
     
     // 说明
-    (?<=XXX) 匹配以XXX开头的字符串，并且不捕获到分组中
+    (?<=XXX) 匹配以某字符开头的字符串，该字符串以XXX结尾，并且不捕获到分组中
     
     // 示例
     var s = '10Windows';
