@@ -318,7 +318,7 @@
 
     // 示例十（执行过程观点3示例）
     function fn(a){
-        console.log( a );
+        console.log(a);
         var a = 'abc';
     }
     fn(10);
@@ -333,7 +333,7 @@
 
     // 示例十一
     function fn(a){
-        console.log( a );
+        console.log(a);
         function a() {}
         var a = 20;
     }
