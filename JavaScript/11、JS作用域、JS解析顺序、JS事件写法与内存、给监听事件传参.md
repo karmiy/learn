@@ -91,6 +91,7 @@
     // 执行过程
     1、从上往下执行代码（即我们传统理解的那种）
     2、执行过程中，遇到函数，就开辟新子作用域，此时，会进入新作用域解析里面的代码，同样遵循两项解析步骤
+    3、函数解析过程中，内部作用域的变量与形参重名时，解析后定义变量为undefined，会去使用形参的值
     
     // 示例一
     console.log(a);
@@ -314,6 +315,39 @@
     
     结果：
         undefined 10
+
+    // 示例十（执行过程观点3示例）
+    function fn(a){
+        console.log( a );
+        var a = 'abc';
+    }
+    fn(10);
+
+    解析：
+    1、定义
+        var a;
+    2、执行
+        a为undefined，使用形参接收到10，a = 10;
+        console.log(a); // 10
+        a = 'abc'
+
+    // 示例十一
+    function fn(a){
+        console.log( a );
+        function a() {}
+        var a = 20;
+    }
+    fn(10);
+
+    解析：
+    1、定义
+        function a() {};
+        var a;
+        重名取
+        function
+    2、执行
+        console.log(a); // ƒ a() {}
+        a = 20
     
 ## JS写法与内存问题
     

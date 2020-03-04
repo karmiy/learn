@@ -119,12 +119,17 @@ ES6规定了以下块级作用域
     }
     // 不会报错，这里有4个作用域，从父到子为：第一个for()作用域，第一个for{}作用域，第二个for()作用域，第二个for{}作用域
 
-    示例四:
+    // 4、function作用域（与for相同，小括号和大括号有各自的作用域）
+    var x = 9;
+    function fn(y = function() { console.log(x) }) {
+        var x = 10;
+        y();
+    }
+    fn(); // 输出9
+
+    // 注意：即使是不同作用域，设定上也不能同for一样，使用let或const在与形参同名的变量上
     function fn(x) {
         let x = 10;
         console.log(x); // 报错，Identifier 'x' has already been declared
     }
     fn(1);
-    // 注：
-    函数如
-    function fn() {}，小括号并没有和for一样，有自己的作用域，而是和{}同一个作用域
