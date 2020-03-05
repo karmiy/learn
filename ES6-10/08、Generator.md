@@ -264,13 +264,6 @@ ES6新增Generator函数，是一种异步编程解决方案
     
     
     比如我们要做一个异步请求，可以这样写：
-    axios.get(url).then(res => {
-        const data = JSON.parse(res.data);
-        console.log(data);
-    });
-    
-    
-    -----
     function * main(v0) {
         const v1 = yield request(v0);
         const v2 = yield request(v1);
@@ -278,9 +271,12 @@ ES6新增Generator函数，是一种异步编程解决方案
     }
     
     function request(value) {
-        setTimeout(() => {
-            
-        }, 3000);
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                console.log(value);
+                resolve(value + 1);
+            }, 2000);
+        });
     }
     
     function run(fn, v0) {
@@ -288,10 +284,13 @@ ES6新增Generator函数，是一种异步编程解决方案
         function next(value) {
             const result = gen.next(value);
             if (result.done) return;
-            next(result);
+            result.value
+            .then(data => next(data))
+            .catch(err => console.log('err:' + err));
         }
         next();
     }
+    run(main, 10);
     
 #### 处理回调地狱
     
