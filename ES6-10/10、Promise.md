@@ -241,10 +241,11 @@ ES6新增Promise，它是异步编程的一种解决方案，比传统的解决�
             resolve('[1, 2, 3, 4]');
         }, 2000);
     });
-    promise.then(JSON.parse) // 以JSON.parse作为参数
-            .then(data => {
-                console.log(data); // [1, 2, 3, 4]数组
-            });
+    promise
+    .then(JSON.parse) // 以JSON.parse作为参数
+    .then(data => {
+        console.log(data); // [1, 2, 3, 4]数组
+    });
             
     理解：
         我们常规.then回调参数是(data) => {}，它会接收前一个resolve传递的数据作为参数，去执行这个回调
