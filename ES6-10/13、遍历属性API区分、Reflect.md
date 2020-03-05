@@ -226,7 +226,12 @@ Reflect对象上有13个方法，基本都是从Object上搬过来的
         x: 1,
         [Symbol()]: 2,
     }
-    Reflect.ownKeys(obj); // ['x', Symbol()]
+    Reflect.defineProperty(obj, 'name', {
+        value: 'k',
+        enumerable: false,
+        configurable: false,
+    });
+    Reflect.ownKeys(obj); // ['x', 'name', Symbol()]
     
     
     11、Reflect.preventExtensions(target)
