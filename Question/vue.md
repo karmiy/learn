@@ -4,6 +4,8 @@
 
 - [Vue 开发必须知道的 36 个技巧](https://juejin.im/post/5d9d386fe51d45784d3f8637#heading-6)
 
+- [Vue读懂这篇，进阶高级](https://juejin.im/post/5e2453e8518825366e13f59a)
+
 ## Watch 如何实现立即执行
 
 一般 watch 在组件初始化时是不会立即执行的：
@@ -298,6 +300,173 @@ $parent 获取父组件实例
         },
     },
 
+- broadcast、dispatch
+
+vue 1.x 时的方法，事件广播与派发，vue 2.x 删除了
+
+broadcast 用于父传子（可跨级）
+
+dispatch 用于子（可跨级）传父
+
+**broadcast 实现：**
+
+    // 实现
+    function broadcast(componentName, eventName, params) {
+        this.$children.forEach(child => {
+            const name = child.$options.name;
+            if (name === componentName) {
+                child.$emit.apply(child, [eventName].concat(params));
+            } else {
+                broadcast.apply(child, [componentName, eventName].concat([params]));
+            }
+        });
+    }
+
+    // 父组件 App.vue
+    mounted() {
+        broadcast.call(this, 'Test', 'app-loaded', 100);
+    },
+
+    // 子组件 Test.vue
+    mounted() {
+        this.$on('app-loaded', (a) => {
+            console.log(a); // 输出 100
+        })
+    }
+
+**dispatch 的实现：**
+
+    // 实现
+    function dispatch(componentName, eventName, params) {
+        let parent = this.$parent || this.$root;
+        let name = parent.$options.name;
+        while (parent && (!name || name !== componentName)) {
+            parent = parent.$parent;
+            if (parent) name = parent.$options.name;
+        }
+        if (parent) parent.$emit.apply(parent, [eventName].concat(params));
+    }
+
+    // 子组件 Test.vue
+    mounted() {
+        dispatch.call(this, 'App', 'test-loaded', 10);
+    }
+
+    // 父组件 App.vue
+    created() {
+        this.$on('test-loaded', a => {
+            console.log(a); // 输出 10
+        })
+    }
+
+## 如何获取父/子/兄弟组件实例
+
+- findComponentUpward
+
+向上匹配最近 componentName 的组件实例
+
+    // 实现
+    export const findComponentUpward = (context, componentName, componentNames) => {
+        let parent = context.$parent;
+        let name = parent.$options.name;
+        while (parent && (!name || componentName !== name)) {
+            parent = parent.$parent;
+            if (parent) name = parent.$options.name;
+        }
+        return parent;
+    };
+
+    // 子组件 Test.vue，查找上级 App 组件实例
+    mounted() {
+        console.log(findComponentUpward(this, 'App'));
+    }
+
+- findComponentsUpward
+
+向上匹配所有 componentName 的组件实例
+
+    // 实现
+    export const findComponentsUpward = (context, componentName) => {
+        let parents = [];
+        const parent = context.$parent;
+        if (parent) {
+            if (parent.$options.name === componentName) parents.push(parent);
+            return parents.concat(findComponentsUpward(parent, componentName));
+        } else {
+            return [];
+        }
+    };
+
+    // 子组件 Test.vue，查找上级 App 组件实例
+    mounted() {
+        console.log(findComponentsUpward(this, 'App'));
+    }
+
+- findComponentDownward
+
+向下匹配最近 componentName 的组件实例
+
+    // 实现
+    export const findComponentDownward = (context, componentName) => {
+        const childrenList = context.$children;
+        let children = null;
+        if (childrenList.length) {
+            for (const child of childrenList) {
+                const name = child.$options.name;
+                if (name === componentName) {
+                    children = child;
+                    break;
+                } else {
+                    children = findComponentDownward(child, componentName);
+                    if (children) break;
+                }
+            }
+        }
+        return children;
+    };
+
+    // 父组件 App.vue，查找下级 Test 组件实例
+    mounted() {
+        console.log(findComponentDownward(this, 'Test'));
+    }
+
+- findComponentsDownward
+
+向下匹配所有 componentName 的组件实例
+
+    // 实现
+    export const findComponentsDownward = (context, componentName) => {
+        return context.$children.reduce((components, child) => {
+            if (child.$options.name === componentName) components.push(child);
+            const foundChilds = findComponentsDownward(child, componentName);
+            return components.concat(foundChilds);
+        }, []);
+    };
+
+    // 父组件 App.vue，查找下级 Test 组件实例
+    mounted() {
+        console.log(findComponentsDownward(this, 'Test'));
+    }
+
+- findBrothersComponents
+
+查找匹配 componentName 的兄弟组件实例
+
+    // 实现
+    export const findBrothersComponents = (context, componentName, excludeSelf = true) => {
+        let res = context.$parent.$children.filter(item => {
+            return item.$options.name === componentName;
+        });
+        let index = res.findIndex(item => item._uid === context._uid);
+        if (excludeSelf && index !== -1) res.splice(index, 1);
+        return res;
+    };
+
+    // 子组件 Test.vue，查找兄弟 Wrap 组件实例
+    mounted() {
+        console.log(findBrothersComponents(this, "Wrap"));
+    }
+
 ## 如何实现异步组件
 
 项目过大会导致加载缓慢，异步组件实现了按需加载
@@ -555,5 +724,180 @@ Vue.use 会调用对象的 install 方法，install 可以接收一个 Vue 参�
     Vue.use(KmUI); // 这时会去调用 install 方法，并把 Vue 作为参数传给它
 
 ## Vue 路由守卫有哪些
+
+### 全局守卫
+
+参数：
+
+- to: 即将进入的目标路由对象 Route
+
+- from：当前导航正要离开的路由对象 Route
+
+- next：函数，一定要调用 next 方法才能 resolve 这个钩子，否则无法进入下一步
+
+    - next()：进入管道下一个钩子，若钩子全部执行完，则导航状态为 comfirmed 可正常进去下一个页面
+
+    - next(false)：中断当前导航
+
+    - next(/) 或 next({path: '/'})：跳转到一个不同的地址。当前导航被中断，进行一个新导航，且允许设置注入 replace: true、name: 'home' 之类的选项以及任何用在 router-link 的 to prop 或 router.push 中的选项
+
+    - next(error)：如果传入的是 Error 示例，导航终止且错误被传递给 router.onError 注册过的回调
+
+**router.beforeEach：**
+
+在渲染该组件的对应路由被确认前调用
+
+    // router.js
+    const router = new VueRouter({ ... })
+
+    router.beforeEach((to, from, next) => {
+        // ...
+        next(); // 要调用 next 才能成功路由跳转
+    })
+
+**router.beforeResolve：**
+
+与 beforeEach 类似，区别是在导航被确认前，同时在所有组件内守卫和异步路由组件被解析之后，解析守卫就被调用
+
+**router.afterEach：**
+
+在所有路由跳转结束的时候调用，不需要 next
+
+    router.afterEach((to, from) => {
+        // ...
+    })
+
+## 路由内部守卫
+
+    const router = new VueRouter({
+        routes: [
+            {
+                path: '/foo',
+                component: Foo,
+                beforeEnter: (to, from, next) => {
+                    // ...
+                }
+            }
+        ]
+    })
+
+这些守卫与全局前置守卫的方法参数是一样的
+
+## 组件内部守卫
+
+    const Foo = {
+        template: `...`,
+        beforeRouteEnter (to, from, next) {
+            // 在渲染该组件的对应路由被 confirm 前调用
+            // 不！能！获取组件实例 `this`
+            // 因为当守卫执行前，组件实例还没被创建
+            // 虽然不能访问 this，但可以给 next 一个回调来接收组件实例，在导航被确认时执行回调
+            next(vm => {
+                // 通过 `vm` 访问组件实例
+            })
+
+        },
+        beforeRouteUpdate (to, from, next) {
+            // 在当前路由改变，但是该组件被复用时调用
+            // 举例来说，对于一个带有动态参数的路径 /foo/:id，在 /foo/1 和 /foo/2 之间跳转的时候，
+            // 由于会渲染同样的 Foo 组件，因此组件实例会被复用。而这个钩子就会在这个情况下被调用。
+            // 可以访问组件实例 `this`
+            // next 不需要传参数
+            next();
+        },
+        beforeRouteLeave (to, from, next) {
+            // 导航离开该组件的对应路由时调用
+            // 可以访问组件实例 `this`
+            // 可以通过 next(false) 取消
+            const answer = window.confirm('...')
+            if (answer) {
+                next()
+            } else {
+                next(false)
+            }
+        }
+    }
+
+## Object.freeze 在 Vue 中有什么作用
+
+我们在 Vue 中定义的 data，会被做响应式处理，添加 getter、setter 转换
+
+当使用 Object.freeze 来定义时，Vue 将不会在进行响应式处理，从而提高性能
+
+通常用于不需要改变，仅用于展示或使用的数据：
+
+    data() {
+        return {
+            list: Object.freeze([
+                {id: 1, value: '10'},
+                {id: 2, value: '20'}
+            ])
+        }
+    }
+
+## 谈谈 Vue 的响应式原理
+
+Vue 响应式的实现核心在于 3 个类：
+
+- Observer：给对象添加 getter、setter，用于依赖收集与派发更新
+
+- Dep：用于收集响应式对象的依赖关系，每个响应式对象都有一个 Dep 实例，如果响应式对象的属性值也是对象（即有子对象），则这个子对象也会有一个 Dep 实例，当数据变化时，dep 会调用 notify 通知各个 watcher
+
+- Watcher：观察者对象，实例分为渲染 watcher（render watcher）、计算属性 watcher（computed watcher）、侦听器 watcher（user watcher）
+
+流程：
+
+组件会创建一个 Observer 对象，Observer 对组件的 data 使用 Object.defineProperty 对每一个属性值进行监听，并把生成的 Observer 实例放在 data 下的 \__ob__ 属性下
+
+如：
+
+    data() {
+        return {
+            name: 'k',
+        }
+    }
+
+会得到：
+
+    {
+        name: 'k',
+        __ob__: Observer
+    }
+
+Observer 里有一个 dep 属性，它是 Dep 的实例,Dep 实例有一个 subs 属性，用于存放 Watcher：
+
+    // Observer 实例
+    {
+        dep: Dep
+    }
+
+    // Dep 实例
+    {
+        subs: [....] // 里面是 Watcher
+    }
+
+我们的 computed watch 等会有相应的 Watcher 实例，当创建了一个 Watcher 时，这个 Watcher 依赖 data 的 name 属性，就会触发 Observer 为其绑定的 getter，将整个 Watcher 实例放到 Dep 的 subs 数组里，并且 Watcher 实例里也会存有对应的 Dep 实例。这样 Observer 的 Dep 实例中，就可以通过 subs 得到全部的 Watcher
+
+当我们会 data 属性赋值时，会触发 Observer 为该属性绑定的 setter，它将触发 Dep 的 notify 方法通知全部 Watcher，而 notify 方法里会遍历 subs 数组，取出 Watcher 做相应的 update 操作
+
+## computed 和 watch 的区别
+
+computed 计算属性，依赖于其他属性值，且值有缓存，只有它依赖的属性值发生改变，下一次获取 computed 值时才会重新计算 computed 的值
+
+watch 侦听器：更多的是观察，无缓存性，类似于某些数据的监听回调
+
+应用场景：
+
+当我们需要进行数值计算，并依赖其他数据时，应该使用 computed，利用它的缓存特性，避免每次获取值时都重新计算
+
+当我们需要在数据变化时执行异步或开销较大的操作时，应该使用 watch
+
+## Vue 中 key 的作用是什么
+
+key 可以给每一个 vnode 唯一的 id，可以让 diff 操作更准确，更快速
+
+更准确：如果不带 key，相同的节点会采用就地复用的形式，这可能会延伸出一些问题，如绑定的事件触发结果问题，没有过渡动画等问题。加了 key，可以避免就地复用
+
+更快速：key 的唯一性可以被 Map 数据结构充分利用，相比遍历查找时间复杂度 O(n)，有了 key 后 Map 的时间复杂度为 O(1)
 
 
