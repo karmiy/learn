@@ -6,6 +6,8 @@
 
 - [Vue读懂这篇，进阶高级](https://juejin.im/post/5e2453e8518825366e13f59a)
 
+- [30 道 Vue 面试题](https://juejin.im/post/5d59f2a451882549be53b170)
+
 ## Watch 如何实现立即执行
 
 一般 watch 在组件初始化时是不会立即执行的：
@@ -46,6 +48,170 @@
             }
         }
     }
+
+## Vue 的生命周期有哪些
+
+- beforeCreate：组件实例初始化之后，this 指向实例，但访问不了 data、computed、watch、methods，数据也还未响应式。常用于初始化非响应式变量
+
+- created：数据响应式了，可以访问 data、computed、watch、methods 了，但是未挂载 DOM，无法用 this.$el 访问到 DOM 节点，$refs 属性内容也还没有。常用于简单的 ajax 请求
+
+- beforeMount：在挂载开始之前调用，beforeMount前，会找到对应 template，编译成 render 函数
+
+- mounted：实例挂载到 DOM，此时可以访问 this.$el、this.$refs。常用于组件初始化后访问 DOM 节点
+
+- beforeUpdate：响应式数据更新时调用，需要 DOM 打补丁前。常用于更新前访问原有的 DOM
+
+- updated：虚拟 DOM 重新渲染打补丁之后调用，DOM 已更新
+
+- beforeDestroy：组件实例销毁前触发，组件的 data、computed、methods 等还可以访问，this 也能拿到实例。常用于销毁定时器、解绑事件等
+
+- destroyed：实例销毁后触发，实例所有东西都会解绑，子实例也销毁，都访问不到
+
+- activated：在组件被 keep-alive 包裹时，每次进入当前组件时就会触发 activated（第一次也会，在 created 后触发）
+
+- deactivated：在组件被 keep-alive 包裹时，每次离开当前组件时触发 deactivated
+
+- errorCaptured：Vue 2.5.0 新增，捕获一个来自子孙组件的错误时调用
+
+**组件生命周期的执行顺序：**
+
+- 加载渲染：
+
+父 beforeCreate -> 父 created -> 父 beforeMount -> 子 beforeCreate -> 子 created -> 子 beforeMount -> 子 mounted -> 父 mounted
+
+- 组件更新：
+
+父 beforeUpdate -> 子 beforeUpdate -> 子 updated -> 父 updated
+
+- 销毁：
+
+父 beforeDestroy -> 子 beforeDestroy -> 子 destroyed -> 父 destroyed
+
+## 在哪个生命周期调用异步请求
+
+可以在 created、beforeMount、mounted 中调用
+
+因为这 3 个钩子中 data 已创建，可以将服务端返回的数据进行赋值
+
+推荐在 created：
+
+- 可以更快获取服务端数据，减少页面 loading 时间
+
+- SSR 不支持 beforeMount、mounted
+
+## 为什么组件中的 data 是个函数
+
+组件中 data 必须是个函数，而 new Vue 实例里的 data 可以是对象
+
+    // 组件中
+    data() {
+        return {
+            ...
+        }
+    }
+
+    // new Vue
+    new Vue({
+        el: '#app',
+        data: {
+            ...
+        }
+    })
+
+因为组件是可复用的，JS 里对象是引用关系，如果 data 是对象，作用域没有隔离，组件中的 data 会互相影响，如果是函数，每个实例可以维护一份被返回对象的拷贝，互不影响
+
+new Vue 的实例不会被复用，不存在这个问题
+
+## v-model 原理
+
+v-model 可以在表单 input、textarea、select 等元素上创建双向数据绑定
+
+v-model 本质是语法糖，内部为不同的输入元素使用不同的属性与抛出不同的事件
+
+- text、textarea 元素使用 value 属性、input 事件
+
+- checkbox、radio 使用 checked 属性、change 事件
+
+- select 使用 value 属性、change 事件
+
+例如 input 表单元素：
+
+    <input v-model='inputValue' />
+
+    等价于：
+    <input :value='inputValue' @input='inputValue = $event.target.value'>
+
+除了这些，还可以自定义组件中使用 v-model
+
+    // Wrap 组件
+    export default {
+        props: ['value'],
+        model: {
+            prop: 'value',
+            event: 'change',
+        },
+        methods: {
+            fn() {
+                ...
+                this.$emit('change', this.currentValue);
+            }
+        }
+    }
+
+    // 父组件
+    <Wrap v-model='val' />
+
+    data() {
+        return {
+            val: '',
+        }
+    }
+
+
+## Class 与 Style 如何动态绑定
+
+- class
+
+`````````
+// 数组形式
+<div :class="[isActive ? 'show' : 'hide', 'wrap']"></div>
+
+data() {
+    return {
+        isActive: true,
+    }
+}
+
+// 对象形式
+<div :class="{show: isActive, hide: !isActive, wrap: true}"></div>
+
+data() {
+    return {
+        isActive: true,
+    }
+}
+`````````
+
+- style
+`````````
+// 数组形式
+<div :style="[colorStyle, fontStyle]"></div>
+
+data() {
+    return {
+        colorStyle: {
+            color: 'red',
+        },
+        fontStyle: {
+            fontSize: '16px',
+        }
+    }
+}
+
+// 对象形式
+<div :style="{color: 'red', fontSize: '16px'}"></div>
+
+`````````
 
 ## 组件之间有哪些通讯方式
 
@@ -900,4 +1066,199 @@ key 可以给每一个 vnode 唯一的 id，可以让 diff 操作更准确，更
 
 更快速：key 的唯一性可以被 Map 数据结构充分利用，相比遍历查找时间复杂度 O(n)，有了 key 后 Map 的时间复杂度为 O(1)
 
+## Vue 中 this.$nextTick 的原理
+
+当我们改变数据时，如果在 DOM 更新后进行操作，一般都需要使用 $nextTick：
+
+    <div>name: {{name}}</div>
+
+    data() {
+        return {
+            name: 'kkk',
+        }
+    },
+    mounted() {
+        this.name = '666';
+        this.$nextTick(() => {
+          console.log(this.$el.innerText); // 输出 name: 666
+        });
+
+        console.log(this.$el.innerText); // 输出 name: kkk
+    },
+
+这是因为 **JavaScript 的事件循环**
+
+我们知道，所有的同步任务都在主线程上执行，除了主线程外，还存在一个任务队列，异步任务的执行结果会被放到这个队列里等待取出
+
+当主线程的任务执行后，就会去读取任务队列后执行
+
+不断这样循环
+
+而任务又分为宏任务和微任务，主线程里的任务也是一种宏任务，当主线程执行完毕后，会取出任务队列里所有的微任务执行
+
+而后进入下一次事件循环，取出下一个宏任务执行
+
+**Vue 就是利用了这种机制：**
+
+当 Vue 检测到数据变化，触发 watcher 更新操作，就会开启一个队列，而不是立即去更新 DOM，多个 watcher 被多次触发只会被推入队列里一次
+
+Vue 内部对异步队列尝试使用，Promise.then、MutationObserver 和 setImmediate，如果执行环境不支持，则会采用 setTimeout(fn, 0) 代替
+
+也就是说，当我们操作了 this.name = '666' 后，这时会触发 watcher 去更新视图，即更新 DOM，但是 Vue 不会直接同步执行 DOM 的更新，而是会把这个操作放在异步队列里，即将 DOM 的操作放在如上提到的 Promise.then 等其中一个里，这样这个操作 DOM 的代码就不会立即执行
+
+等我们全部同步操作都结束后（我们可能做了许多数据改变，如 this.name = '666'; this.id = 1 ....，与之相关的 update DOM 的操作会一个个用如 Promise.then 置于任务队列中），就会去取这些代码来一一执行，做到 DOM 视图的改变
+
+而 $nextTick 里的回调同样与 update 操作相同，被放到异步队列里，用如 Promise.then 包起来，所以当我们在代码后面利用 this.$next 操作 DOM 时，可以拿到最新的 DOM 视图结果，因为例如是用 Promise.then，那微任务都被取出来了，DOM 的 update 代码在我们 this.$nextTick 之前操作好了，自然 $nextTick 里可以得到最新的视图数据
+
+    <div>name: {{name}}</div>
+
+    data() {
+        return {
+            name: 'kkk',
+        }
+    },
+    mounted() {
+        this.$nextTick(() => {
+          console.log(this.$el.innerText); // 输出 name: kkk
+        });
+
+        this.name = '666';
+
+        this.$nextTick(() => {
+          console.log(this.$el.innerText); // 输出 name: 666
+        });
+    },
+
+如上，第一个 $nextTick 执行后，回调被用如 Promise.then 包起来放到异步队列里了，接着执行 this.name = '666'，它相关的 DOM update 操作也被放到异步队列里了，最后执行第二个 $nextTick，回调同样被放到异步队列里，取出来时是一个个顺序执行，而 DOM 更新视图是在第二个异步任务里做的，所以第一个 $nextTick 的回调里拿到的还是旧的，第二个 $nextTick 是新视图
+
+此外，除了 $nextTick 的回调是遵循这样异步执行，根据上面说到的 watcher 的更新也是这样异步执行，可知在 computed、watch 中的回调也会是异步执行的
+
+## 如何监听子组件的声明周期钩子
+
+可以通过 @hook:XXX 监听子组件的生命周期钩子：
+
+    // 监听 todo-item 组件的 mounted 钩子
+    <todo-item @hook:mounted="childrenMounted" />
+
+    methods: {
+        childrenMounted() {
+            console.log('监听到子组件 mounted');
+        }
+    }
+
+## Vue 的数据初始化顺序是什么样的
+
+- inject
+
+- provide
+
+- props
+
+- methods
+
+- data
+
+- computed
+
+- watch
+
+以上按顺序初始化，然后再 created
+
+这个顺序可以得知：
+
+- 初始化时 watch 可以拿到 computed
+
+- data 里不能用 computed 初始化
+
+## 怎么理解 Vue 单向数据流
+
+所有 prop 都使其父子之间形成**单向下行绑定**
+
+父级 prop 的更新会向下流动到子组件，反过来不行
+
+这样可以防止子组件意外改变父组件状态，导致应用打的数据流向难以理解
+
+## 什么是 MVVM
+
+MVVM 源于 MVC
+
+MVC：
+
+- View：UI 界面
+
+- Model：管理数据
+
+- Controller：业务逻辑
+
+当界面 View 收到用户响应时（如输入框输入内容），由 Controller 执行相应的业务逻辑代码通知 Model 变化。View 和 Model 需要通过 Controller 承上启下
+
+但是在这前端开发中存在一些痛处：
+
+- 在代码上大量调用相同 DOM API，处理繁琐冗余
+
+- 大量 DOM 操作使页面渲染性能降低
+
+- Model 频繁变化，开发者需要主动更新到 View，用户操作导致 View 变化，也同样需要开发者同步到 Model，工作繁琐，很难维护复杂多变的数据状态
+
+JQuery 就是为了让开发者可以更简洁的操作 DOM，然而它也只能解决第一个问题
+
+
+MVVM：
+
+- View：UI 界面
+
+- ViewModel：组织生成和维护的视图数据层
+
+- Model：管理数据
+
+在 MVVM 中，实现了双向绑定，View 和 Model 通过 ViewModel 交互，而 View 与 Model 之间同步的工作，都由 ViewModel 自动去完成
+
+开发者不需要自己去操纵 DOM 更新视图，MVVM 已经把这一块都做好了，只需要处理和维护 ViewModel，更新数据视图就会自动得到响应
+
+View 层展示的不是 Model 层的数据，而是 ViewModel 的数据，由 ViewModel 负责与 Model 交互，完全的解耦了 View 与 Model
+
+在 Vue 中，我们在 template 的模板就相当于 MVVM 的 View 层：
+
+    <template>
+        <div id='app'>
+            <p>{{message}}</p>
+        </div>
+    </template>
+
+组件中 data 的数据可以算一层 Model 管理层：
+
+
+    new Vue({
+        data() {
+            return {
+                message: '',
+            }
+        },
+        ...
+    })
+
+而整个组件实例就相当于 ViewModel 层：
+
+    // vm 相当于 ViewModel 层，帮助我们管理数据与视图
+    const vm = new Vue({
+        ...
+    })
+
+我们不需要自己去操作 DOM，只需要维护好 vm 里的数据，就会自动帮助我们同步到 View 视图中，而 View 中收到用户的操作响应，也由 vm 帮我们同步到 Model 中
+
+## Vue 是如何实现数据双向绑定
+
+双向绑定主要是：数据变化时更新视图（Data => View），视图变化更新数据（View => Data）
+
+- View => Data
+
+主要通过事件监听来实现
+
+如 input 输入时触发 oninput 事件修改 vm.$data 里的数据
+
+- Data => View
+
+比较复杂的是数据如何同步到视图，而这个原理其实就是 Vue 响应式的原理：
+
+当数据变化时，触发 Observer 的 setter，从而触发 Dep 的 notify 通知全部 Watcher 进行相应的 update 操作更新 DOM，从而更新视图
 
