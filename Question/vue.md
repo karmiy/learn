@@ -2,11 +2,13 @@
 
 学习至掘金小册：
 
-- [Vue 开发必须知道的 36 个技巧](https://juejin.im/post/5d9d386fe51d45784d3f8637#heading-6)
+- [Vue 开发必须知道的 36 个技巧](https://juejin.im/post/5d9d386fe51d45784d3f8637)
 
 - [Vue读懂这篇，进阶高级](https://juejin.im/post/5e2453e8518825366e13f59a)
 
 - [30 道 Vue 面试题](https://juejin.im/post/5d59f2a451882549be53b170)
+
+- [12道vue高频原理面试题,你能答出几道](https://juejin.im/post/5e04411f6fb9a0166049a073)
 
 ## Watch 如何实现立即执行
 
@@ -1261,4 +1263,66 @@ View 层展示的不是 Model 层的数据，而是 ViewModel 的数据，由 Vi
 比较复杂的是数据如何同步到视图，而这个原理其实就是 Vue 响应式的原理：
 
 当数据变化时，触发 Observer 的 setter，从而触发 Dep 的 notify 通知全部 Watcher 进行相应的 update 操作更新 DOM，从而更新视图
+
+## Vue 是如何对数组方法进行变异的
+
+Vue 通过原型拦截的方式重新的数据的 7 个方法：
+
+- push
+
+- pop
+
+- shift
+
+- unshift
+
+- splice
+
+- sort
+
+- reverse
+
+当调用数组这些方法时，首先获取数组的 \__ob__，即 Observer 对象，如果有新的值，就调用 observeArray 对新值进行监听，然后手动调用 notify 通知 watcher 执行 update
+
+## vm.$set 的实现原理
+
+对于已创建的实例，Vue 不允许动态添加根级别的响应式属性：
+
+    data() {
+        return {
+            info: {
+                id: 1,
+                name: 'k',
+            }
+        }
+    },
+    mounted() {
+        this.info.code = '0393'; // 无效，code 不会是响应式的
+    },
+
+Vue 提供了 Vue.set(object, propertyName, value) 方法向嵌套对象添加响应式属性：
+
+    data() {
+        return {
+            info: {
+                id: 1,
+                name: 'k',
+            }
+        }
+    },
+    mounted() {
+        this.$set(this.info, 'code', '0393'); // code 会成为响应式的
+    },
+
+那么 Vue 内部是如何解决对象新增属性不能响应式的问题？
+
+Vue.set 做了如下操作：
+
+- 如果目标是数组，使用 Vue 变异过的 splice 实现响应式（Array.prototype.splice 在原型上被 Vue 拦截了）
+
+- 如果目标是对象，判断属性是否存在，存在的话那本身这个属性已经是响应式，直接赋值即可
+
+- 如果目标本身就不是响应式的（Vue 中被响应式过的对象会添加自定义属性 \__ob__），那直接赋值，不把这个目标对象响应式化
+
+- 如果目标是响应式对象，属性不是响应式的，调用 defineReactive 进行响应式处理
 
