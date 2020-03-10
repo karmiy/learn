@@ -125,13 +125,18 @@ React 的 setState 更新原理和 Vue 的 $nextTick 相似，都是将更新操
 
 ![Alt text](./imgs/react-01.png)
 
+新版 16.4 后生命周期：
+![Alt text](./imgs/react-02.png)
+
 React16 之后移除的生命周期（未删除，17 后准备完全移除，保留 UNSAFE_ 前缀）：
 
 - componentWillMount：组件渲染之前执行，还无法拿到真实 DOM 节点
 
 - componentWillReceiveProps：componentWillReceiveProps(nextProps)，组件初始化时不会执行，组件接收到新的 props 时触发
 
-- componentWillUpdate：componentWillUpdate(nextProps, nextState)，组件
+- componentWillUpdate：componentWillUpdate(nextProps, nextState)，组件即将更新前调用，在 props 或 state 更新后都会触发，在 componentWillReceiveProps 之后，render 之前
+
+
 
 
 
