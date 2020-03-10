@@ -119,6 +119,22 @@ setState 的批量更新优化也是建立在 '异步' 之上的，对同一个�
 
 React 的 setState 更新原理和 Vue 的 $nextTick 相似，都是将更新操作后置执行
 
+## React 生命周期有哪些
+
+旧版生命周期：
+
+![Alt text](./imgs/react-01.png)
+
+React16 之后移除的生命周期（未删除，17 后准备完全移除，保留 UNSAFE_ 前缀）：
+
+- componentWillMount：组件渲染之前执行，还无法拿到真实 DOM 节点
+
+- componentWillReceiveProps：componentWillReceiveProps(nextProps)，组件初始化时不会执行，组件接收到新的 props 时触发
+
+- componentWillUpdate：componentWillUpdate(nextProps, nextState)，组件
+
+
+
 ## 什么是受控组件、非受控组件
 
 受控组件：
@@ -853,4 +869,56 @@ constructor() {
         }
     }
 
+## React 中 StrictMode 是什么
 
+React 的 StrictMode 是一种辅助函数，可以帮助开发者编写更好的 React 组件
+
+使用 \<StrictMode/> 包裹组件，可以检查：
+
+- 内部组件是否遵循某些推荐做法，如果没有会在控制台给出警告
+
+- 是否使用已废弃的方法，如果有会在控制台给出警告
+
+- 识别潜在的风险预防一些副作用
+
+## 什么是 prop drilling
+
+即多层嵌套组件中，底层子元素要使用顶层父元素的数据，最简单的做法是将 prop 从每个组件一层层传递下来，从源组件传递到深层嵌套组件，这就是 prop drilling
+
+缺点：原本不需要数据的组件也被迫需要添加这个需要传递的 prop，变得不必要的复杂，难以维护
+
+解决：使用 React Context，利用 Provider 组件传递数据，Consumer 组件或 contextType 接收类组件的数据，函数组件可以用 useContext 接收数据
+
+## React 中 constructor 和 getInitialState 的区别是什么
+
+constructor 是 React 使用 ES6 class 定义组件初始状态时使用
+
+getInitialState 是在 React.createClass 中使用
+
+    class MyComponent extends React.Component {
+        constructor(props) {
+            super(props);
+            this.state = {
+                ...
+            };
+        }
+    }
+
+    等价于：
+    var MyComponent = React.createClass({
+        getInitialState() {
+            return {
+                ...
+            };
+        },
+    });
+
+## React Hook 有什么优势
+
+- 函数式组件中使用，函数组件相比类组件性能更好
+
+- 更好的重用，相比 HOC 高阶组件，避免了组件深处嵌套问题
+
+- 将逻辑也做到了解耦，类组件中我们可能在生命周期中实现一系列的逻辑操作，然而这些逻辑操作相互不关联却放在一个生命周期里强行耦合，而 hooks 让我们提取自定义 hook，更好的分离逻辑
+
+- class 组件初学者需要了解 this 指向问题，存在学习障碍，hook 中不存在这个问题
