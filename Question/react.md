@@ -136,9 +136,44 @@ React16 之后移除的生命周期（未删除，17 后准备完全移除，保
 
 - componentWillUpdate：componentWillUpdate(nextProps, nextState)，组件即将更新前调用，在 props 或 state 更新后都会触发，在 componentWillReceiveProps 之后，render 之前
 
+目前 React16.8+ 的生命周期分为 3 个阶段：**挂载阶段、更新阶段、卸载阶段**
 
+挂载阶段：
 
+- constructor：构造函数，最先被执行，通常在构造函数里初始化 state 或绑定 this
 
+- getDerivedStateFromProps：static getDerivedStateFromProps(nextProps, prevState)，是个**静态方法**，在组件初始化、prop 或 state 改变时都会调用，需要一个返回值为新的 state 状态，即使 state 不变也要返回 null。一般用于接收新 props 而修改 state
+
+``````````
+static getDerivedStateFromProps(nextProps, prevState) {
+    console.log(nextProps, prevState);
+    // return null; // 返回 null 表示 state 不变
+    return {
+        ...prevState,
+        id: 11,
+    };
+}
+``````````
+
+- render：纯函数，返回渲染的内容
+
+- componentDidMount：组件挂载后调用，此时可以操作 DOM 节点
+
+更新阶段：
+
+- getDerivedStateFromProps：...
+
+- shouldComponentUpdate：shouldComponentUpdate(nextProps, nextState)，需要返回一个 boolean，**表示是否重新渲染**。通常用来优化 React 性能
+
+- render：...
+
+- getSnapshotBeforeUpdate：getSnapshotBeforeUpdate(prevProps, prevState)，在 render 后 componentDidUpdate 前调用。这个函数返回值会作为componentDidUpdate 的第 3 个参数，若不需要也要返回 null，此生命周期必须与 componentDidUpdate 搭配，此生命周期时 **DOM 还未更新**，一般将对比或计算的过程放在这里，将结果传递给 componentDidUpdate
+
+- componentDidUpdate：componentDidUpdate(prevProps, prevState, snapshot)，在组件更新完成后调用，**此时 DOM 已更新**。一般将对比或计算的过程迁移至 getSnapshotBeforeUpdate，然后在 componentDidUpdate 中统一触发回调或更新状态
+
+卸载阶段：
+
+- componentWillUnmount：当组件被卸载或销毁就会调用，可以在这个生命周期里清除定时器，取消请求，清理无效 DOM 等清理工作
 
 ## 什么是受控组件、非受控组件
 
