@@ -253,6 +253,12 @@ Array的API存在着会改变原数组的效果，这在开发中经常引起BUG
     var brr = [4, 5, 6];
     var crr = [7, 8, 9];
     console.log(arr.concat(brr, crr)); // 可以多个数组一起拼接
+
+    // concat 参数为一个值或数据，且可以磨平第一层数组
+    var arr = [1, 2, 3];
+    var brr = [4, 5, 6];
+    console.log(arr.concat(brr, 7, 8, [9, 10], [11, [12, 13]]));
+    // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, [12, 13]]，一层数组都被磨平了
     
     // ES6 扩展运算符拼接数组
     var arr = [1, 2, 3];
