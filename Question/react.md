@@ -1296,4 +1296,48 @@ React 中当组件的 props 或 state 改变时触发组件更新，都会重新
 
 简而言之，Vue 已经将性能优化做好了，React 在性能优化上更灵活
 
+## 如何理解 Fiber
+
+### Fiber 的原理是什么
+
+React Fiber 是对核心算法的一次重新实现
+
+原来 React 的更新过程是同步的，这可能会导致性能问题，因为当 React 要加载或更新组件树时，有很多事要做：调用生命周期，计算对比 Virtual DOM、更新 DOM 树，整个过程是同步的，只要一个更新（如调用 this.setState），React 会**遍历**应用的所有节点，这些操作就要一步到底走下去，这可能会造成界面卡顿问题
+
+React Fiber 就是为了解决这个 JS 单线程引起的问题，它将更新过程碎片化，把耗时长的任务分为很多小片，虽然总时长依旧，但每个小片执行完成后，就把控制权交还给浏览器，让浏览器有时间进行页面的渲染，主要调用的是浏览器的 **requestIdleCallback** API
+
+并且更新分片后，每次执行新的分片前还可以查看是否存在优先级高的任务要做，没有就继续更新，主要做的优势在于可以灵活的暂停、继续和丢弃执行的任务
+
+这样的做法也让浏览器主线程得以释放，保证了渲染了帧数
+
+### 每次分片后如何知道下一段从哪个组件开始渲染
+
+每个 React 元素都有一个对应的 Fiber 节点，用于描述需要完成的工作，且 Fiber 节点拥有 return、child、sibling 三个属性，分别表示父节点、子节点、兄弟节点，这就可以从树结构转而构建出一个**链表**
+
+![Alt text](./imgs/react-03.png)
+
+### Fiber 对现有代码的影响
+
+Fiber 将更新进行分片，并且可以让优先级高的任务打断更新，这可能造成低优先级的更新任务完全作废，等待时机重头再来
+
+因为更新可能被打断，Fiber 的更新过程分为两个阶段：
+
+- Reconciliation Phase
+
+- Commit Phase
+
+Reconciliation Phase 会找到需要更新哪些 DOM，这个阶段是可以被打断的，会调用如下生命周期：**componentWillMount、componentWillReceiveProps、shouldComponentUpdate、componentWillUpdate**
+
+Commit Phase 会一鼓作气把 DOM 更新完，不会被打断，会调用如下生命周期：**componentDidMount、componentDidUpdate、componentWillUnmount**
+
+可以看出，由于 Fiber 的机制，**现在第一阶段的生命周期在一次加载或更新中可能被多次调用，造成不必要的 BUG，不安全**
+
+所以 React16 后推出了新的生命周期：
+
+- static getDerivedStateFromProps：处于 Reconciliation 阶段，但因为是静态方法，用户无法做如 this.XXX 等操作，强迫这个函数变成纯函数，逻辑相对简单，就没那么多错误了
+
+- getSnapShotBeforeUpdate：处于 Commit 阶段，不会有重复调用问题
+
+
+
 
