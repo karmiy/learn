@@ -50,29 +50,29 @@ bind 与 call 参数相似
 
 - call 的实现：
 
-············
+````````````
 Function.prototype._call = function(context, ...args) {
     context.func = this;
     const result = context.func(...args);
     delete context.func;
     return result;
 }
-············
+````````````
 
 - apply 的实现：
 
-············
+````````````
 Function.prototype._apply = function(context, args) {
     context.func = this;
     const result = args ? context.func(...args) : context.func();
     delete context.func;
     return result;
 }
-············
+````````````
 
 - bind 的实现：
 
-············
+````````````
 Function.prototype._bind = function(context, ...args) {
     context.func = this;
     return function F(...params) {
@@ -87,7 +87,7 @@ Function.prototype._bind = function(context, ...args) {
         return result;
     }
 }
-············
+````````````
 
 ## 深拷贝与浅拷贝的区别是什么
 
@@ -250,6 +250,14 @@ console.log(o1 === o2); // true
     }
     const arr = [1, [2, 3, [4, 5, 6], 7], 8];
     console.log(flattenDeep(arr));
+
+## 什么是原型链
+
+每个构造函数都有 prototype 属性获得原型
+
+对象实例也有 \_\_proto\_\_ 属性获得原型 
+
+查找一个对象的属性时，会先从自身找，找不到往上一层原型找，找到则返回，一直到顶层 Object 原型为止，找不到为 undefined
 
 ## ES5 如何实现继承
 
