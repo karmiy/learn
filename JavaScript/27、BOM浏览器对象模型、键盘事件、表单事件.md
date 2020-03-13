@@ -216,7 +216,7 @@ which在IE8即以下不兼容
     
     // 注（下例onblur、blur一致）
     1、<a>、<area>、<button>、<input>、<object>、<select>、<textarea>等标签都可以获取焦点
-    2、<div>、<span>等无法获取焦点，如果需要，可以设置tabindex属性如<div tabindex='1'>，这样div也可以获取焦点
+    2、<div>、<span>等无法获取焦点，如果需要，可以设置tabindex属性如<div tabindex='1'>，这样div也可以获取焦点（注：设了 tabindex 就可以点击获取焦点，即使是 -1，-1 只是键盘 tab 排除而已）
     3、tabindex = -1无法通过键盘tab键获取焦点
     4、tabindex = 0 优先级排在最后
     5、tabindex = 1 - 32767，数值越大，排在越后面，即键盘tab切换获取焦点时，先选中tabindex=1，再选中tabindex=2 ... 最后选中tabindex=0    
