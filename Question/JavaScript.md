@@ -112,6 +112,38 @@ Function.prototype._bind = function(context, ...args) {
     const o2 = JSON.parse(JSON.stringify(o1));
     console.log(o1.list === o2.list); // false
 
+## 如何实现一个深拷贝
+
+- 最简洁实现
+
+最简单实现深拷贝的方法，就是使用 JSON.parse(JSON.stringify(obj))：
+
+    const o1 = {
+        list: [1, 2, 3],
+    }
+    const o2 = JSON.parse(JSON.stringify(o1));
+    console.log(o1.list === o2.list); // false
+
+然而这个方法的局限性非常大，如拷贝其他引用类型、函数、循环引用等都存在缺陷
+
+- 基础实现
+
+`````````````
+function clone(target) {
+    if (typeof target === 'object') {
+        let cloneTarget = {};
+        for (const key in target) {
+            cloneTarget[key] = clone(target[key]);
+        }
+        return cloneTarget;
+    } else {
+        return target;
+    }
+}
+`````````````
+
+更深层的写法可以参考：[如何写出一个惊艳面试官的深拷贝](https://juejin.im/post/5d6aa4f96fb9a06b112ad5b1)
+
 ## 什么是柯里化，如何实现
 
 函数柯里化是把接收多个参数的函数，转为为一系列使用一个参数的函数的技术：
@@ -678,4 +710,126 @@ ES 模块不是对象，import 命令会被 JavaScript 引擎静态分析，**�
 - CommonJS 输出的是值的拷贝，ES 模块系统输出的是值的引用
 
 - CommonJS 是运行时加载，加载的是个对象，只有在脚本运行时才会生成，而ES 模块系统是编译时输出接口，不是对象，在代码静态编译阶段就会生成
+
+## 如何实现大文件上传和断点续传
+
+学习至 [字节跳动面试官：请你实现一个大文件上传和断点续传](https://juejin.im/post/5dff8a26e51d4558105420ed)
+
+下面只整理思路：
+
+- 大文件上传
+
+前端：
+
+ 利用 **Blob.prototype.slice** 方法，将 file 进行切片（如切成 10 片）
+ 
+ 循环每一个分片，将每一个切片分别调用接口发送给后端（**并行**发送请求，Promise.all  等待上传结束）
+ 
+每个分片发送结构如下：
+
+    {
+        chunk: file 分片
+        hash: filename + '-' + index（如：不可描述的视频-1）
+        filename: 文件名（不可描述的视频）
+    }
+
+ 结束后调用接口通知后端合并文件，传递参数：
+
+    {
+        filename: 文件名（不可描述的视频）
+    }
+
+
+后端：
+
+接收切片的接口（接收每一个切片，放在定义的文件夹中）
+
+合并请求的接口（接口被调用后合并全部切片为完整文件）
+
+- 显示上传进度条
+
+前端：
+
+各个分片的上传进度：每个切片的请求中，利用 onProgress 监听上传进度
+
+整个文件的上传进度：如果在 Vue 库中，可以利用 computed 实时计算总进度，算法为：当前各个切片已上传 size / 总文件 size，而当前各个切片已上传 size 为该切片 size * 当前该切片进度 percentage
+
+- hash 标识符优化
+
+之前使用的标识符 hash，是 filename + '-' + index（如：不可描述的视频-1），这样文件名一旦修改就失去了效果，而事实上文件内容是不变的，正确的做法是将文件内容作为 hash
+
+可以使用**spark-md5**库，将文件内容计算出 hash，由于考虑大文件计算的性能耗费，为了防止 UI 阻塞，可以使用 Web Worker 单独计算
+
+这样传输的分片就会是如：9bd12088913asc12387f0964-1 的 hash 值
+
+- 文件秒传
+
+做到分片秒传，其实就是已经上传到服务端的资源，当用户再次上传时不再发起请求，直接上传成功
+
+前端：
+
+上传前，利用之前生成的 hash，请求后端判断文件是否已经上传过，若已经上传，直接提示上传成功，不需要发起请求上传文件
+
+后端：
+
+has 值校验文件是否已上传过的校验接口
+
+- 断点续传-暂停上传
+
+前端：
+
+利用 XMLHttpRequest 的 abort 取消请求
+
+- 断点续传-恢复上传
+
+前端：
+
+点击上传或续传时，调用后端接口，获取**该文件已上传的分片名（如 9bd12088913asc12387f0964-1、9bd12088913asc12387f0964-2）**，上传时进行过滤，只上传未上传的部分
+
+后端：
+
+获取已上传分片名列表的接口，可以与之前校验文件是否已上传完成的接口合并
+
+- 进度条回退 BUG
+
+前端：
+
+因为暂停后直接取消请求，导致恢复上传时重新要上传的分片会从 0% 开始，就会出现进度条回退
+
+切片进度条在点击上传或恢复时，需要将已上传的切片进度变为 100%
+
+由于文件进度条是由各个切片进度条计算而来的，在点击上传或恢复时由于部分未上传完成的分片取消变回 0%，导致总文件进度条会倒退。可以用一个变量存储原本总进度条的进度值，当重新恢复上传时，如果计算结果小于存储值，则已存储值来显示
+
+## 如何实现文本溢出省略
+
+[可能是最全的 “文本溢出截断省略” 方案合集](https://juejin.im/post/5dc15b35f265da4d432a3d10)
+
+## get、post 区别
+
+[get、post 区别](https://github.com/karmiy/learn/blob/master/JavaScript/22%E3%80%81ajax%E3%80%81jsonp.md)
+
+- 请求方式
+
+- 缓存
+
+- 数据量
+
+- 安全性
+
+## localStorage、sessionStorage、cookie 区别
+
+[Web Storage与Cookie](https://github.com/karmiy/learn/blob/master/H5/5%E3%80%81input%20file%E3%80%81contenteditable%E3%80%81storage%E7%BC%93%E5%AD%98%E3%80%81Web%20Worker%E3%80%81WebSocket.md)
+
+- 传递
+
+- 有效期
+
+- 存储大小
+
+- 作用域
+
+
+
+
+
 
