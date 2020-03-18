@@ -347,7 +347,7 @@ $parent 获取父组件实例
     <header :title.sync='titie' />
 
     等价于
-    <header :title='title' @update='val => title = val' />
+    <header :title='title' @update:title='val => title = val' />
 
     // 子
     mounted() {
