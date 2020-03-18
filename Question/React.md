@@ -1151,7 +1151,7 @@ react-redux 的核心模块：
 
 - Provider：一个组件，用来传递 store 给子组件
 
-- connect：一个函数，负责连接 Redux 与 React，合并 state 和 dispatch 到组件的 props 中，让组件可以从 porps 中获取 store 的 state，也可以 dispatch 派发 action
+- connect：一个函数，负责连接 Redux 与 React，合并 state 和 dispatch 到组件的 props 中，让组件可以从 props 中获取 store 的 state，也可以 dispatch 派发 action
 
 示例：
 
