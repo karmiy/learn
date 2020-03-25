@@ -804,18 +804,6 @@ has 值校验文件是否已上传过的校验接口
 
 [可能是最全的 “文本溢出截断省略” 方案合集](https://juejin.im/post/5dc15b35f265da4d432a3d10)
 
-## get、post 区别
-
-[get、post 区别](https://github.com/karmiy/learn/blob/master/JavaScript/22%E3%80%81ajax%E3%80%81jsonp.md)
-
-- 请求方式
-
-- 缓存
-
-- 数据量
-
-- 安全性
-
 ## localStorage、sessionStorage、cookie 区别
 
 [Web Storage与Cookie](https://github.com/karmiy/learn/blob/master/H5/5%E3%80%81input%20file%E3%80%81contenteditable%E3%80%81storage%E7%BC%93%E5%AD%98%E3%80%81Web%20Worker%E3%80%81WebSocket.md)
