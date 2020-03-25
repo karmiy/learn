@@ -804,6 +804,42 @@ has 值校验文件是否已上传过的校验接口
 
 [可能是最全的 “文本溢出截断省略” 方案合集](https://juejin.im/post/5dc15b35f265da4d432a3d10)
 
+## 前端性能优化方案有哪些
+
+- 减少 HTTP 请求
+
+- 使用 CDN 加速
+
+- CSS、JS 放外部文件，可以缓存
+
+- CSS 放 \<head>，JS 放 \</body> 前，因为资源加载自上而下，CSS 放顶部能优先渲染，而 JS 会阻塞 DOM 解析，放底部
+
+- 小图标用 iconfont
+
+- 小图片 base64 格式转化
+
+- 减少静态资源体积，如图片体积
+
+- CSS 编写高效，一般建议嵌 3 层即可，少用 CSS 表达式，表达式会持续在页面上计算样式影响性能
+
+- gzip 压缩 js、css
+
+- 使用缓存
+
+- 代码切割，如 SPA 页面的路由按需加载，不要整个 js 就一个文件，首页一下子加载全部 js 脚本
+
+- 图片懒加载
+
+- 骨架屏，一开始视图外的先不渲染，用骨架屏形式展示，如手机上看淘宝商品为刷到的就骨架屏显示
+
+- 做好防抖节流，如滚动监听、动画
+
+- 大量数据分页或 select 长列表性能优化，只展示可视区域数据
+
+- SSR 服务端渲染，减少 SPA 首页执行 JS 的白屏过程
+
+- 预加载，如弹框一开始进来不需要用来，点击才展示，可以弹框组件先不加载，空闲时预加载
+
 ## localStorage、sessionStorage、cookie 区别
 
 [Web Storage与Cookie](https://github.com/karmiy/learn/blob/master/H5/5%E3%80%81input%20file%E3%80%81contenteditable%E3%80%81storage%E7%BC%93%E5%AD%98%E3%80%81Web%20Worker%E3%80%81WebSocket.md)
