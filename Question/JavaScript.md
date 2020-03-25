@@ -957,7 +957,7 @@ CSRF 可以攻击成功，是因为攻击者可以伪造请求，用户验证信
 可以在用户登录时，利用用户信息进行加密生成 token 后返回给前端，前端存储后每次请求可以作为参数带上发送给后端，后端再进行解密校验，校验不通过拒绝请求
 
 
-## HTTP2
+## 简述 HTTP2
 
 参考至： [你了解HTTP2.0吗](https://juejin.im/post/5e54da4ef265da57325529a0)
 
@@ -1017,10 +1017,228 @@ HTTP2 采用 HPACK 压缩格式压缩首部
 
 如果服务端推送的资源已经被浏览器缓存过，浏览器可以通过发送 RST_STREAM 帧来拒收
 
+## HTTP 有哪些方法
 
+参考至： [可能是全网最全的http面试答案](https://juejin.im/post/5d032b77e51d45777a126183)
 
+- GET：通常请求服务器发送某些资源
 
+- POST：发送数据给服务器
 
+- PUT：用于新增资源或使用请求中的有效负载替换目标资源的表现形式
 
+- DELETE：删除指定资源
 
+- PATCH：对资源进行部分修改
 
+- HEAD：请求资源的头部信息，并且这些头部与 HTTP GET 请求时返回的一致。使用场景是下载一个大文件先获取其大小再决定是否要下载
+
+- OPTIONS：获取目标资源所支持的通讯选项
+
+- CONNECT：HTTP1.1 中预留给能够将连接改为管道方式的代理服务器
+
+- TRACE：回显服务器收到的请求，主要用于测试或诊断
+
+## GET 和 POST 都是给服务器发送新增资源，有什么区别
+
+[get、post区别](https://github.com/karmiy/learn/blob/master/JavaScript/22%E3%80%81ajax%E3%80%81jsonp.md)
+
+## PUT 和 POST 区别
+
+PUT 是幂等的，连续调用一次或多次效果相同，POST 不是幂等的
+
+PUT 的 URI 通常指向具体单一资源，POST 可以指向资源集合
+
+    如我们创建一篇文章时往往 POST：https://www.xxx.com/articles
+
+    语义是在 articles 资源集合下创建一篇新文章，如果多次提交这个请求，会创建多个文章，不幂等
+
+    而 PUT：https://www.xxx.com/articles/4863 语义是更新对应文章下的资源，是幂等的，如把 karmiy 改为 karloy，发多少次都是改为 karloy
+
+## PUT 和 PATCH 都是给服务器发送修改资源，有什么区别
+
+PATCH 一般对已知资源进行局部更新
+
+    如有个文章地址：https://www.xxx.com/articles/4863
+
+    这个文章可以表示为：
+
+        article = {
+            author: 'karmiy',
+            createTime: '2012-01-12',
+            content: 'aaaa',
+            id: 10,
+        }
+
+    当我们修改文章作者，发送 PUT 请求，这时数据应该是如下：
+
+        article = {
+            author: 'karloy',
+            createTime: '2012-01-12',
+            content: 'aaaa',
+            id: 10,
+        }
+
+    这种直接覆盖资源的修改方式用 PUT
+
+    但是你觉得每次带这么多无用信息，那么可以使用 PATCH，只需要发送数据：
+
+        {
+            author: 'karloy',
+        }
+
+## 什么是正向代理、反向代理
+
+- 正向代理：
+
+A 向 C 借钱，C 不认识 A 不借
+
+A 就通过 B 像 C 借钱，B 借到再转给 A
+
+这里 B 就是正向代理
+
+像平时翻墙就是正向代理，如要访问 www.google.com，可以用 Shadowsocks 搭建代理服务器，代理帮我们请求后再把结果返回给我们
+
+正向代理中，**真实服务器是不清楚客户端是谁的**
+
+- 反向代理：
+
+A 向 B 借钱，B 借给了他，但是实际上 B 这个钱是向 C 借的
+
+这里 B 就是反向代理
+
+反向代理**隐藏了真实服务端**，如我们访问 www.baidu.com，背后可能有成千上万服务器为我们服务，具体哪一台，你不知道，你只需要知道反向代理服务器是谁
+
+## Nginx 能做什么
+
+参考至 [Nginx与前端开发](https://juejin.im/post/5bacbd395188255c8d0fd4b2)
+
+Nginx 是一款轻量级的 HTTP 服务器，采用事件驱动的异步非阻塞处理方式框架，这让其具有极好的IO性能，时常用于服务端的反向代理和负载均衡
+
+它能做什么：
+
+- 快速实现简单的访问限制：
+
+经常会遇到希望网站让某些特定用户群体访问，不让某个 URI 访问，可以配置：
+
+    location / {
+        deny  192.168.1.100;
+        allow 192.168.1.10/200;
+        allow 10.110.50.16;
+        deny  all;
+    }
+
+    禁止 192.168.1.100 访问
+    允许 192.168.1.10 - 192.168.1.200 访问（除了 192.168.1.100）
+    允许 10.110.50.16 这个单独 ip 访问
+    剩余未匹配全部禁止访问
+
+- 解决跨域：
+
+如本地起一个 nginx server，server_name 是 mysite-base.com
+
+要请求 http://www.kaola.com/getPCBannerList.html，这时会跨域请求失败
+
+为了绕开跨域问题，需要将请求的域名改为 mysite-base.com
+
+同时约定一个 url 规则来表明代理请求身份，Nginx 通过匹配规则，将请求代理回原来的域
+
+    #请求跨域，这里约定代理请求url path是以/apis/开头
+    location ^~/apis/ {
+        # 这里重写了请求，将正则匹配中的第一个()中$1的path，拼接到真正的请求后面，并用break停止后续匹配
+        rewrite ^/apis/(.*)$ /$1 break;
+        proxy_pass https://www.kaola.com/;
+    }
+
+接着将请求从 http://www.kaola.com/getPCBannerList.html 变为 http://mysite-base.com/apis/getPCBannerList.html，就可以正常请求了
+
+- 适配 PC 和 Mobile：
+
+很多网站都有 PC 和 Mobile 两个站点，希望通过用户当前环境自动切换到正确的站点
+
+Nginx 可以通过 $http_user_agent，获取到请求客户端的 userAgent，从而知道是 PC 还是 Mobile
+
+如下配置：
+
+    location / {
+        # 移动、pc设备适配
+        if ($http_user_agent ~* '(Android|webOS|iPhone|iPod|BlackBerry)') {
+            set $mobile_request '1';
+        }
+        if ($mobile_request = '1') {
+            rewrite ^.+ http://mysite-base-H5.com;
+        }
+    }  
+
+- 合并请求：
+
+前端性能优化中其中一点就是减少请求量
+
+可以通过 [nginx-http-concat](https://github.com/alibaba/nginx-http-concat)（淘宝开发的第三方模块，需要单独安装） 用特殊的请求 url 规则，前端将多个请求合并为一个请求
+
+如下配置：
+
+    # js资源http-concat
+    # nginx-http-concat模块的参数远不止下面三个，剩下的请查阅文档
+    location /static/js/ {
+        concat on; # 是否打开资源合并开关
+        concat_types application/javascript; # 允许合并的资源类型
+        concat_unique off; # 是否允许合并不同类型的资源
+        concat_max_files 5; # 允许合并的最大资源数目
+    }
+
+其中本地 server mysite-base 下，static/js 有 3 个文件：
+
+    // a.js
+    console.log('a');
+
+    // b.js
+    console.log('b');
+
+    // c.js
+    console.log('c');
+ 
+当请求 http://mysite-base.com/static/js/??a.js,b.js,c.js，会发现 3 个请求合并为 1 个，返回如下：
+
+    console.log('a');console.log('b');console.log('c');
+
+- 图片处理
+
+前端开发中，经常需要不同尺寸的图片
+
+用 Nginx 可以搭建一个自己的本地图片服务，完全能够满足日常对图片的裁剪/缩放/旋转/图片品质等处理需求
+
+需要安装 [ngx_http_image_filter_module](http://nginx.org/en/docs/http/ngx_http_image_filter_module.html)
+
+配置如下：
+
+    # 图片缩放处理
+    # 这里约定的图片处理url格式：以 mysite-base.com/img/路径访问
+    location ~* /img/(.+)$ {
+        alias /Users/cc/Desktop/server/static/image/$1; #图片服务端储存地址
+        set $width -; #图片宽度默认值
+        set $height -; #图片高度默认值
+        if ($arg_width != "") {
+            set $width $arg_width;
+        }
+        if ($arg_height != "") {
+            set $height $arg_height;
+        }
+        image_filter resize $width $height; #设置图片宽高
+        image_filter_buffer 10M;   #设置Nginx读取图片的最大buffer。
+        image_filter_interlace on; #是否开启图片图像隔行扫描
+        error_page 415 = 415.png; #图片处理错误提示图，例如缩放参数不是数字
+    }
+
+- cookie 配置
+
+可以在 Nginx 上进行 cookie 常量配置，而不需要在前端手动设置一些常量 cookie：
+
+    location /officialApp-ch {
+        root   D:\\project\\main-cloud-official\\cloud-official\\pc;
+        index  index.html index.htm;
+        add_header Access-Control-Allow-Origin *;
+        proxy_set_header Access-Control-Allow-Origin $http_origin;
+        expires  1d;
+        add_header  Set-Cookie 'service_language=zh-cn;path=/'; #设置 cookie
+    }
