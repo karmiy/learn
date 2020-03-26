@@ -1412,3 +1412,27 @@ Vue.set 做了如下操作：
     Vue.directive('color', function (el, binding) {
         el.style.color = binding.value;
     })
+
+## Vue 有哪些性能优化
+
+- 高频率切换使用 v-show，而不是用 v-if
+
+- 区分 computed、watch 应用场景
+
+- 少直接在面板上做 JS 表达式操作，如 v-if="isShow && isWrap && (x || y)"，可以写到 computed、methods 中
+
+- v-if 循环节点时使用 key 表示
+
+- 不用使用 v-for 又 v-if，v-for 优先级高，可以使用 computed 代替过滤
+
+- 组件分割，如未使用的组件使用异步组件进行按需加载
+
+- 路由懒加载
+
+- 打包时如 axios 等不一起打包，可以使用 cdn 链接引入于 index.html
+
+- SSR 服务端渲染，减少首屏加载执行 JS 的时间
+
+- Object.freeze 冻结不需要响应式化的资源
+
+- 事件记得在组件销毁时取消监听
