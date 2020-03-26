@@ -1326,3 +1326,89 @@ Vue.set 做了如下操作：
 
 - 如果目标是响应式对象，属性不是响应式的，调用 defineReactive 进行响应式处理
 
+## Vue 中 Directive 有什么作用
+
+自定义指令
+
+当我们需要对 DOM 进行底层操作时，可以使用自定义指令来完成
+
+我们希望 input 元素在页面初始化时可以聚焦，我们可能会在 mounted 生命周期中获取 input 元素后 .focus() 达到聚焦效果
+
+而 Vue 更推崇的是 MVVM 模式，我们不应该手动去操作 DOM 元素，可以把对 DOM 的操作封装为一个指令，做到抽离解耦，而且提升了复用性：
+
+    // 全局注册
+    Vue.directive('focus', {
+        inserted(el) {
+            el.focus();
+        }
+    });
+
+    // 组件中
+    <input v-focus />
+
+    // 组件中局部注册
+    directives：{
+        'focus':{
+            inserted: function(el){
+                el.focus();
+            }
+        }
+    }
+
+
+除了上面的 inserted，还有如下**钩子函数**：
+
+- bind：只调用一次，指令第一次绑定到元素时调用，可以在这里进行一次初始化设置。注：这里可以拿到 el 元素，但是 el 的父元素是 null 还拿不到
+
+- inserted：被插入到父节点调用，这里 el 的父元素不再是 null，可以拿到父元素，但是不一定被插入到 document
+
+- update：所有组件 VNode 更新时调用，但可能在子 VNode 更新前。指令的值不一定会发生变化，可以通过对比防止不必要的操作
+
+- componentUpdated：所有组件 VNode 及子 VNode 全部更新后调用
+
+- unbind：只调用一次，指令与元素解绑时调用
+
+如上的钩子函数，会接收如下**参数**：
+
+- el：绑定的元素，可以用来操作 DOM
+
+- binding：对象，包含一些属性：
+
+    - name：指令名，不包含 v- 前缀
+
+    - value：指令绑定值，如 v-test="10"，value 为 10
+
+    - oldValue：绑定前一个值，在 update 和 componentUpdated 中做对比
+
+    - expression：指令表达式，如 v-test="1 + 1"，表达式为 "1 + 1"
+
+    - arg：传给指令的参数，如 v-test:foo，参数为 foo
+
+    - modifiers：修饰符对象，如 v-test:foo.bar，修饰符对象为 { foo: true, bar: true }
+
+- vnode：Vue 编译生成的虚拟节点
+
+- oldVnode：上一个虚拟节点，在 update 和 componentUpdated 中做对比
+
+还可以有**动态指令参数**：
+
+    // 组件中
+    <div v-test:[direction]="200">...</div>
+    
+    data() {
+        return {
+            direction: 'left'
+        }
+    }
+
+    Vue.directive('test', {
+        bind: function (el, binding, vnode) {
+            const d = binding.arg == 'left' ? 'left': 'top';
+        }
+    })
+
+**当 bind 和 update 做相同行为时，不关心其他钩子，可以简写**：
+
+    Vue.directive('color', function (el, binding) {
+        el.style.color = binding.value;
+    })
