@@ -146,6 +146,8 @@ function clone(target) {
 
 ## 什么是柯里化，如何实现
 
+**函数式编程**中一个重要的概念
+
 函数柯里化是把接收多个参数的函数，转为为一系列使用一个参数的函数的技术：
 
     fn(1, 2, 3, 4);
@@ -839,6 +841,254 @@ has 值校验文件是否已上传过的校验接口
 - SSR 服务端渲染，减少 SPA 首页执行 JS 的白屏过程
 
 - 预加载，如弹框一开始进来不需要用来，点击才展示，可以弹框组件先不加载，空闲时预加载
+
+## 什么是纯函数
+
+纯函数是一个在**函数式编程中**重要的概念
+
+- 相同的参数输入，总是相同的输出结果，即只依赖参数
+
+- 不改变传入参数值，return 新值
+
+- 没有副作用（http 请求、DOM 查询、DOM 修改、IO 文件操作、数据突变、console.log 打印、window.reload 刷新浏览器、Math.random()、获取 Date.now() 等）
+
+如下：
+
+    // 这是纯函数，只依赖参数
+    function add(x, y) {
+        return x + y;
+    }
+
+    // 这不是纯函数，依赖了外部变量
+    const x = 10;
+    function add(y) {
+        return x + y;
+    }
+
+    // 这不是纯函数，改变了参数数据
+    function mutation(item) {
+        item.sum = 10;
+        return item;
+    }
+
+纯函数的优点：
+
+- 引用透明性：输入相同的值总返回相同的结果。如果一段代码可以替换成它执行所得结果，且在不改变整个程序行为的前提下替换，那就可以说这段代码是引用透明的
+
+`````````````
+    function add(x, y) {
+        return x + y;
+    }
+
+    function main() {
+        ...
+        const a = add(1, 4);
+        ...
+    }
+
+    以上可以直接替换为：
+
+    function main() {s
+        ...
+        const a = 5;
+        ...
+    }
+
+    而不影响整个程序
+`````````````
+
+- 可复用性：只依赖传入的参数，意味着可以随意将这个函数移植到别的代码。如果我们在别的代码中引用了非纯函数，这个非纯函数可能引用的外部变量，那当外部变量改变时，就会导致非纯函数的结果可能改变，也间接导致引用的代码也受到影响
+
+- 可测试性：方便单元测试，只需要关心参数和返回结果，不需要考虑上下文环境
+
+- 健壮性：改变执行顺序不会对系统造成影响，可以**并行执行**。而非纯函数由于可能与外部关联，导致一个在执行时影响外部变量，另一个执行时也受影响，无法并行执行
+
+- 可缓存性：纯函数只依赖输入，相同的输入映射出相同的输出，这让它可以根据输入来做缓存
+
+## 什么是高阶函数
+
+函数满足以下条件**之一**即为高阶函数：
+
+- 函数作为参数被传递（Array.prototype.map/filter/forEach，回调函数等）
+
+- 函数作为返回值被返回（节流、防抖函数等）
+
+应用场景：
+
+- AOP 切面
+
+将一些与业务逻辑无关的功能抽离，如日志统计，异常处理等
+
+做到业务与功能解耦，保持业务的内聚性，功能的复用性
+
+如下实现函数执行前的打印：
+
+    Function.prototype.before = function(fn) {
+        const _this = this;
+        return function() {
+            fn.apply(this, arguments);
+            return _this.apply(this, arguments);
+        }
+    };
+
+    let func = function(){
+        console.log(2);
+    };
+
+    func = func.before(function(){
+        console.log(1);
+    });
+
+    func(); // 输出 1、2
+
+- 柯里化
+
+柯里化是**函数式编程**中一个重要的概念
+
+函数柯里化是把接收多个参数的函数，转为为一系列使用一个参数的函数的技术
+
+实现：
+
+    function curry(fn, ...args) {
+        return fn.length > args.length ? (...params) => curry(fn, ...args, ...params) : fn(...args);
+    }
+
+作用：
+
+参数复用
+
+    function record(type, msg) {
+        switch (type) {
+            case 'log':
+                console.log(msg);
+                break;
+            case 'warn':
+                console.warn(msg);
+                break;
+        }
+    }
+
+    record('log', '1');
+    record('log', '2');
+    record('log', '3');
+    ...
+
+如上当使用 log 打印信息时，每次都要重新传入 'log'
+
+其实可以使用 curry 分离参数，将同一种类型的分离出来，达到参数复用：
+
+    const _curry = curry(record);
+
+    const log_record = _curry('log'); // 抽离 log 类型
+
+    log_record('1');
+    log_record('2');
+    log_record('3');
+
+- 防抖、节流
+
+防抖和节流函数的封装也需要用到高阶函数返回一个函数的特性：
+
+    // 防抖
+    function debounce(fn, delay) {
+        let timer = null;
+        return function(...args) {
+            const context = this;
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                fn.call(context, ...args);
+            }, delay);
+        }
+    }
+
+    // 节流
+    function throttle(fn, delay) {
+        let prevTime = Date.now();
+        return function(...args) {
+            if(Date.now() - prevTime < delay) return;
+            
+            fn.call(this, ...args);
+            prevTime = Date.now();
+        }
+    }
+
+- 分时函数
+
+有时一个列表可能有成百上千条数据，如果要渲染这个列表，就需要一次性向页面添加这么多的节点
+
+一次性大量的 DOM 添加势必会导致页面卡顿
+
+可以对添加操作进行拆分，例如原本一次性添加 1000 个节点，变成每 200ms 添加 10 个节点，这就可以构造一个分时函数来完成：
+
+    const timeChunk = function(arr, fn, count = 1) {
+        const start = function() {
+            for (let i = 0; i < Math.min(count, arr.length); i++) {
+                fn(arr.shift());
+            }
+        };
+        return function () {
+            const timer = setInterval(function() {
+                if (arr.length === 0) { //如果全部的节点都已经被创建好了
+                    return clearInterval(timer)
+                }
+                start();
+            }, 200);
+        }
+    }
+
+    const arr = [1, 2, ..., 1000];
+    const _timeChunk = timeChunk(arr, item => {
+        console.log(item);
+    }, 10);
+
+    _timeChunk();
+
+- 惰性加载
+
+因为浏览器之间的差异，我们在做兼容性处理，如绑定事件时，可能是这样处理的：
+
+    const addEvent = function(elem, type, handler) {
+        if (window.addEventListener) {
+            return elem.addEventListener(type, handler, false);
+        }
+        if (window.attachEvent) {
+            return elem.attachEvent('on' + type, handler);
+        }
+    };
+
+然而这种写法导致每次绑定新的事件，都要不断去重复判断，虽然判断的开销不大，但是也显得多余
+
+可以使用高阶函数做惰性加载：
+
+    const addEvent = (function() {
+        if (window.addEventListener) {
+            return function(elem, type, handler) {
+                elem.addEventListener(type, handler, false);
+            }
+        }
+        if (window.attachEvent) {
+            return function(elem, type, handler) {
+                elem.attachEvent('on' + type, handler);
+            }
+        }
+    })();
+
+然而这样做还是有缺陷的，如果我们至始至终没有使用 addEvent 这个函数，addEvent 初始化执行就是在浪费加载时间
+
+可以做如下处理重写，在第一次加载后就重置函数：
+
+    const addEvent = function(elem, type, handler) {
+        if (window.addEventListener) {
+            addEvent = function(elem, type, handler) {
+                elem.addEventListener(type, handler, false);
+            }
+        } else if (window.attachEvent) {
+            addEvent = function(elem, type, handler) {
+                elem.attachEvent('on' + type, handler);
+            }
+        }
+        addEvent(elem, type, handler);
+    };
 
 ## localStorage、sessionStorage、cookie 区别
 
