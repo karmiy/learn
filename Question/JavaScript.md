@@ -171,6 +171,47 @@ function clone(target) {
     const _sum = curry(sum);
     console.log(_sum(1)(2)(3)); // 6
 
+## 什么是反柯里化，如何实现
+
+柯里化是缩小适用范围，创建针对性更强的函数
+
+反柯里化是扩大适用范围，创建一个应用范围更广的函数，让原本特定对象才能使用的方法，扩展到更多的对象也能使用
+
+例如我们知道 arguments 是不能用数组的 push 去添加项的，这是因为 Array.prototype.push 只能让特定的对象（数组）使用
+
+为了扩展到更多的对象，如 arguments 也能使用，可以这样做：
+
+    Array.prototype.push.call(arguments, 4);
+
+反柯里化就是利用这种操作来实现的：
+
+    Function.prototype.uncurrying = function () { 
+        const self = this; 
+        return function() { 
+            const obj = Array.prototype.shift.call(arguments); 
+            return self.apply(obj, arguments); 
+        }; 
+    };
+
+使用：
+
+    const push = Array.prototype.push.uncurrying();
+
+    (function(){ 
+        push(arguments, 4); 
+        console.log(arguments); // 输出：[1, 2, 3, 4] 
+    })(1, 2, 3);
+
+    const obj  = {
+        length: 1,
+        0: 10,
+    }
+
+    push(obj, 20);
+    console.log(obj); // {0: 10, 1: 20, length: 2}
+
+如上，经过 uncurrying，数组的 push 变成了一个通用的 push，不仅仅局限于 array 对象，并且调用 push 函数的方式也显得更加简洁和意图明了
+
 ## 什么是防抖/节流函数，如何实现
 
 防抖函数：控制函数在一定时间内的执行次数，如果这段时间内再次被触发，重新计算延迟时间。一般应用在输入框输入时联系查询，防止用户快速输入导致不断发起请求
