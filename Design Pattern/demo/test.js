@@ -2,8 +2,6 @@ const mult = function(...args) {
     return args.reduce((sum, item) => sum * item);
 }
 
-mult(1, 2, 3);
-
 const proxyMult = (function() {
     const cache = {};
 
@@ -14,3 +12,5 @@ const proxyMult = (function() {
         return cache[key] = mult.apply(this, args);
     }
 }());
+
+proxyMult(1, 2, 3);
