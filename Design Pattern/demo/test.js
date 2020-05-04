@@ -1,31 +1,21 @@
-const getActiveUploadObj = function() {
-    try {
-        return new ActiveXObject("TXFTNActiveX.FTNUpload"); // IE 上传控件
-    } catch (e) {
-        return false;
-    }
+const salesOffices = {}; // 定义售楼处
+salesOffices.clientList = []; // 缓存列表，存放订阅者的回调函数
+salesOffices.listen = function(fn) { // 增加订阅者
+    this.clientList.push(fn); // 订阅的消息添加进缓存列表
+};
+salesOffices.trigger = function(...args) { // 发布消息
+    this.clientList.forEach(fn => fn(...args));
 };
 
-const getFlashUploadObj = function() {
-    if (supportFlash()) { // supportFlash 函数未提供
-        const str = '<object type="application/x-shockwave-flash"></object>';
-        return $(str).appendTo($('body'));
-    }
-    return false;
-};
+salesOffices.listen(function(price, squareMeter) { // A 订阅消息
+    console.log('价格= ' + price);
+    console.log('平方米= ' + squareMeter);
+});
 
-const getFormUpladObj = function() {
-    const str = '<input name="file" type="file" class="ui-file"/>'; // 表单上传
-    return $(str).appendTo($('body'));
-};
+salesOffices.listen(function(price, squareMeter) { // B 订阅消息
+    console.log('价格= ' + price);
+    console.log('平方米= ' + squareMeter);
+});
 
-const iteratorUploadObj = function(...args) {
-    for (let i = 0, fn; fn = args[i++];) {
-        const uploadObj = fn();
-        if (uploadObj !== false) {
-            return uploadObj;
-        }
-    }
-};
-
-iteratorUploadObj(getActiveUploadObj, getFlashUploadObj, getFormUpladObj);
+salesOffices.trigger(2000000, 88);
+// A、B 都接收到消息：价格= 2000000 平方米= 88
