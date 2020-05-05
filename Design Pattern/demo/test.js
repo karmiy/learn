@@ -7,6 +7,7 @@ salesOffices.trigger = function(...args) { // 发布消息
     this.clientList.forEach(fn => fn(...args));
 };
 
+// 测试
 salesOffices.listen(function(price, squareMeter) { // A 订阅消息
     console.log('价格= ' + price);
     console.log('平方米= ' + squareMeter);
