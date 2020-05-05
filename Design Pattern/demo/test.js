@@ -1,31 +1,38 @@
-const header = (function() { // header 模块
-    login.listen('loginSucc', function(data) {
-        header.setAvatar(data.avatar);
-    });
-    return {
-        setAvatar: function(data) {
-            console.log('设置 header 模块的头像');
+const Event = (function() {
+    const subscribers = {};
+
+    const subscribe = function(key, fn) {
+        if (!subscribers[key]) subscribers[key] = [];
+
+        subscribers[key].push(fn);
+    };
+    const publish = function(key, ...args) {
+        const fns = subscribers[key];
+        if (!fns || fns.length === 0) return false;
+
+        fns.forEach(fn => fn(...args));
+    };
+    const unsubscribe = function(key, fn) {
+        const fns = subscribers[key];
+        if (!fns || fns.length === 0) return false;
+
+        if (!fn) {
+            fns && (fns.length = 0);
+        } else {
+            for (let l = fns.length - 1; l >= 0; l--) {
+                const _fn = fns[l];
+                if (_fn === fn) fns.splice(l, 1);
+            }
         }
-    }
-})();
-const nav = (function() { // nav 模块
-    login.listen('loginSucc', function(data) {
-        nav.setAvatar(data.avatar);
-    });
+    };
     return {
-        setAvatar: function(avatar) {
-            console.log('设置 nav 模块的头像');
-        }
+        subscribe,
+        publish,
+        unsubscribe,
     }
 })();
 
-const address = (function() { // address 模块
-    login.listen('loginSucc', function(obj) {
-        address.refresh(obj);
-    });
-    return {
-        refresh: function(avatar) {
-            console.log('刷新收货地址列表');
-        }
-    }
-})();
+Event.subscribe('squareMeter88', function(price) { // A 订阅消息
+    console.log('价格= ' + price);
+});
+Event.publish('squareMeter88', 2000000);
