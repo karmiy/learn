@@ -1,22 +1,31 @@
-const salesOffices = {}; // 定义售楼处
-salesOffices.clientList = []; // 缓存列表，存放订阅者的回调函数
-salesOffices.listen = function(fn) { // 增加订阅者
-    this.clientList.push(fn); // 订阅的消息添加进缓存列表
-};
-salesOffices.trigger = function(...args) { // 发布消息
-    this.clientList.forEach(fn => fn(...args));
-};
+const header = (function() { // header 模块
+    login.listen('loginSucc', function(data) {
+        header.setAvatar(data.avatar);
+    });
+    return {
+        setAvatar: function(data) {
+            console.log('设置 header 模块的头像');
+        }
+    }
+})();
+const nav = (function() { // nav 模块
+    login.listen('loginSucc', function(data) {
+        nav.setAvatar(data.avatar);
+    });
+    return {
+        setAvatar: function(avatar) {
+            console.log('设置 nav 模块的头像');
+        }
+    }
+})();
 
-// 测试
-salesOffices.listen(function(price, squareMeter) { // A 订阅消息
-    console.log('价格= ' + price);
-    console.log('平方米= ' + squareMeter);
-});
-
-salesOffices.listen(function(price, squareMeter) { // B 订阅消息
-    console.log('价格= ' + price);
-    console.log('平方米= ' + squareMeter);
-});
-
-salesOffices.trigger(2000000, 88);
-// A、B 都接收到消息：价格= 2000000 平方米= 88
+const address = (function() { // address 模块
+    login.listen('loginSucc', function(obj) {
+        address.refresh(obj);
+    });
+    return {
+        refresh: function(avatar) {
+            console.log('刷新收货地址列表');
+        }
+    }
+})();
