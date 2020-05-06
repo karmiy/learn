@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button id="replay">回放</button>
+</body>
+<script>
+    const Ryu = {
+        attack() {
+            console.log('攻击');
+        },
+        defense() {
+            console.log('防御');
+        },
+        jump() {
+            console.log('跳跃');
+        },
+        crouch() {
+            console.log('蹲下');
+        }
+    };
+
+    const makeCommand = function(receiver, state) { // 创建命令
+        return function() {
+            receiver[state]();
+        }
+    };
+
+    const commands = {
+        "119": "jump", // W 
+        "115": "crouch", // S 
+        "97": "defense", // A 
+        "100": "attack" // D 
+    };
+    const commandStack = []; // 保存命令的堆栈
+    document.onkeypress = function(e) {
+        const keyCode = e.keyCode,
+            command = makeCommand(Ryu, commands[keyCode]);
+
+        if(!command) return;
+        command();
+        commandStack.push(command);
+    };
+
+    document.getElementById('replay').onclick = function() {
+        let command;
+        while(command = commandStack.shift()) { // 从堆栈里依次取出命令并执行
+            command();
+        }
+    };
+</script>
+
+</html>

@@ -1,22 +1,24 @@
-class Command {
-    constructor(receiver) {
-        this.receiver = receiver;
-    }
-}
-class RefreshMenuBarCommand extends Command {
-    execute() {
-        this.receiver.refresh();
+
+const RefreshMenuBarCommand = function(receiver) {
+    return {
+        execute() {
+            receiver.refresh();
+        }
     }
 }
 
-class AddSubMenuCommand extends Command {
-    execute() {
-        this.receiver.add();
+const AddSubMenuCommand = function(receiver) {
+    return {
+        execute() {
+            receiver.add();
+        }
     }
 }
 
-class DelSubMenuCommand extends Command {
-    execute() {
-        this.receiver.del();
+const DelSubMenuCommand = function(receiver) {
+    return {
+        execute() {
+            receiver.del();
+        }
     }
 }
