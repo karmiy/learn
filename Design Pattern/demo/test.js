@@ -1,24 +1,33 @@
+const closeDoorCommand = {
+    execute() {
+        console.log('关门');
+    }
+};
+const openPcCommand = {
+    execute() {
+        console.log('开电脑');
+    }
+};
+const openQQCommand = {
+    execute() {
+        console.log('登录 QQ');
+    }
+};
 
-const RefreshMenuBarCommand = function(receiver) {
+const MacroCommand = function () {
     return {
-        execute() {
-            receiver.refresh();
+        commandsList: [],
+        add: function (command) {
+            this.commandsList.push(command);
+        },
+        execute: function () {
+            this.commandsList.forEach(command => command.execute());
         }
     }
-}
+};
+const macroCommand = MacroCommand();
+macroCommand.add(closeDoorCommand);
+macroCommand.add(openPcCommand);
+macroCommand.add(openQQCommand);
 
-const AddSubMenuCommand = function(receiver) {
-    return {
-        execute() {
-            receiver.add();
-        }
-    }
-}
-
-const DelSubMenuCommand = function(receiver) {
-    return {
-        execute() {
-            receiver.del();
-        }
-    }
-}
+macroCommand.execute();
