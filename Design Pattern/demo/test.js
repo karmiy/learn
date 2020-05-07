@@ -1,66 +1,44 @@
-class Folder {
-    constructor(name) {
-        this.name = name;
-        this.parent = null;
-        this.files = [];
+class Beverage {
+    boilWater() {
+        console.log('把水煮沸');
     }
-    add(file) {
-        file.parent = this;
-        this.files.push(file);
-    }
-    scan() {
-        console.log(`开始扫描文件夹：${this.name}`);
-        this.files.forEach(file => file.scan());
-    }
-    remove() {
-        if(!this.parent) return;
-
-        const files = this.parent.files;
-        for(let l = files.length - 1; l >= 0; l--) {
-            const file = files[l];
-            if(file === this) files.splice(l, 1);
-        }
+    brew() { } // 空方法，由子类重写
+    pourInCup() { } // 空方法，由子类重写
+    addCondiments() { } // 空方法，由子类重写
+    init() {
+        this.boilWater();
+        this.brew();
+        this.pourInCup();
+        this.addCondiments();
     }
 }
 
-class File {
-    constructor(name) {
-        this.name = name;
-        this.parent = null;
+class Coffee extends Beverage {
+    brew() {
+        console.log('用沸水冲泡咖啡');
     }
-    add() {
-        throw new Error('文件下不能添加文件');
+    pourInCup() {
+        console.log('把咖啡倒进杯子');
     }
-    scan() {
-        console.log(`开始扫描文件：${this.name}`);
-    }
-    remove() {
-        if(!this.parent) return;
-
-        const files = this.parent.files;
-        for(let l = files.length - 1; l >= 0; l--) {
-            const file = files[l];
-            if(file === this) files.splice(l, 1);
-        }
+    addCondiments() {
+        console.log('加糖和牛奶');
     }
 }
 
-const folder = new Folder('学习资料');
-const folder1 = new Folder('JavaScript');
-const folder2 = new Folder('Vue');
+const coffee = new Coffee();
+coffee.init();
 
-const file1 = new File('JavaScript 设计模式与开发实践');
-const file2 = new File('Vue 入门到精通');
-const file3 = new File('算法与数据结构');
+class Tea extends Beverage {
+    brew() {
+        console.log('用沸水浸泡茶叶');
+    }
+    pourInCup() {
+        console.log('把茶倒进杯子');
+    }
+    addCondiments() {
+        console.log('加柠檬');
+    }
+}
 
-folder1.add(file1);
-folder2.add(file2);
-
-folder.add(folder1);
-folder.add(folder2);
-folder.add(file3);
-
-// 删除 JavaScript 文件夹
-folder1.remove();
-
-folder.scan();
+const tea = new Tea();
+tea.init();
