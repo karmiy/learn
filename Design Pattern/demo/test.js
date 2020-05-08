@@ -2,7 +2,9 @@ class Beverage {
     boilWater() {
         console.log('把水煮沸');
     }
-    brew() { } // 空方法，由子类重写
+    brew() {
+        throw new Error( '子类必须重写 brew 方法' );
+     } // 空方法，由子类重写
     pourInCup() { } // 空方法，由子类重写
     addCondiments() { } // 空方法，由子类重写
     init() {
