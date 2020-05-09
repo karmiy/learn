@@ -1436,3 +1436,19 @@ Vue.set 做了如下操作：
 - Object.freeze 冻结不需要响应式化的资源
 
 - 事件记得在组件销毁时取消监听
+
+## Vue 有哪些隐藏操作
+
+在 Vue 实例上有 $el 获取根节点 DOM，与之对应有个隐藏属性，DOM 节点上会挂载 \_\_vue\_\_ 属性反向得到 Vue 实例
+
+如组件：
+
+    <template>
+        <div id='k'>
+            ...
+        </div>
+    </template>
+
+我们可以通过如下操作拿到这个组件的 Vue 实例：
+
+    document.getElementById('k').__vue__
