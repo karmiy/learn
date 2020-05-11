@@ -1,46 +1,37 @@
-class Beverage {
-    boilWater() {
+const Beverage = function(param) {
+    const boilWater = function() {
         console.log('把水煮沸');
     }
-    brew() {
-        throw new Error( '子类必须重写 brew 方法' );
-     } // 空方法，由子类重写
-    pourInCup() { } // 空方法，由子类重写
-    addCondiments() { } // 空方法，由子类重写
-    init() {
-        this.boilWater();
-        this.brew();
-        this.pourInCup();
-        this.addCondiments();
-    }
+    const brew = param.brew || function() {
+        throw new Error('必须传递 brew 方法');
+    };
+    const pourInCup = param.pourInCup || function() {
+        throw new Error('必须传递 pourInCup 方法');
+    };
+    const addCondiments = param.addCondiments || function() {
+        throw new Error('必须传递 addCondiments 方法');
+    };
+    const F = function() { };
+    F.prototype.init = function() {
+        boilWater();
+        brew();
+        pourInCup();
+        addCondiments();
+    };
+    return F;
 }
 
-class Coffee extends Beverage {
-    brew() {
+const Coffee = Beverage({
+    brew: function() {
         console.log('用沸水冲泡咖啡');
-    }
-    pourInCup() {
+    },
+    pourInCup: function() {
         console.log('把咖啡倒进杯子');
-    }
-    addCondiments() {
+    },
+    addCondiments: function() {
         console.log('加糖和牛奶');
     }
-}
+});
 
 const coffee = new Coffee();
 coffee.init();
-
-class Tea extends Beverage {
-    brew() {
-        console.log('用沸水浸泡茶叶');
-    }
-    pourInCup() {
-        console.log('把茶倒进杯子');
-    }
-    addCondiments() {
-        console.log('加柠檬');
-    }
-}
-
-const tea = new Tea();
-tea.init();
