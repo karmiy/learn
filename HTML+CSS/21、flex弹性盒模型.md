@@ -227,7 +227,7 @@
     }
 ![Alt text](./imgs/21-28.png) 
 
-**利用flex-shrink实现tabs选项卡排版:**
+**利用flex-shrink实现tabs选项卡排版：**
 
     #main {
         display: flex;
@@ -244,6 +244,47 @@
     }
 
 ![Alt text](./imgs/21-28-01.png) 
+
+**flex-shrink不能收缩的问题：**
+
+我们知道.flex-shrink 是让元素超出父级时进行挤压，收缩，但是当如下情况时，收缩是失败的：
+
+    .main {
+        display: flex;
+        width: 400px;
+        height: 200px;
+        border: 1px solid powderblue;
+    }
+    .left {
+        flex-shrink: 0;
+        background-color: blueviolet;
+    }
+    .right {
+        flex-shrink: 1;
+        background-color: darkgreen;
+    }
+    .content {
+        width: 500px; // 内容元素超出 .right 收缩后的宽度
+    }
+
+    <div class="main">
+        <div class="left">123123</div>
+        <div class="right">
+            <div class="content"></div>
+        </div>
+    </div>
+
+![Alt text](./imgs/21-28-02.png) 
+
+解决方法：
+
+    .right {
+        flex-shrink: 1;
+        background-color: darkgreen;
+        overflow: auto; // 设置 overflow: auto
+    }
+
+![Alt text](./imgs/21-28-03.png) 
 
 ### flex-basis设置元素初始长度的像素
 
@@ -368,3 +409,4 @@
     flex-grow: 2;
     flex-shrink: 1;
     flex-basis: 200px;
+
