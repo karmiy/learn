@@ -1,37 +1,54 @@
-const Beverage = function(param) {
-    const boilWater = function() {
-        console.log('把水煮沸');
+let id = 0;
+startUpload = function (uploadType, files) { // uploadType 区分是控件还是 flash 
+    for (let i = 0, file; file = files[i++];) {
+        const uploadObj = new Upload(uploadType, file.fileName, file.fileSize);
+        uploadObj.init(id++); // 给 upload 对象设置一个唯一的 id 
     }
-    const brew = param.brew || function() {
-        throw new Error('必须传递 brew 方法');
-    };
-    const pourInCup = param.pourInCup || function() {
-        throw new Error('必须传递 pourInCup 方法');
-    };
-    const addCondiments = param.addCondiments || function() {
-        throw new Error('必须传递 addCondiments 方法');
-    };
-    const F = function() { };
-    F.prototype.init = function() {
-        boilWater();
-        brew();
-        pourInCup();
-        addCondiments();
-    };
-    return F;
+};
+
+class Upload {
+    constructor(uploadType) {
+        this.uploadType = uploadType;
+    }
+    delFile() {
+        if (this.fileSize < 3000)
+            return this.dom.parentNode.removeChild(this.dom);
+
+        if (window.confirm('确定要删除该文件吗? ' + this.fileName))
+            return this.dom.parentNode.removeChild(this.dom);
+
+    }
 }
 
-const Coffee = Beverage({
-    brew: function() {
-        console.log('用沸水冲泡咖啡');
+const pluginFiles = [
+    {
+        fileName: '1.txt',
+        fileSize: 1000
     },
-    pourInCup: function() {
-        console.log('把咖啡倒进杯子');
+    {
+        fileName: '2.html',
+        fileSize: 3000
     },
-    addCondiments: function() {
-        console.log('加糖和牛奶');
+    {
+        fileName: '3.txt',
+        fileSize: 5000
     }
-});
+];
 
-const coffee = new Coffee();
-coffee.init();
+const flashFiles = [
+    {
+        fileName: '4.txt',
+        fileSize: 1000
+    },
+    {
+        fileName: '5.html',
+        fileSize: 3000
+    },
+    {
+        fileName: '6.txt',
+        fileSize: 5000
+    }
+]
+
+startUpload('plugin', pluginFiles);
+startUpload('flash', flashFiles);
