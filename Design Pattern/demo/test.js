@@ -20,6 +20,47 @@ class Upload {
     }
 }
 
+const UploadFactory = (function() {
+    const store = {};
+    return {
+        create(uploadType) {
+            if(store(uploadType)) {
+                return store(uploadType);
+            }
+            return store(uploadType) = new Upload(uploadType);
+        },
+    }
+}());
+
+const uploadManager = (function() {
+    const uploadDatabase = {}; // 存储外部状态
+
+    return {
+        add(id, uploadType, fileName, fileSize) {
+            const uploadObj = UploadFactory(uploadType);
+
+            const dom = document.createElement('div');
+            dom.innerHTML = `
+                <span>文件名：${fileName} 文件大小：${fileSize}</span>
+                <button class="delFile">删除</button>
+            `;
+            dom.querySelector('.delFile').onclick = () => {
+                uploadObj.delFile();
+            }
+            document.body.append(dom);
+            uploadDatabase[id] = {
+                fileName,
+                fileSize,
+                dom,
+            }
+            return uploadObj;
+        },
+        setExternalState(id, ) {
+
+        }
+    }
+}());
+
 const pluginFiles = [
     {
         fileName: '1.txt',
