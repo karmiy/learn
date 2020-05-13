@@ -1,8 +1,7 @@
 let id = 0;
-startUpload = function (uploadType, files) { // uploadType 区分是控件还是 flash 
+const startUpload = function (uploadType, files) { // uploadType 区分是控件还是 flash 
     for (let i = 0, file; file = files[i++];) {
-        const uploadObj = new Upload(uploadType, file.fileName, file.fileSize);
-        uploadObj.init(id++); // 给 upload 对象设置一个唯一的 id 
+        const uploadObj = uploadManager.add(id++, uploadType, file.fileName, file.fileSize);
     }
 };
 
@@ -10,7 +9,9 @@ class Upload {
     constructor(uploadType) {
         this.uploadType = uploadType;
     }
-    delFile() {
+    delFile(id) {
+        uploadManager.setExternalState(id, this);
+
         if (this.fileSize < 3000)
             return this.dom.parentNode.removeChild(this.dom);
 
@@ -21,13 +22,13 @@ class Upload {
 }
 
 const UploadFactory = (function() {
-    const store = {};
+    let upload;
     return {
-        create(uploadType) {
-            if(store(uploadType)) {
-                return store(uploadType);
+        create() {
+            if(upload) {
+                return upload;
             }
-            return store(uploadType) = new Upload(uploadType);
+            return upload = new Upload();
         },
     }
 }());
@@ -37,7 +38,7 @@ const uploadManager = (function() {
 
     return {
         add(id, uploadType, fileName, fileSize) {
-            const uploadObj = UploadFactory(uploadType);
+            const uploadObj = UploadFactory.create(uploadType);
 
             const dom = document.createElement('div');
             dom.innerHTML = `
@@ -45,7 +46,7 @@ const uploadManager = (function() {
                 <button class="delFile">删除</button>
             `;
             dom.querySelector('.delFile').onclick = () => {
-                uploadObj.delFile();
+                uploadObj.delFile(id);
             }
             document.body.append(dom);
             uploadDatabase[id] = {
@@ -55,8 +56,11 @@ const uploadManager = (function() {
             }
             return uploadObj;
         },
-        setExternalState(id, ) {
-
+        setExternalState(id, upload) {
+            const uploadData = uploadDatabase[id];
+            for(let externalStatus in uploadData) {
+                upload[externalStatus] = uploadData[externalStatus];
+            }
         }
     }
 }());
