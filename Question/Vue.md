@@ -795,8 +795,27 @@ context 参数上有：
 使用：
 
     <template functional>
-        <div>test: {{props.id}}</div>
+        <div>test: {{props.id}} class: {{data.staticClass}} style: {{data.style}} fullName: {{fullName(props.prefix, props.name)}}</div>
     </template>
+    export default {
+        props: {
+            prefix: String,
+            name: String,
+        },
+        fullName(prefix, name) {
+            return prefix + '-' + name
+        }
+    }
+
+> 注：函数式组件不自动继承 class、style，会放到 context.data 下，上面是单文件 .vue 的写法，可以在 render 写法打印查看
+
+    export default {
+        render(h, context) {
+            console.log(context);
+
+            return h('div', context.data, '1111');
+        }
+    }
 
 ## components 和 Vue.component 的区别
 
