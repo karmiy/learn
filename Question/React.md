@@ -70,56 +70,60 @@ export default class Question extends Component {
 
 原生事件：
 
-    import React, { Component, createRef } from 'react'
+```js
+import React, { Component, createRef } from 'react'
 
-    export default class Question extends Component {
-        buttonRef = createRef();
-        state = {
-            id: 1,
-        }
-        componentDidMount() {
-            this.buttonRef.current.onclick = () => {
-                this.setState({
-                    id: 2,
-                });
-                console.log(this.state.id); // 输出 2
-            }
-        }
-        render() {
-            return (
-                <div>
-                    <p>id: {this.state.id}</p>
-                    <button ref={this.buttonRef}>点击</button>
-                </div>
-            )
+export default class Question extends Component {
+    buttonRef = createRef();
+    state = {
+        id: 1,
+    }
+    componentDidMount() {
+        this.buttonRef.current.onclick = () => {
+            this.setState({
+                id: 2,
+            });
+            console.log(this.state.id); // 输出 2
         }
     }
+    render() {
+        return (
+            <div>
+                <p>id: {this.state.id}</p>
+                <button ref={this.buttonRef}>点击</button>
+            </div>
+        )
+    }
+}
+```
 
 setTimeout：
 
-    import React, { Component } from 'react'
+```js
+import React, { Component } from 'react'
 
-    export default class Question extends Component {
-        state = {
-            id: 1,
-        }
-        click = () => {
-            setTimeout(() => {
-                this.setState({
-                    id: 2,
-                });
-                console.log(this.state.id); // 输出 2
-            }, 0);
-        }
-        render() {
-            return (
-                <div>
-                    <p>id: {this.state.id}</p>
-                    <button onClick={this.click}>点击</button>
-                </div>
-            )
-        }
+export default class Question extends Component {
+    state = {
+        id: 1,
     }
+    click = () => {
+        setTimeout(() => {
+            this.setState({
+                id: 2,
+            });
+            console.log(this.state.id); // 输出 2
+        }, 0);
+    }
+    render() {
+        return (
+            <div>
+                <p>id: {this.state.id}</p>
+                <button onClick={this.click}>点击</button>
+            </div>
+        )
+    }
+}
+```
 
 setState 的批量更新优化也是建立在 '异步' 之上的，对同一个值多次 setState，批量更新策略会进行覆盖，取最后一次执行。同时 setState 多个不同的值，更新时也会对其进行合并批量更新
 
@@ -150,7 +154,7 @@ React16 之后移除的生命周期（未删除，17 后准备完全移除，保
 
 - getDerivedStateFromProps：static getDerivedStateFromProps(nextProps, prevState)，是个**静态方法**，在组件初始化、prop 或 state 改变时都会调用，需要一个返回值为新的 state 状态，即使 state 不变也要返回 null。一般用于接收新 props 而修改 state
 
-``````````
+```js
 static getDerivedStateFromProps(nextProps, prevState) {
     console.log(nextProps, prevState);
     // return null; // 返回 null 表示 state 不变
@@ -159,7 +163,7 @@ static getDerivedStateFromProps(nextProps, prevState) {
         id: 11,
     };
 }
-``````````
+```
 
 - render：纯函数，返回渲染的内容
 
@@ -189,21 +193,27 @@ static getDerivedStateFromProps(nextProps, prevState) {
 
 受控组件：
 
-    // 通过 value 状态 和 changeValue 合并事件控制显示的值
-    <input value={this.state.value} onChange={this.changeValue} />
+```js
+// 通过 value 状态 和 changeValue 合并事件控制显示的值
+<input value={this.state.value} onChange={this.changeValue} />
+```
 
 非受控组件：
 
-    // 直接通过 ref 获取原生 DOM，而不是用组件 state 去控制它
-    ref = createRef();
+```js
+// 直接通过 ref 获取原生 DOM，而不是用组件 state 去控制它
+ref = createRef();
 
-    <input ref={this.ref} />
+<input ref={this.ref} />
+```
 
 ## React 的事件机制是什么
 
 当我们在 React 中写如下代码：
 
-    <div onClick={this.click}>...</div>
+```js
+<div onClick={this.click}>...</div>
+```
 
 React 并没有将这个 click 事件绑定到这个 div 上，React 内部自定义了一套事件系统，在这个系统上进行事件订阅和分发
 
