@@ -241,117 +241,127 @@ React 利用事件代理，在 document 监听所有支持的事件，再通过 
 
 利用 Context 的 Consumer 和 Provider 进行通讯，可以实现父子组件**跨级通讯**
 
-    const { Consumer, Provider } = React.createContext();
+```js
+const { Consumer, Provider } = React.createContext();
 
-    // 父组件
-    <Provider value={name}>
-        <Child />
-    </Provider>
+// 父组件
+<Provider value={name}>
+    <Child />
+</Provider>
 
-    // 子组件
-    <Consumer>
-        {
-            name => (
-                <div>{name}</div>
-            )
-        }
-    </Consumer>
+// 子组件
+<Consumer>
+    {
+        name => (
+            <div>{name}</div>
+        )
+    }
+</Consumer>
+```
 
 - EventEmitter
 
 使用 events 插件定义全局事件机制
 
-    npm install events --save
+```js
+npm install events --save
 
-    // event.js
-    import { EventEmitter } from 'events';
+// event.js
+import { EventEmitter } from 'events';
 
-    export default new EventEmitter();
+export default new EventEmitter();
 
-    // 组件 A
-    import eventEmitter from './event';
+// 组件 A
+import eventEmitter from './event';
 
-    componentDidMount() {
-        this.emitter = eventEmitter.addListener('changeEvent', mes => {
-            console.log(mes);
-        });
-    }
+componentDidMount() {
+    this.emitter = eventEmitter.addListener('changeEvent', mes => {
+        console.log(mes);
+    });
+}
 
-    // 组件 B
-    import eventEmitter from './event';
+// 组件 B
+import eventEmitter from './event';
 
-    click = () => {
-        eventEmitter.emit('changeEvent', 'something');
-    }
+click = () => {
+    eventEmitter.emit('changeEvent', 'something');
+}
 
-    <div>
-        <button onClick={this.click}>点击</button>
-    </div>
+<div>
+    <button onClick={this.click}>点击</button>
+</div>
+```
 
 - 路由传参
 
 组件页面之间通过路由传参也算是一种通讯方式：
 
-    // 示例一
-    <Route path='/path/:name' component={Path}/>
-    <link to="/path/2">xxx</Link>
+```js
+// 示例一
+<Route path='/path/:name' component={Path}/>
+<link to="/path/2">xxx</Link>
 
-    this.props.history.push({ pathname: '/path/' + name });
-    this.props.match.params.name
+this.props.history.push({ pathname: '/path/' + name });
+this.props.match.params.name
 
-    // 示例二
-    <Route path='/query' component={Query}/>
-    <Link to={{ pathname: '/query' , query: { name: 'k' }}}>
+// 示例二
+<Route path='/query' component={Query}/>
+<Link to={{ pathname: '/query' , query: { name: 'k' }}}>
 
-    this.props.history.push({ pathname: '/query', query: { name: 'k' } });
-    this.props.location.query.name
+this.props.history.push({ pathname: '/query', query: { name: 'k' } });
+this.props.location.query.name
 
-    // 示例三
-    <Route path='/state ' component={State}/>
-    <Link to={{ pathname: '/state ' , state: { name: 'k' }}}> 
+// 示例三
+<Route path='/state ' component={State}/>
+<Link to={{ pathname: '/state ' , state: { name: 'k' }}}> 
 
-    this.props.history.push({ pathname: '/state', state: { name: 'k' } })
-    this.props.location.query.state
+this.props.history.push({ pathname: '/state', state: { name: 'k' } })
+this.props.location.query.state
 
-    // 示例四
-    <Route path='/web/search ' component={Search}/>
-    <link to="web/search?id=1">xxx</Link>
+// 示例四
+<Route path='/web/search ' component={Search}/>
+<link to="web/search?id=1">xxx</Link>
 
-    this.props.history.push({ pathname:'/web/search?id=1' });
-    this.props.location.search
+this.props.history.push({ pathname:'/web/search?id=1' });
+this.props.location.search
+```
 
 - onRef
 
 父组件传递一个 onRef 函数的 props 给子组件，子组件将自己的 this 作为参数传递，这样父组件就可以调用子组件的 this，从而调用子组件里的状态和方法
 
-    // 子组件
-    componentDidMount() {
-        this.props.onRef(this);
-    }
-    query = () => {
-        ...
-    }
+```js
+// 子组件
+componentDidMount() {
+    this.props.onRef(this);
+}
+query = () => {
+    ...
+}
 
-    // 父组件
-    childRef = ref => {
-        console.log(ref); // 子组件实例
-        ref.query();
-    };
+// 父组件
+childRef = ref => {
+    console.log(ref); // 子组件实例
+    ref.query();
+};
 
-    <Child onRef={this.childRef} />
+<Child onRef={this.childRef} />
+```
 
 - ref
 
 直接利用 ref 获取整个子组件实例
 
-    // 父组件
-    childRef = null;
+```js
+// 父组件
+childRef = null;
 
-    click = () => {
-        console.log(this.childRef); // 子组件实例
-    }
+click = () => {
+    console.log(this.childRef); // 子组件实例
+}
 
-    <Child ref={r => this.childRef = r} />
+<Child ref={r => this.childRef = r} />
+```
 
 - redux
 
@@ -382,136 +392,144 @@ ref 可以获取组件实例或 DOM 节点
 
 - 回调形式
 
-````````
-    inputRef = null;
-    componentDidMount() {
-        this.inputRef; // input DOM 节点
-    }
+```js
+inputRef = null;
+componentDidMount() {
+    this.inputRef; // input DOM 节点
+}
 
-    <input ref={input => this.inputRef = input} />
-````````
+<input ref={input => this.inputRef = input} />
+```
 
 - createRef
 
 React16.3 后使用 createRef 创建 ref，该 ref 的 current 可以拿到 DOM 节点或组件实例
 
-    inputRef = React.createRef();
-    componentDidMount() {
-        this.inputRef.current; // input DOM 节点
-    }
+```js
+inputRef = React.createRef();
+componentDidMount() {
+    this.inputRef.current; // input DOM 节点
+}
 
-    <input ref={inputRef} />
+<input ref={inputRef} />
+```
 
 - forwardRef
 
 React.forwardRef 可以将 ref 作为普通 prop 传递，一般用于高阶组件
 
-    function withinButton(Comp) {
-        return React.forwardRef((props, ref) => {
-            return <Component {...props} myRef={ref} />
-        })
-    }
+```js
+function withinButton(Comp) {
+    return React.forwardRef((props, ref) => {
+        return <Component {...props} myRef={ref} />
+    })
+}
 
-    class FancyButton extends React.Component {
-        ...
-    }
+class FancyButton extends React.Component {
+    ...
+}
 
-    const Fb = withinButton(FancyButton);
+const Fb = withinButton(FancyButton);
 
-    // 使用
-    class Wrap extends React.Component {
-        ref = React.createRef();
-        render() {
-            return <Fb ref={this.ref} />
-        }
+// 使用
+class Wrap extends React.Component {
+    ref = React.createRef();
+    render() {
+        return <Fb ref={this.ref} />
     }
+}
+```
 
 ## React 怎么为 props 定义类型
 
 使用 propTypes 可以为组件的 props 定义类型：
 
-    class Wrap extends React.Component {
-        ...
-    }
+```js
+class Wrap extends React.Component {
+    ...
+}
 
-    Wrap.propTypes = {
+Wrap.propTypes = {
+    id: number,
+    name: string,
+    ...
+}
+
+或直接 static 定义：
+
+class Wrap extends React.Component {
+    static propTypes = {
         id: number,
         name: string,
         ...
     }
-
-    或直接 static 定义：
-
-    class Wrap extends React.Component {
-        static propTypes = {
-            id: number,
-            name: string,
-            ...
-        }
-        ...
-    }
+    ...
+}
+```
 
 ## React 有哪些定义组件方法的方式
 
-    // 方式一
-    export default class Question extends Component {
-        click() {
-            console.log(this);
-        }
-        render() {
-            return (
-                <div>
-                    <button onClick={this.click.bind(this)}>点击</button>
-                </div>
-            )
-        }
+```js
+// 方式一
+export default class Question extends Component {
+    click() {
+        console.log(this);
     }
+    render() {
+        return (
+            <div>
+                <button onClick={this.click.bind(this)}>点击</button>
+            </div>
+        )
+    }
+}
 
-    // 方式二
-    export default class Question extends Component {
-        constructor() {
-            super();
-            this.click = this.click.bind(this);
-        }
-        click() {
-            console.log(this);
-        }
-        render() {
-            return (
-                <div>
-                    <button onClick={this.click}>点击</button>
-                </div>
-            )
-        }
+// 方式二
+export default class Question extends Component {
+    constructor() {
+        super();
+        this.click = this.click.bind(this);
     }
+    click() {
+        console.log(this);
+    }
+    render() {
+        return (
+            <div>
+                <button onClick={this.click}>点击</button>
+            </div>
+        )
+    }
+}
 
-    // 方式三
-    export default class Question extends Component {
-        click() {
-            console.log(this);
-        }
-        render() {
-            return (
-                <div>
-                    <button onClick={() => this.click()}>点击</button>
-                </div>
-            )
-        }
+// 方式三
+export default class Question extends Component {
+    click() {
+        console.log(this);
     }
+    render() {
+        return (
+            <div>
+                <button onClick={() => this.click()}>点击</button>
+            </div>
+        )
+    }
+}
 
-    // 方式四
-    export default class Question extends Component {
-        click = () => {
-            console.log(this);
-        }
-        render() {
-            return (
-                <div>
-                    <button onClick={this.click}>点击</button>
-                </div>
-            )
-        }
+// 方式四
+export default class Question extends Component {
+    click = () => {
+        console.log(this);
     }
+    render() {
+        return (
+            <div>
+                <button onClick={this.click}>点击</button>
+            </div>
+        )
+    }
+}
+```
 
 方式一中，每次组件 render 都会重新 bind(this)，会生成新的函数引用，可能导致子组件重复渲染
 
@@ -525,7 +543,7 @@ React.forwardRef 可以将 ref 作为普通 prop 传递，一般用于高阶组�
 
 - 自定义异步加载组件
 
-`````````
+```js
  export default class Bundle extends React.Component {
     state = {
         mod: null,
@@ -562,59 +580,63 @@ class App extends Component {
         )
     }
 }
-`````````
+```
 
 - 使用 react-loadable
 
-`````````
+```js
 npm install react-loadable --save
-`````````
+```
 
-    import Loadable from 'react-loadable';
+```js
+import Loadable from 'react-loadable';
 
-    function Loading({error, pastDelay}) {
-        if(error) {
-            return <div>Error</div>
-        } else if(pastDelay) {
-            return <div>Loading ...</div>
-        } else {
-            return null;
-        }
+function Loading({error, pastDelay}) {
+    if(error) {
+        return <div>Error</div>
+    } else if(pastDelay) {
+        return <div>Loading ...</div>
+    } else {
+        return null;
     }
+}
 
-    const AsyncQuestion = Loadable({
-        loader: () => import('./components/todo/question'),
-        loading: Loading,
-        delay: 300,
-    })
+const AsyncQuestion = Loadable({
+    loader: () => import('./components/todo/question'),
+    loading: Loading,
+    delay: 300,
+})
 
-    // 使用
-    class App extends Component {
-        render() {
-            return (
-                <div>
-                    <AsyncHelp />
-                </div>
-            )
-        }
+// 使用
+class App extends Component {
+    render() {
+        return (
+            <div>
+                <AsyncHelp />
+            </div>
+        )
     }
+}
+```
 
 - 使用 React.lazy
 
 React16.6 新出的 API，可以实现懒加载组件
 
-    const AsyncQuestion = React.lazy(() => import('./components/todo/question'));
+```js
+const AsyncQuestion = React.lazy(() => import('./components/todo/question'));
 
-    // 使用
-    class App extends Component {
-        render() {
-            return (
-                <React.Suspense fallback={<div>Loading ...</div>}>
-                    <AsyncQuestion/>
-                </React.Suspense>
-            )
-        }
+// 使用
+class App extends Component {
+    render() {
+        return (
+            <React.Suspense fallback={<div>Loading ...</div>}>
+                <AsyncQuestion/>
+            </React.Suspense>
+        )
     }
+}
+```
 
 React.lazy 与 react-loadable 差别：
 
@@ -628,7 +650,7 @@ suspense 可以实现多 lazy 多级应用，不仅仅可以包裹一个 lazy �
 
 - 代码重用、逻辑抽象
 
-`````````
+```js
 如许多组件都需要响应一个鼠标移动事件，可以封装一个高阶组件保存 mouse 状态向下传递：
 
     function withinMouse(Comp) {
@@ -671,7 +693,7 @@ suspense 可以实现多 lazy 多级应用，不仅仅可以包裹一个 lazy �
             <WithinWrap />
         }
     }
-`````````
+```
 
 - 渲染劫持
 
@@ -679,34 +701,38 @@ suspense 可以实现多 lazy 多级应用，不仅仅可以包裹一个 lazy �
 
 如利用反向继承，做到条件型渲染：
 
-    function withinRender(Comp) {
-        return class extends Comp {
-            render() {
-                return this.props.isLogged ? super.render() : null;
-            }
-        }
-    }
-
-    const RenderQuestion = withinRender(Question);
-
-    class App extends React.Component {
+```js
+function withinRender(Comp) {
+    return class extends Comp {
         render() {
-            <RenderQuestion isLogged={true} />
+            return this.props.isLogged ? super.render() : null;
         }
     }
+}
+
+const RenderQuestion = withinRender(Question);
+
+class App extends React.Component {
+    render() {
+        <RenderQuestion isLogged={true} />
+    }
+}
+```
 
 利用反向继承修改 React ElementS Tree：
 
-    function withinRender(Comp) {
-        return class extends Comp {
-            render() {
-                const renderTree = super.render();
-                return React.cloneElement(renderTree, { 
-                    info: 'something',
-                })
-            }
+```js
+function withinRender(Comp) {
+    return class extends Comp {
+        render() {
+            const renderTree = super.render();
+            return React.cloneElement(renderTree, { 
+                info: 'something',
+            })
         }
     }
+}
+```
 
 
 ## 什么是 render props
@@ -727,38 +753,40 @@ render props 同样是提高组件复用和抽象的手段
 
 那这时，这些组件都依赖于这个按钮是状态，就可以封装成一个抽象组件，使用 render props 来调用其它组件
 
-    // 抽象按钮
-    class ToggleButton extends React.Component {
-        state = {
-            open: false,
-        };
-        toggle = () => {
-            this.setState(state => ({
-                open: !state.open,
-            }));
-        }
-        render() {
-            return (
-                <div>
-                    <button onClick={this.toggle}>{this.state.open ? '关闭' : '开启'}</button>
-                    {this.props.render(this.state.open)}
-                </div>
-            )
-        }
+```js
+// 抽象按钮
+class ToggleButton extends React.Component {
+    state = {
+        open: false,
+    };
+    toggle = () => {
+        this.setState(state => ({
+            open: !state.open,
+        }));
     }
+    render() {
+        return (
+            <div>
+                <button onClick={this.toggle}>{this.state.open ? '关闭' : '开启'}</button>
+                {this.props.render(this.state.open)}
+            </div>
+        )
+    }
+}
 
-    // 使用，显示隐藏模态框
-    class App extends React.Component {
-        render() {
-            return (
-                <ToggleButton
-                    render={isOpen => {
-                        return isOpen ? <div>This is Dialog</div> : null;
-                    }}
-                />
-            )
-        }
+// 使用，显示隐藏模态框
+class App extends React.Component {
+    render() {
+        return (
+            <ToggleButton
+                render={isOpen => {
+                    return isOpen ? <div>This is Dialog</div> : null;
+                }}
+            />
+        )
     }
+}
+```
 
 ## HOC、render props、hooks 的优劣
 
@@ -828,55 +856,62 @@ React.Component 需要使用 shouldComponentUpdate 手动去对比 state 或 pro
 
 React.PureComponent 可以自动通过 state 与 props 进行浅比较，判断是否需要更新组件，提供组件性能
 
-    class Child extends React.Component {
-        ....
-    }
+```js
+class Child extends React.Component {
+    ....
+}
 
-    class App extends React.Component {
-        ...
-        render() {
-            return (
-                <div>
-                    <button onClick={this.toggle}>{this.state.open ? '关闭' : '开启'}</button>
-                    <Child id='1' />
-                </div>
-            )
-        }
+class App extends React.Component {
+    ...
+    render() {
+        return (
+            <div>
+                <button onClick={this.toggle}>{this.state.open ? '关闭' : '开启'}</button>
+                <Child id='1' />
+            </div>
+        )
     }
+}
+```
 
 如上，当 App 组件中 open 状态改变时，APP 组件重新 render，其实 Child 组件的 state 和 props 是没有改变的，但是它还是会重新 render，这显然对性能有影响
 
 而使用 React.PureComponent 了后，就可以自动浅比较 state 与 props，如不需要 render，组件将不会耗费性能重新渲染：
 
-    class Child extends React.PureComponent {
-        ....
-    }
+```js
+class Child extends React.PureComponent {
+    ....
+}
+```
 
 React.PureComponent 并不适用于函数组件，且函数组件也没有 shouldComponentUpdate 可以手动对比
 
 React16.6 新增了 React.memo 用于函数组件：
 
+```js
+function Child(props) {
+    ...
+}
 
-    function Child(props) {
-        ...
-    }
-
-    // 第二个参数可选
-    export default React.memo(Child, (prevProps, nextProps) => {
-        return prevProps.seconds === nextProps.seconds
-    })
+// 第二个参数可选
+export default React.memo(Child, (prevProps, nextProps) => {
+    return prevProps.seconds === nextProps.seconds
+})
+```
 
 ## ReactDOM.createPortal 的作用是什么
 
 一般在组件 render 中，我们写如下代码：
 
-    render() {
-        return (
-            <div>
-                <Modal />
-            </div>
-        )
-    }
+```js
+render() {
+    return (
+        <div>
+            <Modal />
+        </div>
+    )
+}
+```
 
 Modal 是一个模态框，绝对定位在 body 之下
 
@@ -884,42 +919,46 @@ Modal 是一个模态框，绝对定位在 body 之下
 
 ReactDOM.createPortal 就是为了解决这个问题而存在，它提供了让子节点渲染到存在于父节点之外的 DOM 节点的方案
 
-    import React, { Component } from 'react';
-    import ReactDOM from 'react-dom';
+```js
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 
-    export default class modal extends Component {
-        el = document.createElement('div');
+export default class modal extends Component {
+    el = document.createElement('div');
 
-        componentDidMount() {
-            document.body.appendChild(this.el);
-        }
-        componentWillUnmount() {
-            document.body.removeChild(this.el);
-        }
-
-        render() {
-            //  props.children 挂载到 el 这个 DOM 下
-            return ReactDOM.createPortal(this.props.children, this.el);
-        }
+    componentDidMount() {
+        document.body.appendChild(this.el);
+    }
+    componentWillUnmount() {
+        document.body.removeChild(this.el);
     }
 
-    // 使用
-     class App extends React.Component {
-        ...
-        render() {
-            return (
-                <div>
-                    <Modal>
-                        This is Modal Content ...
-                    </Modal>
-                </div>
-            )
-        }
+    render() {
+        //  props.children 挂载到 el 这个 DOM 下
+        return ReactDOM.createPortal(this.props.children, this.el);
     }
+}
+
+// 使用
+    class App extends React.Component {
+    ...
+    render() {
+        return (
+            <div>
+                <Modal>
+                    This is Modal Content ...
+                </Modal>
+            </div>
+        )
+    }
+}
+```
 
 ## 如何在 React 中使用 innerHTML
 
-    <div dangerouslySetInnerHTML={{__html: '<span>content</span>'}}></div>
+```js
+<div dangerouslySetInnerHTML={{__html: '<span>content</span>'}}></div>
+```
 
 ## 什么是 React.createElement
 
@@ -927,34 +966,38 @@ React.createElement( type, [props], [...children] )
 
 JSX 即是 React.createElement 的语法糖，JSX 编译后生成的 js 都是 React.createElement：
 
-    // jsx
-    <div id='wrap'>
-        <span id="item">something</span>
-    </div>
+```js
+// jsx
+<div id='wrap'>
+    <span id="item">something</span>
+</div>
 
-    // js
-    React.createElement(
-        "div",
-        { id: "one" },
-        React.createElement("span", { id: "item" }, "something")
-    );
+// js
+React.createElement(
+    "div",
+    { id: "one" },
+    React.createElement("span", { id: "item" }, "something")
+);
+```
 
 ## React.cloneElement 的作用是什么
 
 一般用于克隆一个 React 元素，或为 React 元素添加或修改 props，会返回一个新的 React 元素
 
-    React.cloneElement(
-        element,
-        [props],
-        [...children]
-    )
+```js
+React.cloneElement(
+    element,
+    [props],
+    [...children]
+)
 
-    // 为 props.children 里每个 React 元素修改 props
-    React.Children.map(this.props.children, child => {
-        return React.cloneElement(child, {
-            title: 'something',
-        })
+// 为 props.children 里每个 React 元素修改 props
+React.Children.map(this.props.children, child => {
+    return React.cloneElement(child, {
+        title: 'something',
     })
+})
+```
 
 ## 什么是 Virtual DOM
 
@@ -988,39 +1031,43 @@ JSX 即是 React.createElement 的语法糖，JSX 编译后生成的 js 都是 R
 
 - 在调用 super() 之前，子类构造函数无法使用 this 引用
 
-```````````````
+```js
 constructor() {
     console.log(this); // 报错
     super();
 }
-```````````````
+```
 
 - 将 props 作为参数传入 super，主要原因是子构造函数里能通过 this.props 获取传入的 props
 
 传入 props：
 
-    class MyComponent extends React.Component {
-        constructor(props) {
-            super(props);
-            console.log(this.props);  // { name: 'k',age: 18 }
-        }
+```js
+class MyComponent extends React.Component {
+    constructor(props) {
+        super(props);
+        console.log(this.props);  // { name: 'k',age: 18 }
     }
+}
+```
 
 没传入 props：
 
-    class MyComponent extends React.Component {
-        constructor(props) {
-            super();
-            console.log(this.props); // undefined
-            // 但是 Props 参数仍然可用
-            console.log(props); // Prints { name: 'k',age: 18 }
-        }
-
-        render() {
-            // 构造函数外部不受影响
-            console.log(this.props) // { name: 'k',age: 18 }
-        }
+```js
+class MyComponent extends React.Component {
+    constructor(props) {
+        super();
+        console.log(this.props); // undefined
+        // 但是 Props 参数仍然可用
+        console.log(props); // Prints { name: 'k',age: 18 }
     }
+
+    render() {
+        // 构造函数外部不受影响
+        console.log(this.props) // { name: 'k',age: 18 }
+    }
+}
+```
 
 ## React 中 StrictMode 是什么
 
@@ -1048,23 +1095,25 @@ constructor 是 React 使用 ES6 class 定义组件初始状态时使用
 
 getInitialState 是在 React.createClass 中使用
 
-    class MyComponent extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = {
-                ...
-            };
-        }
+```js
+class MyComponent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            ...
+        };
     }
+}
 
-    等价于：
-    var MyComponent = React.createClass({
-        getInitialState() {
-            return {
-                ...
-            };
-        },
-    });
+等价于：
+var MyComponent = React.createClass({
+    getInitialState() {
+        return {
+            ...
+        };
+    },
+});
+```
 
 ## 什么是错误边界
 
@@ -1072,46 +1121,48 @@ getInitialState 是在 React.createClass 中使用
 
 如果一个组件有 static getDerivedStateFromError() 或 componentDidCatch 中的任何一个（或两个），就变成一个错误边界
 
-    class ErrorBoundary extends Component {
-        state = { hasError: false };
-        static getDerivedStateFromError(error) {
-            console.log(error);
-            return { hasError: true };
-        }
-        componentDidCatch(error, errorInfo) {
-            console.log(error);
-            console.log(errorInfo);
-        }
-        render() {
-            if(this.state.hasError) {
-                return <p>Something Error</p>
-            }
-            return this.props.children;
-        }
+```js
+class ErrorBoundary extends Component {
+    state = { hasError: false };
+    static getDerivedStateFromError(error) {
+        console.log(error);
+        return { hasError: true };
     }
+    componentDidCatch(error, errorInfo) {
+        console.log(error);
+        console.log(errorInfo);
+    }
+    render() {
+        if(this.state.hasError) {
+            return <p>Something Error</p>
+        }
+        return this.props.children;
+    }
+}
 
-    class Question extends Component {
+class Question extends Component {
+    ...
+    render() {
+        if(this.state.id === 2) {
+            throw new Error('error............');
+        }
         ...
-        render() {
-            if(this.state.id === 2) {
-                throw new Error('error............');
-            }
-            ...
-        }
     }
+}
 
-    // 使用
-    class App extends Component {
-        render() {
-            return (
-                <div>
-                    <ErrorBoundary>
-                        <Question />
-                    </ErrorBoundary>
-                </div>
-            )
-        }
+// 使用
+class App extends Component {
+    render() {
+        return (
+            <div>
+                <ErrorBoundary>
+                    <Question />
+                </ErrorBoundary>
+            </div>
+        )
     }
+}
+```
 
 错误边界无法捕获以下错误：
 
@@ -1169,51 +1220,53 @@ react-redux 的核心模块：
 
 示例：
 
-    // app.jsx
-    import { Provider } from 'react-redux';
+```js
+// app.jsx
+import { Provider } from 'react-redux';
 
-    class App extends Component {
-        ...
-        render() {
-            return (
-                <Provider store={store}>
-                    <Child />
-                </Provider>
-            )
+class App extends Component {
+    ...
+    render() {
+        return (
+            <Provider store={store}>
+                <Child />
+            </Provider>
+        )
+    }
+}
+
+// child.jsx
+import { connect } from 'react-redux';
+
+class Child extends Component {
+    ...
+    render() {
+        return (
+            <div>
+                <p>cart count: {this.props.cartCount}</p>
+                <button onClick={this.props.onCartCountChange}>add</button>
+            </div>
+        )
+    }
+}
+
+const stateToProps = (state)=>{
+    return {
+        cartCount : state.count,
+    }
+}
+
+const dispatchToProps = (dispatch) =>{
+    return {
+        onCartCountChange(e){
+            const action = changeCartCountAction(e.target.value);
+            dispatch(action);
         }
     }
+}
 
-    // child.jsx
-    import { connect } from 'react-redux';
-
-    class Child extends Component {
-        ...
-        render() {
-            return (
-                <div>
-                    <p>cart count: {this.props.cartCount}</p>
-                    <button onClick={this.props.onCartCountChange}>add</button>
-                </div>
-            )
-        }
-    }
-
-    const stateToProps = (state)=>{
-        return {
-            cartCount : state.count,
-        }
-    }
-
-    const dispatchToProps = (dispatch) =>{
-        return {
-            onCartCountChange(e){
-                const action = changeCartCountAction(e.target.value);
-                dispatch(action);
-            }
-        }
-    }
-
-    export default connect(stateToProps, dispatchToProps)(Child);
+export default connect(stateToProps, dispatchToProps)(Child);
+```
 
 原理：
 
@@ -1221,24 +1274,24 @@ react-redux 的核心模块：
 
 - 根据 export default connect(stateToProps, dispatchToProps)(Child) 可以看出，connect 函数的结构应该是：
 
-``````````````
-    function connect(mapStateToProps, mapDispatchToProps, ...) {
-        return function wrapWithConnect(WrappedComponent) {
-            class Connect extends Component {
+```js
+function connect(mapStateToProps, mapDispatchToProps, ...) {
+    return function wrapWithConnect(WrappedComponent) {
+        class Connect extends Component {
+            ...
+            constructor() {
+                // context 获取 store，将 state 存在自己的 state 上
                 ...
-                constructor() {
-                    // context 获取 store，将 state 存在自己的 state 上
-                    ...
-                }
-                render() {
-                    // 结合 mapStateToProps、mapDispatchToProps、this.props 得到新的 props 传递给 WrappedComponent
-                    ...
-                }
             }
-            return ...
+            render() {
+                // 结合 mapStateToProps、mapDispatchToProps、this.props 得到新的 props 传递给 WrappedComponent
+                ...
+            }
         }
+        return ...
     }
-``````````````
+}
+```
 
 - Connect 组件会根据 context 获取到 store，然后将 store.getState() 放在 state 状态中
 
