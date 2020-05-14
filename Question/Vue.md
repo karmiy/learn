@@ -186,10 +186,10 @@ data() {
 
 - class
 
-```js
+```html
 // 数组形式
 <div :class="[isActive ? 'show' : 'hide', 'wrap']"></div>
-// aa
+
 data() {
     return {
         isActive: true,
