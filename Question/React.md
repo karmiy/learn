@@ -18,51 +18,55 @@
 
 合成事件：
 
-    import React, { Component } from 'react'
+```js
+import React, { Component } from 'react'
 
-    export default class Question extends Component {
-        state = {
-            id: 1,
-        }
-        click = () => {
-            this.setState({
-                id: 2,
-            });
-            console.log(this.state.id); // 输出 1
-        }
-        render() {
-            return (
-                <div>
-                    <p>id: {this.state.id}</p>
-                    <button onClick={this.click}>点击</button>
-                </div>
-            )
-        }
+export default class Question extends Component {
+    state = {
+        id: 1,
     }
+    click = () => {
+        this.setState({
+            id: 2,
+        });
+        console.log(this.state.id); // 输出 1
+    }
+    render() {
+        return (
+            <div>
+                <p>id: {this.state.id}</p>
+                <button onClick={this.click}>点击</button>
+            </div>
+        )
+    }
+}
+```
 
 钩子函数：
 
-    import React, { Component } from 'react'
+```js
+import React, { Component } from 'react'
 
-    export default class Question extends Component {
-        state = {
-            id: 1,
-        }
-        componentDidMount() {
-            this.setState({
-                id: 2,
-            });
-            console.log(this.state.id); // 输出 1
-        }
-        render() {
-            return (
-                <div>
-                    <p>id: {this.state.id}</p>
-                    <button>点击</button>
-                </div>
-            )
-        }
+export default class Question extends Component {
+    state = {
+        id: 1,
     }
+    componentDidMount() {
+        this.setState({
+            id: 2,
+        });
+        console.log(this.state.id); // 输出 1
+    }
+    render() {
+        return (
+            <div>
+                <p>id: {this.state.id}</p>
+                <button>点击</button>
+            </div>
+        )
+    }
+}
+```
 
 原生事件：
 
