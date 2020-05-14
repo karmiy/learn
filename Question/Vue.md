@@ -46,14 +46,16 @@ watch: {
 
 可以配置 deep 实现深度监听：
 
-    watch: {
-        value: {
-            deep: true,
-            handler() {
-                ...
-            }
+```js
+watch: {
+    value: {
+        deep: true,
+        handler() {
+            ...
         }
     }
+}
+```
 
 ## Vue 的生命周期有哪些
 
@@ -109,20 +111,22 @@ watch: {
 
 组件中 data 必须是个函数，而 new Vue 实例里的 data 可以是对象
 
-    // 组件中
-    data() {
-        return {
-            ...
-        }
+```js
+// 组件中
+data() {
+    return {
+        ...
     }
+}
 
-    // new Vue
-    new Vue({
-        el: '#app',
-        data: {
-            ...
-        }
-    })
+// new Vue
+new Vue({
+    el: '#app',
+    data: {
+        ...
+    }
+})
+```
 
 因为组件是可复用的，JS 里对象是引用关系，如果 data 是对象，作用域没有隔离，组件中的 data 会互相影响，如果是函数，每个实例可以维护一份被返回对象的拷贝，互不影响
 
@@ -142,43 +146,47 @@ v-model 本质是语法糖，内部为不同的输入元素使用不同的属性
 
 例如 input 表单元素：
 
-    <input v-model='inputValue' />
+```html
+<input v-model='inputValue' />
 
-    等价于：
-    <input :value='inputValue' @input='inputValue = $event.target.value'>
+等价于：
+<input :value='inputValue' @input='inputValue = $event.target.value' />
+```
 
 除了这些，还可以自定义组件中使用 v-model
 
-    // Wrap 组件
-    export default {
-        props: ['value'],
-        model: {
-            prop: 'value',
-            event: 'change',
-        },
-        methods: {
-            fn() {
-                ...
-                this.$emit('change', this.currentValue);
-            }
+```js
+// Wrap 组件
+export default {
+    props: ['value'],
+    model: {
+        prop: 'value',
+        event: 'change',
+    },
+    methods: {
+        fn() {
+            ...
+            this.$emit('change', this.currentValue);
         }
     }
+}
 
-    // 父组件
-    <Wrap v-model='val' />
+// 父组件
+<Wrap v-model='val' />
 
-    data() {
-        return {
-            val: '',
-        }
+data() {
+    return {
+        val: '',
     }
+}
+```
 
 
 ## Class 与 Style 如何动态绑定
 
 - class
 
-`````````
+```html
 // 数组形式
 <div :class="[isActive ? 'show' : 'hide', 'wrap']"></div>
 
@@ -196,7 +204,7 @@ data() {
         isActive: true,
     }
 }
-`````````
+```
 
 - style
 `````````
