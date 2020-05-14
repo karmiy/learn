@@ -1316,7 +1316,7 @@ http://www.c.im/article/delete/:id
 当**用户尚未关闭 c 网站时（或 c 网站 cookie 还未过期）**，他打开了恶意网站 b：
 
 ```js
-http:// www.b.im
+http://www.b.im
 ```
 
 而 b 网站有如下结构：

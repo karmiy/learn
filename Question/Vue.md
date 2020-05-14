@@ -14,27 +14,31 @@
 
 一般 watch 在组件初始化时是不会立即执行的：
 
-    data() {
-        return {
-            value: '',
-        }
-    },
-    watch: {
-        value() {
-            ...
-        }
+```js
+data() {
+    return {
+        value: '',
     }
+},
+watch: {
+    value() {
+        ...
+    }
+}
+```
 
 可以配置 immediate 让 watch 在组件初始化时立即执行：
 
-    watch: {
-        value: {
-            immediate: true,
-            handler() {
-                ...
-            }
+```js
+watch: {
+    value: {
+        immediate: true,
+        handler() {
+            ...
         }
     }
+}
+```
 
 ## Watch 如何实现深度监听
 
