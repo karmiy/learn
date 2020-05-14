@@ -2,15 +2,15 @@
 
 行内元素：
 
-``````````
+```css
 .wrap {
     text-align: center;
 }
-``````````
+```
 
 块级元素：
 
-``````````
+```css
 // 方式一: margin
 .wrap {
     margin: 0 auto;
@@ -44,13 +44,13 @@
     right: 0;
     margin: 0 auto;
 }
-``````````
+```
 
 ## 如何实现垂直居中
 
 行内元素：
 
-``````````
+```css
 // 方式一：行高
 .wrap {
     height: 20px;
@@ -80,11 +80,11 @@
     height: 100%;
     background-color: transparent;
 }
-``````````
+```
 
 块级元素：
 
-``````````
+```css
 // 方式一：absolute + top + bottom + margin
 .wrap {
     position: relative;
@@ -160,4 +160,4 @@
     display: table-cell;
     vertical-align: middle;
 }
-``````````
+```
