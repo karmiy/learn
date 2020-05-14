@@ -186,7 +186,7 @@ data() {
 
 - class
 
-```html
+```js
 // 数组形式
 <div :class="[isActive ? 'show' : 'hide', 'wrap']"></div>
 
@@ -207,7 +207,7 @@ data() {
 ```
 
 - style
-`````````
+```js
 // 数组形式
 <div :style="[colorStyle, fontStyle]"></div>
 
@@ -225,7 +225,7 @@ data() {
 // 对象形式
 <div :style="{color: 'red', fontSize: '16px'}"></div>
 
-`````````
+```
 
 ## 组件之间有哪些通讯方式
 
@@ -233,30 +233,34 @@ data() {
 
 父 => 子
 
-    props: ['value'],
+```js
+props: ['value'],
 
-    或
+或
 
-    props: {
-        value: {
-            type: String,
-            required: true,
-            default: '',
-            validator(v) {
-                return ['success', 'warning'].indexOf(value) !== -1;
-            }
+props: {
+    value: {
+        type: String,
+        required: true,
+        default: '',
+        validator(v) {
+            return ['success', 'warning'].indexOf(value) !== -1;
         }
     }
+}
+```
 
 - $emit
 
 子 => 父
 
-    // 父
-    <header @titleChange="titleChange" />
+```js
+// 父
+<header @titleChange="titleChange" />
 
-    // 子
-    this.$emit('titleChange', 'new title');
+// 子
+this.$emit('titleChange', 'new title');
+```
 
 - vuex
 
@@ -266,15 +270,17 @@ data() {
 
 $attrs 获取父组件传递下来的属性中，不在 props 中的项（也除了 class 和 style）：
 
-    // 父
-    <header title='title' width='80' height='80' />
+```js
+// 父
+<header title='title' width='80' height='80' />
 
-    // 子
-    props: [],
-    mounted() {
-        // {title: 'title', width: '80', height: '80'}
-        console.log(this.$attrs);
-    }
+// 子
+props: [],
+mounted() {
+    // {title: 'title', width: '80', height: '80'}
+    console.log(this.$attrs);
+}
+```
 
 还可以使用 v-bind="$attrs" 继续让下传递给子子组件
 
@@ -282,54 +288,60 @@ $attrs 获取父组件传递下来的属性中，不在 props 中的项（也除
 
 $listeners 为父组件传递的方法：
 
-    // 父
-    <header @titleChange="titleChange" />
+```js
+// 父
+<header @titleChange="titleChange" />
 
-    // 子
-    mounted() {
-        // 里面有 titleChange 方法
-        console.log(this.$listeners);
-    }
+// 子
+mounted() {
+    // 里面有 titleChange 方法
+    console.log(this.$listeners);
+}
+```
 
 - provide、inject
 
 跨级的父 => 子(子)
 
-    // 父
-    provide: {
-        value: 'something',
-        valueChange: v => console.log(v),
-    }
+```js
+// 父
+provide: {
+    value: 'something',
+    valueChange: v => console.log(v),
+}
 
-    // 子(子)
-    inject: ['value', 'valueChange'],
-    mounted() {
-        this.value;
-        this.valueChange('anything');
-    }
+// 子(子)
+inject: ['value', 'valueChange'],
+mounted() {
+    this.value;
+    this.valueChange('anything');
+}
+```
 
 > 注：provide 和 inject 绑定并不是可响应的，如果需要响应，需要传入可监听对象
 
-    // 父
-    data() {
-        return {
-            user: {id: 1}
-        }
-    },
-    provide() {
-        return {
-            user: this.user,
-        }
-    },
-    mounted() {
-        this.user.id = '2';
-    },
+```js
+// 父
+data() {
+    return {
+        user: {id: 1}
+    }
+},
+provide() {
+    return {
+        user: this.user,
+    }
+},
+mounted() {
+    this.user.id = '2';
+},
 
-    // 子
-    inject: ['user'],
-    mounted() {
-        console.log(this.user.id);
-    },
+// 子
+inject: ['user'],
+mounted() {
+    console.log(this.user.id);
+},
+```
 
 - $parent、$children
 
@@ -341,11 +353,13 @@ $parent 获取父组件实例
 
 获取子组件实例或 DOM 节点
 
-    <header ref='header' />
+```js
+<header ref='header' />
 
-    mounted() {
-        this.$refs.header; // header 组件实例
-    }
+mounted() {
+    this.$refs.header; // header 组件实例
+}
+```
 
 - $root
 
@@ -355,75 +369,85 @@ $parent 获取父组件实例
 
 双向绑定的功能
 
-    // 父
-    <header :title.sync='titie' />
+```js
+// 父
+<header :title.sync='titie' />
 
-    等价于
-    <header :title='title' @update:title='val => title = val' />
+等价于
+<header :title='title' @update:title='val => title = val' />
 
-    // 子
-    mounted() {
-        this.$emit('update:title', 'new title');
-    }
+// 子
+mounted() {
+    this.$emit('update:title', 'new title');
+}
+```
 
 - v-slot
 
 默认插槽：
 
-    // 父
-    <todo-list>
-        <template v-slot:default>
-            <p>内容</p>
-        </template>
-    </todo-list>
+```html
+// 父
+<todo-list>
+    <template v-slot:default>
+        <p>内容</p>
+    </template>
+</todo-list>
 
-    // 子
-    <slot>默认内容</slot>
+// 子
+<slot>默认内容</slot>
+```
 
 具名插槽：
 
-    // 父
-    <todo-list>
-        <template v-slot:todo>
-            <p>内容</p>
-        </template>
-    </todo-list>
+```html
+// 父
+<todo-list>
+    <template v-slot:todo>
+        <p>内容</p>
+    </template>
+</todo-list>
 
-    // 子
-    <slot name='todo'>默认内容</slot>
+// 子
+<slot name='todo'>默认内容</slot>
+```
 
 作用域插槽：
 
-    // 父
-    <todo-list>
-        <template v-slot:todo='scope'>
-            <p>{{scope.name}}</p>
-        </template>
-    </todo-list>
+```html
+// 父
+<todo-list>
+    <template v-slot:todo='scope'>
+        <p>{{scope.name}}</p>
+    </template>
+</todo-list>
 
-    // 子
-    <slot name='todo' :name='name'>{{name}}</slot>
+// 子
+<slot name='todo' :name='name'>{{name}}</slot>
 
-    data() {
-        return {
-            name: 'k',
-        }
+data() {
+    return {
+        name: 'k',
     }
+}
+```
 
 - EventBus
 
 利用 on 和 emit 传递与接收事件，实例化一个全局 vue 实例实现数据共享
 
-    // main.js
-    Vue.prototype.$eventBus = new Vue();
+```js
+// main.js
+Vue.prototype.$eventBus = new Vue();
 
-    // 组件 A
-    this.$eventBus.$emit('targetChange', 'something');
+// 组件 A
+this.$eventBus.$emit('targetChange', 'something');
 
-    // 组件 B
-    this.$eventBus.$on('targetChange', v => {
-        console.log(v);
-    })
+// 组件 B
+this.$eventBus.$on('targetChange', v => {
+    console.log(v);
+})
+```
 
 - 路由传参
 
@@ -431,54 +455,60 @@ $parent 获取父组件实例
 
 示例一：
 
-    // 组件 A
-    this.$router.push({
-        path: '/b/${this.id}',
-    })
+```js
+// 组件 A
+this.$router.push({
+    path: '/b/${this.id}',
+})
 
-    或
-    this.$router.push({
-        name: 'B',
-        params: {
-            id: this,id,
-        }
-    })
+或
+this.$router.push({
+    name: 'B',
+    params: {
+        id: this,id,
+    }
+})
 
-    // 组件 B
-    this.$route.params.id
+// 组件 B
+this.$route.params.id
+```
 
 示例二：
 
-    // 组件 A
-    this.$router.push({
-        path: '/b',
-        query: {
-            id: this.id,
-        }
-    })
+```js
+// 组件 A
+this.$router.push({
+    path: '/b',
+    query: {
+        id: this.id,
+    }
+})
 
-    // 组件 B
-    this.$route.query.id
+// 组件 B
+this.$route.query.id
+```
 
 - Vue.observable
 
 2.6.0 新增，让一个对象可响应，相当于一个简易版 vuex
 
-    // store.js
-    export const store = Vue.observable({
-        name: 'observable instance',
-    })
+```js
+// store.js
+export const store = Vue.observable({
+    name: 'observable instance',
+})
 
-    // 组件 A
-    import store from '../store';
+// 组件 A
+import store from '../store';
 
-    <div>{{name}}</div>
+<div>{{name}}</div>
 
-    computed: {
-        name() {
-            return store.name;
-        },
+computed: {
+    name() {
+        return store.name;
     },
+},
+```
 
 - broadcast、dispatch
 
@@ -490,54 +520,58 @@ dispatch 用于子（可跨级）传父
 
 **broadcast 实现：**
 
-    // 实现
-    function broadcast(componentName, eventName, params) {
-        this.$children.forEach(child => {
-            const name = child.$options.name;
-            if (name === componentName) {
-                child.$emit.apply(child, [eventName].concat(params));
-            } else {
-                broadcast.apply(child, [componentName, eventName].concat([params]));
-            }
-        });
-    }
+```js
+// 实现
+function broadcast(componentName, eventName, params) {
+    this.$children.forEach(child => {
+        const name = child.$options.name;
+        if (name === componentName) {
+            child.$emit.apply(child, [eventName].concat(params));
+        } else {
+            broadcast.apply(child, [componentName, eventName].concat([params]));
+        }
+    });
+}
 
-    // 父组件 App.vue
-    mounted() {
-        broadcast.call(this, 'Test', 'app-loaded', 100);
-    },
+// 父组件 App.vue
+mounted() {
+    broadcast.call(this, 'Test', 'app-loaded', 100);
+},
 
-    // 子组件 Test.vue
-    mounted() {
-        this.$on('app-loaded', (a) => {
-            console.log(a); // 输出 100
-        })
-    }
+// 子组件 Test.vue
+mounted() {
+    this.$on('app-loaded', (a) => {
+        console.log(a); // 输出 100
+    })
+}
+```
 
 **dispatch 的实现：**
 
-    // 实现
-    function dispatch(componentName, eventName, params) {
-        let parent = this.$parent || this.$root;
-        let name = parent.$options.name;
-        while (parent && (!name || name !== componentName)) {
-            parent = parent.$parent;
-            if (parent) name = parent.$options.name;
-        }
-        if (parent) parent.$emit.apply(parent, [eventName].concat(params));
+```js
+// 实现
+function dispatch(componentName, eventName, params) {
+    let parent = this.$parent || this.$root;
+    let name = parent.$options.name;
+    while (parent && (!name || name !== componentName)) {
+        parent = parent.$parent;
+        if (parent) name = parent.$options.name;
     }
+    if (parent) parent.$emit.apply(parent, [eventName].concat(params));
+}
 
-    // 子组件 Test.vue
-    mounted() {
-        dispatch.call(this, 'App', 'test-loaded', 10);
-    }
+// 子组件 Test.vue
+mounted() {
+    dispatch.call(this, 'App', 'test-loaded', 10);
+}
 
-    // 父组件 App.vue
-    created() {
-        this.$on('test-loaded', a => {
-            console.log(a); // 输出 10
-        })
-    }
+// 父组件 App.vue
+created() {
+    this.$on('test-loaded', a => {
+        console.log(a); // 输出 10
+    })
+}
+```
 
 ## 如何获取父/子/兄弟组件实例
 
@@ -545,107 +579,117 @@ dispatch 用于子（可跨级）传父
 
 向上匹配最近 componentName 的组件实例
 
-    // 实现
-    export const findComponentUpward = (context, componentName, componentNames) => {
-        let parent = context.$parent;
-        let name = parent.$options.name;
-        while (parent && (!name || componentName !== name)) {
-            parent = parent.$parent;
-            if (parent) name = parent.$options.name;
-        }
-        return parent;
-    };
-
-    // 子组件 Test.vue，查找上级 App 组件实例
-    mounted() {
-        console.log(findComponentUpward(this, 'App'));
+```js
+// 实现
+export const findComponentUpward = (context, componentName, componentNames) => {
+    let parent = context.$parent;
+    let name = parent.$options.name;
+    while (parent && (!name || componentName !== name)) {
+        parent = parent.$parent;
+        if (parent) name = parent.$options.name;
     }
+    return parent;
+};
+
+// 子组件 Test.vue，查找上级 App 组件实例
+mounted() {
+    console.log(findComponentUpward(this, 'App'));
+}
+```
 
 - findComponentsUpward
 
 向上匹配所有 componentName 的组件实例
 
-    // 实现
-    export const findComponentsUpward = (context, componentName) => {
-        let parents = [];
-        const parent = context.$parent;
-        if (parent) {
-            if (parent.$options.name === componentName) parents.push(parent);
-            return parents.concat(findComponentsUpward(parent, componentName));
-        } else {
-            return [];
-        }
-    };
-
-    // 子组件 Test.vue，查找上级 App 组件实例
-    mounted() {
-        console.log(findComponentsUpward(this, 'App'));
+```js
+// 实现
+export const findComponentsUpward = (context, componentName) => {
+    let parents = [];
+    const parent = context.$parent;
+    if (parent) {
+        if (parent.$options.name === componentName) parents.push(parent);
+        return parents.concat(findComponentsUpward(parent, componentName));
+    } else {
+        return [];
     }
+};
+
+// 子组件 Test.vue，查找上级 App 组件实例
+mounted() {
+    console.log(findComponentsUpward(this, 'App'));
+}
+```
 
 - findComponentDownward
 
 向下匹配最近 componentName 的组件实例
 
-    // 实现
-    export const findComponentDownward = (context, componentName) => {
-        const childrenList = context.$children;
-        let children = null;
-        if (childrenList.length) {
-            for (const child of childrenList) {
-                const name = child.$options.name;
-                if (name === componentName) {
-                    children = child;
-                    break;
-                } else {
-                    children = findComponentDownward(child, componentName);
-                    if (children) break;
-                }
+```js
+// 实现
+export const findComponentDownward = (context, componentName) => {
+    const childrenList = context.$children;
+    let children = null;
+    if (childrenList.length) {
+        for (const child of childrenList) {
+            const name = child.$options.name;
+            if (name === componentName) {
+                children = child;
+                break;
+            } else {
+                children = findComponentDownward(child, componentName);
+                if (children) break;
             }
         }
-        return children;
-    };
-
-    // 父组件 App.vue，查找下级 Test 组件实例
-    mounted() {
-        console.log(findComponentDownward(this, 'Test'));
     }
+    return children;
+};
+
+// 父组件 App.vue，查找下级 Test 组件实例
+mounted() {
+    console.log(findComponentDownward(this, 'Test'));
+}
+```
 
 - findComponentsDownward
 
 向下匹配所有 componentName 的组件实例
 
-    // 实现
-    export const findComponentsDownward = (context, componentName) => {
-        return context.$children.reduce((components, child) => {
-            if (child.$options.name === componentName) components.push(child);
-            const foundChilds = findComponentsDownward(child, componentName);
-            return components.concat(foundChilds);
-        }, []);
-    };
+```js
+// 实现
+export const findComponentsDownward = (context, componentName) => {
+    return context.$children.reduce((components, child) => {
+        if (child.$options.name === componentName) components.push(child);
+        const foundChilds = findComponentsDownward(child, componentName);
+        return components.concat(foundChilds);
+    }, []);
+};
 
-    // 父组件 App.vue，查找下级 Test 组件实例
-    mounted() {
-        console.log(findComponentsDownward(this, 'Test'));
-    }
+// 父组件 App.vue，查找下级 Test 组件实例
+mounted() {
+    console.log(findComponentsDownward(this, 'Test'));
+}
+```
 
 - findBrothersComponents
 
 查找匹配 componentName 的兄弟组件实例
 
-    // 实现
-    export const findBrothersComponents = (context, componentName, excludeSelf = true) => {
-        let res = context.$parent.$children.filter(item => {
-            return item.$options.name === componentName;
-        });
-        let index = res.findIndex(item => item._uid === context._uid);
-        if (excludeSelf && index !== -1) res.splice(index, 1);
-        return res;
-    };
+```js
+// 实现
+export const findBrothersComponents = (context, componentName, excludeSelf = true) => {
+    let res = context.$parent.$children.filter(item => {
+        return item.$options.name === componentName;
+    });
+    let index = res.findIndex(item => item._uid === context._uid);
+    if (excludeSelf && index !== -1) res.splice(index, 1);
+    return res;
+};
 
-    // 子组件 Test.vue，查找兄弟 Wrap 组件实例
-    mounted() {
-        console.log(findBrothersComponents(this, "Wrap"));
-    }
+// 子组件 Test.vue，查找兄弟 Wrap 组件实例
+mounted() {
+    console.log(findBrothersComponents(this, "Wrap"));
+}
+```
 
 ## 如何实现异步组件
 
@@ -653,70 +697,76 @@ dispatch 用于子（可跨级）传父
 
 常规注册组件：
 
-    Vue.component('km-button', KmButton);
+```js
+Vue.component('km-button', KmButton);
+```
 
 注册异步组件
 
-    // 全局注册：
-    // 方式一
-    Vue.component('km-button', function(resolve) {
-        require(['./components/km-button'], resolve);
-    })
+```js
+// 全局注册：
+// 方式一
+Vue.component('km-button', function(resolve) {
+    require(['./components/km-button'], resolve);
+})
 
-    // 方式二
-    Vue.component(
-        'km-button', 
-        () => import('./components/km-button')
-    )
+// 方式二
+Vue.component(
+    'km-button', 
+    () => import('./components/km-button')
+)
 
-    // 方式三
-    const KmButton = () => ({
-        component: import('./components/km-button'),
-        // 异步组件加载时使用的组件
-        loading: LoadingComponent,
-        // 加载失败时使用的组件
-        error: ErrorComponent,
-        // 展示加载时组件的延时时间。默认值是 200 (毫秒)
-        delay: 200,
-        // 如果提供了超时时间且组件加载也超时了，
-        // 则使用加载失败时使用的组件。默认值是：`Infinity`
-        timeout: 3000
-    })
+// 方式三
+const KmButton = () => ({
+    component: import('./components/km-button'),
+    // 异步组件加载时使用的组件
+    loading: LoadingComponent,
+    // 加载失败时使用的组件
+    error: ErrorComponent,
+    // 展示加载时组件的延时时间。默认值是 200 (毫秒)
+    delay: 200,
+    // 如果提供了超时时间且组件加载也超时了，
+    // 则使用加载失败时使用的组件。默认值是：`Infinity`
+    timeout: 3000
+})
 
-    Vue.component('km-button', KmButton)
+Vue.component('km-button', KmButton)
 
-    // 局部注册
-    组件 A：
-    components: {
-        KmButton: () => import('./components/km-button'),
-    }
+// 局部注册
+组件 A：
+components: {
+    KmButton: () => import('./components/km-button'),
+}
+```
 
 ## 什么是动态组件
 
 Vue 提供了特殊的 \<component> 元素让我们动态的挂载不同的组件：
 
-    // 组件 A
-    <component :is="currentComponent" />
+```js
+// 组件 A
+<component :is="currentComponent" />
 
-    import Test from './components/test';
-    data() {
-        return {
-            currentComponent: 'Test',
-        }
-    },
-    components: {
-        Test,
-    },
+import Test from './components/test';
+data() {
+    return {
+        currentComponent: 'Test',
+    }
+},
+components: {
+    Test,
+},
 
-    或
-    <component :is="currentComponent" />
+或
+<component :is="currentComponent" />
 
-    import Test from './components/test';
-    data() {
-        return {
-            currentComponent: Test,
-        }
-    },
+import Test from './components/test';
+data() {
+    return {
+        currentComponent: Test,
+    }
+},
+```
 
 ## 什么是 keep-alive
 
@@ -724,59 +774,65 @@ Vue 提供了特殊的 \<component> 元素让我们动态的挂载不同的组�
 
 keep-alive 可以让组件实例得到缓存，在重新切换到原来的组件时不会重新加载组件：
 
-    <keep-alive>
-        <component :is="currentComponent" />
-    </keep-alive>
+```html
+<keep-alive>
+    <component :is="currentComponent" />
+</keep-alive>
+```
 
 keep-alive 可以使用 include 与 exclude 包含与排除，因为有些组件可能需要有实时性，那就不能缓存，可以使用 exclude 排除：
 
-    <keep-alive :include="['a', 'b']">
-        // 或include="a,b" :include="/a|b/",a 和 b 表示组件的 name
-        <router-view/>
-    </keep-alive>
+```html
+<keep-alive :include="['a', 'b']">
+    // 或include="a,b" :include="/a|b/",a 和 b 表示组件的 name
+    <router-view/>
+</keep-alive>
 
-    <keep-alive :exclude="c">
-        <router-view/>
-    </keep-alive>
+<keep-alive :exclude="c">
+    <router-view/>
+</keep-alive>
+```
 
 ## 什么是递归组件
 
-    // Tree 组件
-    <Treelayer :list='list'>
+```js
+// Tree 组件
+<Treelayer :list='list'>
 
-    data() {
-        return {
-            list: [
-                {
-                    id: 1,
-                    children: [
-                        {
-                            id: 11
-                        }
-                    ]
-                },
-                {
-                    id: 2,
-                }
-            ]
-        }
+data() {
+    return {
+        list: [
+            {
+                id: 1,
+                children: [
+                    {
+                        id: 11
+                    }
+                ]
+            },
+            {
+                id: 2,
+            }
+        ]
     }
+}
 
-    // TreeLayer 递归组件
-    <ul class='menu_tree_layer'>
-        <li v-for='item in list'>
-            <p>id: {{item.id}}</p>
-            <tree-layer v-if='item.children' :list='item.children' />
-        </li>
-    </ul>
+// TreeLayer 递归组件
+<ul class='menu_tree_layer'>
+    <li v-for='item in list'>
+        <p>id: {{item.id}}</p>
+        <tree-layer v-if='item.children' :list='item.children' />
+    </li>
+</ul>
 
-    name: "Treelayer", // 必须定义 name 组件内部才可以递归
-    prop: {
-        list: {
-            type: Array,
-            default: [],
-        }
+name: "Treelayer", // 必须定义 name 组件内部才可以递归
+prop: {
+    list: {
+        type: Array,
+        default: [],
     }
+}
+```
 
 ## 什么是函数式组件
 
@@ -806,55 +862,63 @@ context 参数上有：
 
 使用：
 
-    <template functional>
-        <div>test: {{props.id}} class: {{data.staticClass}} style: {{data.style}} fullName: {{fullName(props.prefix, props.name)}}</div>
-    </template>
-    export default {
-        props: {
-            prefix: String,
-            name: String,
-        },
-        fullName(prefix, name) {
-            return prefix + '-' + name
-        }
+```js
+<template functional>
+    <div>test: {{props.id}} class: {{data.staticClass}} style: {{data.style}} fullName: {{fullName(props.prefix, props.name)}}</div>
+</template>
+export default {
+    props: {
+        prefix: String,
+        name: String,
+    },
+    fullName(prefix, name) {
+        return prefix + '-' + name
     }
+}
+```
 
 > 注：函数式组件不自动继承 class、style，会放到 context.data 下，上面是单文件 .vue 的写法，可以在 render 写法打印查看
 
-    export default {
-        render(h, context) {
-            console.log(context);
+```js
+export default {
+    render(h, context) {
+        console.log(context);
 
-            return h('div', context.data, '1111');
-        }
+        return h('div', context.data, '1111');
     }
+}
+```
 
 ## components 和 Vue.component 的区别
 
 components 在组件内部使用，是**局部注册**，只在当前组件内注册和使用
 
-    // 组件 A
-    <div>
-        <B />
-    </div>
+```js
+// 组件 A
+<div>
+    <B />
+</div>
 
-    import B from './B';
-    components: {
-        B,
-    }
+import B from './B';
+components: {
+    B,
+}
+```
 
 Vue.component 是**全局注册**，注册后全局任何组件都可以使用，一般在使用第三方组件库时，就会全局组件某个组件：
 
-    // main.js
-    Vue.component('km-button', KmButton);
+```js
+// main.js
+Vue.component('km-button', KmButton);
 
 
-    // 组件 A
-    <div>
-        <km-button />
-    </div>
+// 组件 A
+<div>
+    <km-button />
+</div>
 
-    不需要 components 里再放 KmButton 了
+不需要 components 里再放 KmButton 了
+```
 
 ## Vue.component 和 Vue.extend 的区别
 
@@ -862,26 +926,28 @@ Vue.component 上个问题中提过，是**全局注册组件**
 
 Vue.extend 是 Vue 的组件实例构造器，用于创建一个组件实例，通常用于创建实例后，挂载于某个 DOM 元素上
 
-    import Test from './components/test';
+```js
+import Test from './components/test';
 
-    const extend = Vue.extend(Test);
-    或
-    const extend = Vue.extend({
-        template: '<p>value: {{value}}; id: {{id}}</p>',
-        data() {
-            return {
-                id: '1',
-            }
-        },
-        props: ['value'],
-    }); 
-
-    // 挂载到 <div id='tood' /> 元素上，会直接覆盖这个 div
-    new extend({
-        propsData: {
-            value: '2222'
+const extend = Vue.extend(Test);
+或
+const extend = Vue.extend({
+    template: '<p>value: {{value}}; id: {{id}}</p>',
+    data() {
+        return {
+            id: '1',
         }
-    }).$mount('#todo');
+    },
+    props: ['value'],
+}); 
+
+// 挂载到 <div id='tood' /> 元素上，会直接覆盖这个 div
+new extend({
+    propsData: {
+        value: '2222'
+    }
+}).$mount('#todo');
+```
 
 ## 什么是 Vue.use
 
@@ -889,38 +955,40 @@ Vue.use 通常用于我们使用第三方库的时候注册组件，接收一个
 
 Vue.use 会调用对象的 install 方法，install 可以接收一个 Vue 参数
 
-    // 第三方库的 button/index.js
-    import Button from './button.vue';
+```js
+// 第三方库的 button/index.js
+import Button from './button.vue';
 
-    Button.install = function(Vue) {
-        Vue.component(Button.name, Button);
-    }
+Button.install = function(Vue) {
+    Vue.component(Button.name, Button);
+}
 
-    // 第三方库的 index.js
-    import Button from './components/button';
-    import Row from './components/row';
+// 第三方库的 index.js
+import Button from './components/button';
+import Row from './components/row';
+...
+
+const components = [
+    Button,
+    Row,
     ...
+]
 
-    const components = [
-        Button,
-        Row,
-        ...
-    ]
+const install = Vue => {
+    components.map(component => Vue.component);
+}
 
-    const install = Vue => {
-        components.map(component => Vue.component);
-    }
-
-    export default {
-        install,
-    }
+export default {
+    install,
+}
 
 
-    // 我们的 main.js
-    import Vue from 'vue';
-    import KmUI from 'kealm-vue-components';
+// 我们的 main.js
+import Vue from 'vue';
+import KmUI from 'kealm-vue-components';
 
-    Vue.use(KmUI); // 这时会去调用 install 方法，并把 Vue 作为参数传给它
+Vue.use(KmUI); // 这时会去调用 install 方法，并把 Vue 作为参数传给它
+```
 
 ## Vue 路由守卫有哪些
 
@@ -946,13 +1014,15 @@ Vue.use 会调用对象的 install 方法，install 可以接收一个 Vue 参�
 
 在渲染该组件的对应路由被确认前调用
 
-    // router.js
-    const router = new VueRouter({ ... })
+```js
+// router.js
+const router = new VueRouter({ ... })
 
-    router.beforeEach((to, from, next) => {
-        // ...
-        next(); // 要调用 next 才能成功路由跳转
-    })
+router.beforeEach((to, from, next) => {
+    // ...
+    next(); // 要调用 next 才能成功路由跳转
+})
+```
 
 **router.beforeResolve：**
 
@@ -962,60 +1032,66 @@ Vue.use 会调用对象的 install 方法，install 可以接收一个 Vue 参�
 
 在所有路由跳转结束的时候调用，不需要 next
 
-    router.afterEach((to, from) => {
-        // ...
-    })
+```js
+router.afterEach((to, from) => {
+    // ...
+})
+```
 
 ## 路由内部守卫
 
-    const router = new VueRouter({
-        routes: [
-            {
-                path: '/foo',
-                component: Foo,
-                beforeEnter: (to, from, next) => {
-                    // ...
-                }
+```js
+const router = new VueRouter({
+    routes: [
+        {
+            path: '/foo',
+            component: Foo,
+            beforeEnter: (to, from, next) => {
+                // ...
             }
-        ]
-    })
+        }
+    ]
+})
+```
 
 这些守卫与全局前置守卫的方法参数是一样的
 
 ## 组件内部守卫
 
-    const Foo = {
-        template: `...`,
-        beforeRouteEnter (to, from, next) {
-            // 在渲染该组件的对应路由被 confirm 前调用
-            // 不！能！获取组件实例 `this`
-            // 因为当守卫执行前，组件实例还没被创建
-            // 虽然不能访问 this，但可以给 next 一个回调来接收组件实例，在导航被确认时执行回调
-            next(vm => {
-                // 通过 `vm` 访问组件实例
-            })
+```js
+const Foo = {
+    template: `...`,
+    beforeRouteEnter (to, from, next) {
+        // 在渲染该组件的对应路由被 confirm 前调用
+        // 不！能！获取组件实例 `this`
+        // 因为当守卫执行前，组件实例还没被创建
+        // 虽然不能访问 this，但可以给 next 一个回调来接收组件实例，在导航被确认时执行回调
+        next(vm => {
+            // 通过 `vm` 访问组件实例
+        })
 
-        },
-        beforeRouteUpdate (to, from, next) {
-            // 在当前路由改变，但是该组件被复用时调用
-            // 举例来说，对于一个带有动态参数的路径 /foo/:id，在 /foo/1 和 /foo/2 之间跳转的时候，
-            // 由于会渲染同样的 Foo 组件，因此组件实例会被复用。而这个钩子就会在这个情况下被调用。
-            // 可以访问组件实例 `this`
-            // next 不需要传参数
-            next();
-        },
-        beforeRouteLeave (to, from, next) {
-            // 导航离开该组件的对应路由时调用
-            // 可以访问组件实例 `this`
-            // 可以通过 next(false) 取消
-            const answer = window.confirm('...')
-            if (answer) {
-                next()
-            } else {
-                next(false)
-            }
+    },
+    beforeRouteUpdate (to, from, next) {
+        // 在当前路由改变，但是该组件被复用时调用
+        // 举例来说，对于一个带有动态参数的路径 /foo/:id，在 /foo/1 和 /foo/2 之间跳转的时候，
+        // 由于会渲染同样的 Foo 组件，因此组件实例会被复用。而这个钩子就会在这个情况下被调用。
+        // 可以访问组件实例 `this`
+        // next 不需要传参数
+        next();
+    },
+    beforeRouteLeave (to, from, next) {
+        // 导航离开该组件的对应路由时调用
+        // 可以访问组件实例 `this`
+        // 可以通过 next(false) 取消
+        const answer = window.confirm('...')
+        if (answer) {
+            next()
+        } else {
+            next(false)
         }
     }
+}
+```
 
 ## Object.freeze 在 Vue 中有什么作用
 
@@ -1025,14 +1101,16 @@ Vue.use 会调用对象的 install 方法，install 可以接收一个 Vue 参�
 
 通常用于不需要改变，仅用于展示或使用的数据：
 
-    data() {
-        return {
-            list: Object.freeze([
-                {id: 1, value: '10'},
-                {id: 2, value: '20'}
-            ])
-        }
+```js
+data() {
+    return {
+        list: Object.freeze([
+            {id: 1, value: '10'},
+            {id: 2, value: '20'}
+        ])
     }
+}
+```
 
 ## 谈谈 Vue 的响应式原理
 
@@ -1050,30 +1128,36 @@ Vue 响应式的实现核心在于 3 个类：
 
 如：
 
-    data() {
-        return {
-            name: 'k',
-        }
+```js
+data() {
+    return {
+        name: 'k',
     }
+}
+```
 
 会得到：
 
-    {
-        name: 'k',
-        __ob__: Observer
-    }
+```js
+{
+    name: 'k',
+    __ob__: Observer
+}
+```
 
 Observer 里有一个 dep 属性，它是 Dep 的实例,Dep 实例有一个 subs 属性，用于存放 Watcher：
 
-    // Observer 实例
-    {
-        dep: Dep
-    }
+```js
+// Observer 实例
+{
+    dep: Dep
+}
 
-    // Dep 实例
-    {
-        subs: [....] // 里面是 Watcher
-    }
+// Dep 实例
+{
+    subs: [....] // 里面是 Watcher
+}
+```
 
 我们的 computed watch 等会有相应的 Watcher 实例，当创建了一个 Watcher 时，这个 Watcher 依赖 data 的 name 属性，就会触发 Observer 为其绑定的 getter，将整个 Watcher 实例放到 Dep 的 subs 数组里，并且 Watcher 实例里也会存有对应的 Dep 实例。这样 Observer 的 Dep 实例中，就可以通过 subs 得到全部的 Watcher
 
@@ -1103,21 +1187,23 @@ key 可以给每一个 vnode 唯一的 id，可以让 diff 操作更准确，更
 
 当我们改变数据时，如果在 DOM 更新后进行操作，一般都需要使用 $nextTick：
 
-    <div>name: {{name}}</div>
+```js
+<div>name: {{name}}</div>
 
-    data() {
-        return {
-            name: 'kkk',
-        }
-    },
-    mounted() {
-        this.name = '666';
-        this.$nextTick(() => {
-          console.log(this.$el.innerText); // 输出 name: 666
-        });
+data() {
+    return {
+        name: 'kkk',
+    }
+},
+mounted() {
+    this.name = '666';
+    this.$nextTick(() => {
+        console.log(this.$el.innerText); // 输出 name: 666
+    });
 
-        console.log(this.$el.innerText); // 输出 name: kkk
-    },
+    console.log(this.$el.innerText); // 输出 name: kkk
+},
+```
 
 这是因为 **JavaScript 的事件循环**
 
@@ -1143,24 +1229,26 @@ Vue 内部对异步队列尝试使用，Promise.then、MutationObserver 和 setI
 
 而 $nextTick 里的回调同样与 update 操作相同，被放到异步队列里，用如 Promise.then 包起来，所以当我们在代码后面利用 this.$next 操作 DOM 时，可以拿到最新的 DOM 视图结果，因为例如是用 Promise.then，那微任务都被取出来了，DOM 的 update 代码在我们 this.$nextTick 之前操作好了，自然 $nextTick 里可以得到最新的视图数据
 
-    <div>name: {{name}}</div>
+```js
+<div>name: {{name}}</div>
 
-    data() {
-        return {
-            name: 'kkk',
-        }
-    },
-    mounted() {
-        this.$nextTick(() => {
-          console.log(this.$el.innerText); // 输出 name: kkk
-        });
+data() {
+    return {
+        name: 'kkk',
+    }
+},
+mounted() {
+    this.$nextTick(() => {
+        console.log(this.$el.innerText); // 输出 name: kkk
+    });
 
-        this.name = '666';
+    this.name = '666';
 
-        this.$nextTick(() => {
-          console.log(this.$el.innerText); // 输出 name: 666
-        });
-    },
+    this.$nextTick(() => {
+        console.log(this.$el.innerText); // 输出 name: 666
+    });
+},
+```
 
 如上，第一个 $nextTick 执行后，回调被用如 Promise.then 包起来放到异步队列里了，接着执行 this.name = '666'，它相关的 DOM update 操作也被放到异步队列里了，最后执行第二个 $nextTick，回调同样被放到异步队列里，取出来时是一个个顺序执行，而 DOM 更新视图是在第二个异步任务里做的，所以第一个 $nextTick 的回调里拿到的还是旧的，第二个 $nextTick 是新视图
 
@@ -1170,14 +1258,16 @@ Vue 内部对异步队列尝试使用，Promise.then、MutationObserver 和 setI
 
 可以通过 @hook:XXX 监听子组件的生命周期钩子：
 
-    // 监听 todo-item 组件的 mounted 钩子
-    <todo-item @hook:mounted="childrenMounted" />
+```js
+// 监听 todo-item 组件的 mounted 钩子
+<todo-item @hook:mounted="childrenMounted" />
 
-    methods: {
-        childrenMounted() {
-            console.log('监听到子组件 mounted');
-        }
+methods: {
+    childrenMounted() {
+        console.log('监听到子组件 mounted');
     }
+}
+```
 
 ## Vue 的数据初始化顺序是什么样的
 
@@ -1252,30 +1342,35 @@ View 层展示的不是 Model 层的数据，而是 ViewModel 的数据，由 Vi
 
 在 Vue 中，我们在 template 的模板就相当于 MVVM 的 View 层：
 
-    <template>
-        <div id='app'>
-            <p>{{message}}</p>
-        </div>
-    </template>
+```html
+<template>
+    <div id='app'>
+        <p>{{message}}</p>
+    </div>
+</template>
+```
 
 组件中 data 的数据可以算一层 Model 管理层：
 
-
-    new Vue({
-        data() {
-            return {
-                message: '',
-            }
-        },
-        ...
-    })
+```js
+new Vue({
+    data() {
+        return {
+            message: '',
+        }
+    },
+    ...
+})
+```
 
 而整个组件实例就相当于 ViewModel 层：
 
-    // vm 相当于 ViewModel 层，帮助我们管理数据与视图
-    const vm = new Vue({
-        ...
-    })
+```js
+// vm 相当于 ViewModel 层，帮助我们管理数据与视图
+const vm = new Vue({
+    ...
+})
+```
 
 我们不需要自己去操作 DOM，只需要维护好 vm 里的数据，就会自动帮助我们同步到 View 视图中，而 View 中收到用户的操作响应，也由 vm 帮我们同步到 Model 中
 
@@ -1319,31 +1414,35 @@ Vue 通过原型拦截的方式重新的数据的 7 个方法：
 
 对于已创建的实例，Vue 不允许动态添加根级别的响应式属性：
 
-    data() {
-        return {
-            info: {
-                id: 1,
-                name: 'k',
-            }
+```js
+data() {
+    return {
+        info: {
+            id: 1,
+            name: 'k',
         }
-    },
-    mounted() {
-        this.info.code = '0393'; // 无效，code 不会是响应式的
-    },
+    }
+},
+mounted() {
+    this.info.code = '0393'; // 无效，code 不会是响应式的
+},
+```
 
 Vue 提供了 Vue.set(object, propertyName, value) 方法向嵌套对象添加响应式属性：
 
-    data() {
-        return {
-            info: {
-                id: 1,
-                name: 'k',
-            }
+```js
+data() {
+    return {
+        info: {
+            id: 1,
+            name: 'k',
         }
-    },
-    mounted() {
-        this.$set(this.info, 'code', '0393'); // code 会成为响应式的
-    },
+    }
+},
+mounted() {
+    this.$set(this.info, 'code', '0393'); // code 会成为响应式的
+},
+```
 
 那么 Vue 内部是如何解决对象新增属性不能响应式的问题？
 
@@ -1367,24 +1466,26 @@ Vue.set 做了如下操作：
 
 而 Vue 更推崇的是 MVVM 模式，我们不应该手动去操作 DOM 元素，可以把对 DOM 的操作封装为一个指令，做到抽离解耦，而且提升了复用性：
 
-    // 全局注册
-    Vue.directive('focus', {
-        inserted(el) {
+```js
+// 全局注册
+Vue.directive('focus', {
+    inserted(el) {
+        el.focus();
+    }
+});
+
+// 组件中
+<input v-focus />
+
+// 组件中局部注册
+directives：{
+    'focus':{
+        inserted: function(el){
             el.focus();
         }
-    });
-
-    // 组件中
-    <input v-focus />
-
-    // 组件中局部注册
-    directives：{
-        'focus':{
-            inserted: function(el){
-                el.focus();
-            }
-        }
     }
+}
+```
 
 
 除了上面的 inserted，还有如下**钩子函数**：
@@ -1423,26 +1524,30 @@ Vue.set 做了如下操作：
 
 还可以有**动态指令参数**：
 
-    // 组件中
-    <div v-test:[direction]="200">...</div>
-    
-    data() {
-        return {
-            direction: 'left'
-        }
-    }
+```js
+// 组件中
+<div v-test:[direction]="200">...</div>
 
-    Vue.directive('test', {
-        bind: function (el, binding, vnode) {
-            const d = binding.arg == 'left' ? 'left': 'top';
-        }
-    })
+data() {
+    return {
+        direction: 'left'
+    }
+}
+
+Vue.directive('test', {
+    bind: function (el, binding, vnode) {
+        const d = binding.arg == 'left' ? 'left': 'top';
+    }
+})
+```
 
 **当 bind 和 update 做相同行为时，不关心其他钩子，可以简写**：
 
-    Vue.directive('color', function (el, binding) {
-        el.style.color = binding.value;
-    })
+```js
+Vue.directive('color', function (el, binding) {
+    el.style.color = binding.value;
+})
+```
 
 ## Vue 有哪些性能优化
 
@@ -1474,12 +1579,16 @@ Vue.set 做了如下操作：
 
 如组件：
 
-    <template>
-        <div id='k'>
-            ...
-        </div>
-    </template>
+```html
+<template>
+    <div id='k'>
+        ...
+    </div>
+</template>
+```
 
 我们可以通过如下操作拿到这个组件的 Vue 实例：
 
-    document.getElementById('k').__vue__
+```js
+document.getElementById('k').__vue__
+```
