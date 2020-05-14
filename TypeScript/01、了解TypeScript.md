@@ -62,16 +62,18 @@ TypeScript 对类型的检查严格程度可以通过 **tsconfig.json** 来配�
 
 因此 TypeScript 并不是类型定义本身，而是类型定义的 **Shape** （形状）：
 
-    class Foo {
-      method(input: string): number { ... }
-    }
-    
-    class Bar {
-      method(input: string): number { ... }
-    }
-    
-    const foo: Foo = new Foo(); // Okay.
-    const bar: Bar = new Foo(); // Okay.
+```ts
+class Foo {
+  method(input: string): number { ... }
+}
+
+class Bar {
+  method(input: string): number { ... }
+}
+
+const foo: Foo = new Foo(); // Okay.
+const bar: Bar = new Foo(); // Okay.
+```
     
 以上代码是不会报错的，因为它们的「形状」是一样的，而类型的代码在 Java 或 C# 是会报错的
 
