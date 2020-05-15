@@ -170,7 +170,9 @@ export default {
         }
     }
 }
+```
 
+```js
 // 父组件
 <Wrap v-model='val' />
 
@@ -186,7 +188,7 @@ data() {
 
 - class
 
-```js
+```html
 // 数组形式
 <div :class="[isActive ? 'show' : 'hide', 'wrap']"></div>
 
@@ -207,7 +209,7 @@ data() {
 ```
 
 - style
-```js
+```html
 // 数组形式
 <div :style="[colorStyle, fontStyle]"></div>
 
