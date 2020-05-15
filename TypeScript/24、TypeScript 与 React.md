@@ -72,7 +72,7 @@ webpack 的 rules 配置：
 
 假设要封装一个 Logo 组件，在 jsx 中一般是这样封装的：
 
-```ts
+```tsx
 // logo.tsx
 import * as React from 'react';
 
@@ -90,7 +90,7 @@ export default Logo;
 
 因为我们没有定义 props 的类型，接着使用 interface 定义 props 的类型：
 
-```ts
+```tsx
 import * as React from 'react';
 
 interface ILogoProps {
@@ -111,7 +111,7 @@ export default Logo;
 
 但是让我们要用到 children 时，是不是又需要定义 children 类型：
 
-```ts
+```tsx
 interface ILogoProps {
     src: string;
     className?: string;
@@ -122,7 +122,7 @@ interface ILogoProps {
 
 其实 React 的提供了更规范的用法, **type SFC\<P>**，这个工具类型里已经定义了 children 类型：
 
-```ts
+```tsx
 import * as React from 'react';
 
 interface ILogoProps {
