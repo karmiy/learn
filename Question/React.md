@@ -18,7 +18,7 @@
 
 合成事件：
 
-```js
+```jsx
 import React, { Component } from 'react'
 
 export default class Question extends Component {
