@@ -49,12 +49,12 @@ You should also be sure that the version you pass to the `corejs` option matches
 则修改安装npm install --save core-js@3，并配置：
 {
     "presets": [
-    [
-        "@babel/preset-env",
-        {
-        "corejs": 3
-        }
-    ]
+        [
+            "@babel/preset-env",
+            {
+            "corejs": 3
+            }
+        ]
     ],
     "plugins": ["@babel/plugin-transform-runtime"]
 }

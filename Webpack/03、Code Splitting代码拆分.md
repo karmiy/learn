@@ -306,8 +306,8 @@ output: {
 
 ```js
 // 3、异步import加webpackChunkName配置解析
-    // src/index.js
-    import(/* webpackChunkName: 'lodash'*/  'lodash')
+// src/index.js
+import(/* webpackChunkName: 'lodash'*/  'lodash')
     
 执行npm run build
 ```

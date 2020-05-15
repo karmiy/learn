@@ -4,67 +4,69 @@
 
 我们可以开发自己的函数库，发布到npm上，通过npm install的形式安装到自己的项目中使用，也可以供他人安装使用
 
-    // 1、src下新建utils文件夹，新建src/utils/math.js
-    export function add(a, b) {
-        return a + b
-    }
-    
-    export function minus(a, b) {
-        return a - b
-    }
-    
-    export function multiply(a, b) {
-        return a * b
-    }
-    
-    export function division(a, b) {
-        return a / b
-    }
-    
-    // 2、入口文件main.js
-    import * as math from './utils/math'
-    
-    export default {
-        math,
-    }
-    
-    // 3、配置build/webpack.lib.conf.js
-    const path = require('path');
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-    
-    module.exports = {
-        mode: 'production',
-        context: path.resolve(__dirname, '../'), // 配置上下文，当遇到相对路径时，会以context为根目录
-        entry: {
-            main: './src/main.js', // 需要打包的文件入口
-        },
-        output: {
-            path: path.resolve(__dirname, '..', 'lib'),
-            filename: 'library.js',
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.js$/, // 使用正则来匹配 js 文件
-                    exclude: /node_modules/, // 排除依赖包文件夹
-                    use: {
-                        loader: 'babel-loader', // 使用 babel-loader
-                    }
-                },
-            ]
-        },
-        plugins: [
-            new CleanWebpackPlugin(),
-        ]
-    }
-    
-    // 4、配置package.json的scripts
-    "scripts": {
-        "lib": "webpack --progress --config build/webpack.lib.conf.js",
+```js
+// 1、src下新建utils文件夹，新建src/utils/math.js
+export function add(a, b) {
+    return a + b
+}
+
+export function minus(a, b) {
+    return a - b
+}
+
+export function multiply(a, b) {
+    return a * b
+}
+
+export function division(a, b) {
+    return a / b
+}
+
+// 2、入口文件main.js
+import * as math from './utils/math'
+
+export default {
+    math,
+}
+
+// 3、配置build/webpack.lib.conf.js
+const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+
+module.exports = {
+    mode: 'production',
+    context: path.resolve(__dirname, '../'), // 配置上下文，当遇到相对路径时，会以context为根目录
+    entry: {
+        main: './src/main.js', // 需要打包的文件入口
     },
-    
-    
-    执行npm run lib
+    output: {
+        path: path.resolve(__dirname, '..', 'lib'),
+        filename: 'library.js',
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/, // 使用正则来匹配 js 文件
+                exclude: /node_modules/, // 排除依赖包文件夹
+                use: {
+                    loader: 'babel-loader', // 使用 babel-loader
+                }
+            },
+        ]
+    },
+    plugins: [
+        new CleanWebpackPlugin(),
+    ]
+}
+
+// 4、配置package.json的scripts
+"scripts": {
+    "lib": "webpack --progress --config build/webpack.lib.conf.js",
+},
+
+
+执行npm run lib
+```
     
 ![Alt text](./imgs/10-01.png)
 
@@ -72,36 +74,42 @@
 
 但是我们做开源库，用户可能会用这些方式去引用我们的library
 
-    // ES module
-    import library from 'library'
-    
-    // comnmonJS
-    const library = require('library')
-    
-    // AMD
-    require(['library'], function() {})
+```js
+// ES module
+import library from 'library'
+
+// comnmonJS
+const library = require('library')
+
+// AMD
+require(['library'], function() {})
+```
     
     
 我们需要同时支持这些形式的引入，需要在webpack.lib.conf.js中加上**libraryTarget**的配置
 
-    output: {
-        path: path.resolve(__dirname, '..', 'lib'),
-        filename: 'library.js',
-        libraryTarget: 'umd', // 配置umd，能够在所有的模块定义下都可运行的方式
-    },
-    
-    在执行npm run lib，这时打出的library.js在上面几种引入方式下，都可以使用了
+```js
+output: {
+    path: path.resolve(__dirname, '..', 'lib'),
+    filename: 'library.js',
+    libraryTarget: 'umd', // 配置umd，能够在所有的模块定义下都可运行的方式
+},
+
+在执行npm run lib，这时打出的library.js在上面几种引入方式下，都可以使用了
+```
     
 ### 本地引入Library得到undefined的常见问题
 
 我们用前一节搭建的开发环境，在入口index.js引入我们打包生成的library.js
 
-    // src/index.js
-    import library from '../lib/library'
-    
-    console.log(library);
+```js
+// src/index.js
+import library from '../lib/library'
 
-    执行npm run dev，在localhost:8080下控制台查看输出
+console.log(library);
+
+执行npm run dev，在localhost:8080下控制台查看输出
+```
     
 ![Alt text](./imgs/10-02.png)
 
@@ -119,28 +127,30 @@
 
 经过不断测试，把.babelrc的配置删除以下部分
 
-    // 原本的.babelrc
-    {
-      "presets": [
+```js
+// 原本的.babelrc
+{
+    "presets": [
         [
-          "@babel/preset-env",
-          {
+            "@babel/preset-env",
+            {
             "useBuiltIns": "usage",
             "corejs": 3
-          }
+            }
         ]
-      ],
-      "plugins": ["@babel/plugin-transform-runtime"]
-    }
-    
-    // 调整后的.babelrc
-    {
-      "presets": [
+    ],
+    "plugins": ["@babel/plugin-transform-runtime"]
+}
+
+// 调整后的.babelrc
+{
+    "presets": [
         [
-          "@babel/preset-env"
+            "@babel/preset-env"
         ]
-      ]
-    }
+    ]
+}
+```
     
 ![Alt text](./imgs/10-06.png)
 
@@ -154,41 +164,47 @@
 
 了解后，我们发现可能是因为commonjs语义保留问题导致
 
-    // 安装解决依赖
-    npm i @babel/plugin-transform-modules-commonjs --save-dev
-    
-    // 配置.babelrc
-    {
-      "presets": [
+```js
+// 安装解决依赖
+npm i @babel/plugin-transform-modules-commonjs --save-dev
+
+// 配置.babelrc
+{
+    "presets": [
         [
-          "@babel/preset-env",
-          {
+            "@babel/preset-env",
+            {
             "useBuiltIns": "usage",
             "corejs": 3
-          }
+            }
         ]
-      ],
-      "plugins": ["@babel/plugin-transform-runtime", "@babel/plugin-transform-modules-commonjs"]
-    }
-    
-    重新npm run dev，会发现引入成功，不再是undefined了
+    ],
+    "plugins": ["@babel/plugin-transform-runtime", "@babel/plugin-transform-modules-commonjs"]
+}
+
+重新npm run dev，会发现引入成功，不再是undefined了
+```
     
 ### 生成可以script引入的Library
 
 用户可能还会使用script标签的形式引入，需要在webpack.lib.conf.js中再配置一个**library**属性
 
-    output: {
-        path: path.resolve(__dirname, '..', 'lib'),
-        filename: 'library.js',
-        libraryTarget: 'umd',
-        library: 'root', // root 可以随便更换，代表script标签引入后全局的名称
-    },
-    
-    执行npm run lib，在一个html中引入打包有的library.js，就可以在window下看到root变量了
+```js
+output: {
+    path: path.resolve(__dirname, '..', 'lib'),
+    filename: 'library.js',
+    libraryTarget: 'umd',
+    library: 'root', // root 可以随便更换，代表script标签引入后全局的名称
+},
+
+执行npm run lib，在一个html中引入打包有的library.js，就可以在window下看到root变量了
+```
     
 ![Alt text](./imgs/10-08.png)
 
-    libraryTarget也可以是this、window，node环境下也可以用global，不过一般都是使用umd
+```text
+libraryTarget也可以是this、window，node环境下也可以用global，不过一般都是使用umd
+```
     
 ### externals排除包
 
@@ -198,61 +214,63 @@
 
 所以我们需要配置**externals**，将jQuery包排除，使我们的library.js也去引用用户自己的jQuery，而不是一起打进包中
 
-    // 配置webpack.lib.conf.js
-    const path = require('path');
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-    
-     module.exports = {
-        mode: 'production',
-        entry: {
-            main: './src/index.js', // 需要打包的文件入口
+```js
+// 配置webpack.lib.conf.js
+const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+
+    module.exports = {
+    mode: 'production',
+    entry: {
+        main: './src/index.js', // 需要打包的文件入口
+    },
+    output: {
+        path: path.resolve(__dirname, 'lib'),
+        filename: 'library.js',
+        libraryTarget: 'umd',
+        library: 'lib',
+    },
+    externals: {
+        "jquery": {
+            commonjs: "jQuery",
+            commonjs2: "jQuery",
+            amd: "jQuery",
+            root: "$"
         },
-        output: {
-            path: path.resolve(__dirname, 'lib'),
-            filename: 'library.js',
-            libraryTarget: 'umd',
-            library: 'lib',
-        },
-        externals: {
-            "jquery": {
-                commonjs: "jQuery",
-                commonjs2: "jQuery",
-                amd: "jQuery",
-                root: "$"
+        //jquery: 'jQuery' // 也可以这样，那上方4个属性值对应的都是jQuery
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js$/, // 使用正则来匹配 js 文件
+                exclude: /node_modules/, // 排除依赖包文件夹
+                use: {
+                    loader: 'babel-loader', // 使用 babel-loader
+                }
             },
-            //jquery: 'jQuery' // 也可以这样，那上方4个属性值对应的都是jQuery
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.js$/, // 使用正则来匹配 js 文件
-                    exclude: /node_modules/, // 排除依赖包文件夹
-                    use: {
-                        loader: 'babel-loader', // 使用 babel-loader
-                    }
-                },
-            ]
-        },
-        plugins: [
-            new CleanWebpackPlugin(),
         ]
-    }
-        
-        注: externals可以是数组、对象、函数等，其他配置具体可以在官网文档了解
+    },
+    plugins: [
+        new CleanWebpackPlugin(),
+    ]
+}
     
-    // 入口文件src/index.js
-    import $ from 'jquery'
-    
-    const jQueryObj = (text) => {
-        return $(text)
-    }
-    
-    
-    export default {
-        jQueryObj,
-    }
-    
-    执行npm run lib生成library.js
+    注: externals可以是数组、对象、函数等，其他配置具体可以在官网文档了解
+
+// 入口文件src/index.js
+import $ from 'jquery'
+
+const jQueryObj = (text) => {
+    return $(text)
+}
+
+
+export default {
+    jQueryObj,
+}
+
+执行npm run lib生成library.js
+```
     
 ![Alt text](./imgs/10-09.png)
 (有externals)
@@ -268,7 +286,9 @@
 
 接着我们在本地项目中安装jquery，再重新启动项目
 
-    npm i jquery --save
+```text
+npm i jquery --save
+```
     
 ![Alt text](./imgs/10-13.png)
 
@@ -284,16 +304,18 @@ externals配置中的commonjs、commonjs2、amd、root是什么意思？
 
 从如下配置分析:
 
-    externals: {
-        "jquery": {
-            commonjs: "jQuery",
-            commonjs2: "jQuery",
-            amd: "jQuery",
-            root: "$",
-        }
-    },
-    
-    执行npm run lib
+```js
+externals: {
+    "jquery": {
+        commonjs: "jQuery",
+        commonjs2: "jQuery",
+        amd: "jQuery",
+        root: "$",
+    }
+},
+
+执行npm run lib
+```
     
 ![Alt text](./imgs/10-14.png)
 
@@ -307,22 +329,26 @@ script: 全局使用window下的jQuery
 
 **问题:**
 
-    externals: {
-        jquery: 'jQuery',
-    },
+```js
+externals: {
+    jquery: 'jQuery',
+},
+```
 
 为什么经常会见到这样配置，要配置为: jquery: 'jQuery'，而不是: jquery: 'jquery' ?
 
 因为如果配置的是jquery: 'jquery'，那会是等于如下配置:
 
-    externals: {
-        "jquery": {
-            commonjs: "jquery",
-            commonjs2: "jquery",
-            amd: "jquery",
-            root: "jquery",
-        }
-    },
+```js
+externals: {
+    "jquery": {
+        commonjs: "jquery",
+        commonjs2: "jquery",
+        amd: "jquery",
+        root: "jquery",
+    }
+},
+```
     
 root配置就会存在问题，因为全局引入的jQuery.min.js文件，挂载到window下的变量是jQuery与$，就会导致删除导出的library.js中，最后的factory(root\["jquery"])为undefined，所以需要配置为jQuery或$，才能保证root下代码正常运行
 
@@ -330,38 +356,40 @@ root配置就会存在问题，因为全局引入的jQuery.min.js文件，挂载
 
 我们使用如下配置去验证externals中的root选项
     
-    // webpack.lib.conf.js
-    ...
-    output: {
-        path: path.resolve(__dirname, 'lib'),
-        filename: 'library.js',
-        libraryTarget: 'umd',
-        library: 'lib',
-    },
-    externals: {
-        "jquery": {
-            commonjs: "jquery",
-            commonjs2: "jquery",
-            amd: "jquery",
-            root: "KKK", // 配置为KKK
-        }
-    },
-    ...
-    
-    // src/index.js
-    import $ from 'jquery'
-    
-    const jQueryObj = (text) => {
-        return $(text)
+```js
+// webpack.lib.conf.js
+...
+output: {
+    path: path.resolve(__dirname, 'lib'),
+    filename: 'library.js',
+    libraryTarget: 'umd',
+    library: 'lib',
+},
+externals: {
+    "jquery": {
+        commonjs: "jquery",
+        commonjs2: "jquery",
+        amd: "jquery",
+        root: "KKK", // 配置为KKK
     }
-    
-    
-    export default {
-        jQueryObj,
-    }
-    
-    执行npm run lib
-    将打包后的library.js使用一个HTML引入
+},
+...
+
+// src/index.js
+import $ from 'jquery'
+
+const jQueryObj = (text) => {
+    return $(text)
+}
+
+
+export default {
+    jQueryObj,
+}
+
+执行npm run lib
+将打包后的library.js使用一个HTML引入
+```
     
 ![Alt text](./imgs/10-15.png)
 

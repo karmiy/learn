@@ -155,46 +155,46 @@ webpack的图片处理主要依赖url-loader与file-loader这2个loader
 
 - gif需要**imagemin-gifsicle**插件
 
-``````
-    // 1、安装依赖
-    npm i img-loader imagemin imagemin-pngquant imagemin-mozjpeg --save-dev
-    
-    注：这个插件会有版本不匹配的问题导致png压缩出错，需要重新安装依赖版本如下
-    npm i imagemin-pngquant@6.0.0 --save-dev
-    
-    // 2、配置webpack.config.js
-    {
-        test: /\.(png|jpg|jpeg|gif)$/,
-        use: [
-            {
-                loader: 'url-loader',
-                options: {
-                    name: '[name]-[hash:5].min.[ext]',
-                    outputPath: 'images/', // 输出到 images 文件夹
-                    limit: 1000, // 这里配置1000K，不让那个gif被转base64，方便看压缩结果
-                }
-            },
-            {
-                loader: 'img-loader',
-                options: {
-                    plugins: [
-                        require('imagemin-pngquant')({
-                            quality: '80' // the quality of zip
-                        }),
-                        require('imagemin-mozjpeg')({
-                            quality: '80'
-                        }),
-                        require('imagemin-gifsicle')({
-                            quality: '80'
-                        })
-                    ]
-                }
+```js
+// 1、安装依赖
+npm i img-loader imagemin imagemin-pngquant imagemin-mozjpeg --save-dev
+
+注：这个插件会有版本不匹配的问题导致png压缩出错，需要重新安装依赖版本如下
+npm i imagemin-pngquant@6.0.0 --save-dev
+
+// 2、配置webpack.config.js
+{
+    test: /\.(png|jpg|jpeg|gif)$/,
+    use: [
+        {
+            loader: 'url-loader',
+            options: {
+                name: '[name]-[hash:5].min.[ext]',
+                outputPath: 'images/', // 输出到 images 文件夹
+                limit: 1000, // 这里配置1000K，不让那个gif被转base64，方便看压缩结果
             }
-        ]
-    },
-    
-    执行npm run build
-``````
+        },
+        {
+            loader: 'img-loader',
+            options: {
+                plugins: [
+                    require('imagemin-pngquant')({
+                        quality: '80' // the quality of zip
+                    }),
+                    require('imagemin-mozjpeg')({
+                        quality: '80'
+                    }),
+                    require('imagemin-gifsicle')({
+                        quality: '80'
+                    })
+                ]
+            }
+        }
+    ]
+},
+
+执行npm run build
+```
 
 ![Alt text](./imgs/06-07.png)
 
@@ -204,45 +204,47 @@ webpack的图片处理主要依赖url-loader与file-loader这2个loader
 
 使用**image-webpack-loader**插件
 
-    // 1、安装依赖
-    npm i image-webpack-loader --save-dev
-    
-    // 2、配置webpack.config.js
-    {
-        test: /\.(png|jpg|jpeg|gif)$/,
-        use: [
-            {
-                loader: 'url-loader',
-                options: {
-                    name: '[name]-[hash:5].min.[ext]',
-                    outputPath: 'images/',
-                    limit: 1000, // 这里配置1000K，不让那个gif被转base64，方便看压缩结果
+```js
+// 1、安装依赖
+npm i image-webpack-loader --save-dev
+
+// 2、配置webpack.config.js
+{
+    test: /\.(png|jpg|jpeg|gif)$/,
+    use: [
+        {
+            loader: 'url-loader',
+            options: {
+                name: '[name]-[hash:5].min.[ext]',
+                outputPath: 'images/',
+                limit: 1000, // 这里配置1000K，不让那个gif被转base64，方便看压缩结果
+            }
+        },
+        {
+            loader: 'image-webpack-loader',
+            options: {
+                // 压缩 jpg/jpeg 图片
+                mozjpeg: {
+                    progressive: true,
+                    quality: 65 // 压缩率
+                },
+                // 压缩 png 图片
+                pngquant: {
+                    quality: '65-90',
+                    speed: 4
+                },
+                // 压缩 gif 图片
+                gifsicle: {
+                    quality: '65-90',
+                    speed: 4
                 }
-            },
-            {
-                loader: 'image-webpack-loader',
-                options: {
-                    // 压缩 jpg/jpeg 图片
-                    mozjpeg: {
-                        progressive: true,
-                        quality: 65 // 压缩率
-                    },
-                    // 压缩 png 图片
-                    pngquant: {
-                        quality: '65-90',
-                        speed: 4
-                    },
-                    // 压缩 gif 图片
-                    gifsicle: {
-                        quality: '65-90',
-                        speed: 4
-                    }
-                }
-            },
-        ]
-    },
-    
-    执行npm run build
+            }
+        },
+    ]
+},
+
+执行npm run build
+```
     
 ![Alt text](./imgs/06-08.png)
 
@@ -251,121 +253,123 @@ image-webpack-loader本身也是使用了imagemin等插件，做了进一步的�
 
 ### sprites雪碧图
 
-    // 1、安装依赖
-    npm i postcss-loader postcss-sprites --save-dev
-    
-    // 2、src/imgs替换3张测试用的小图片，修改src/style/base.css
-    .box-1 {
-        background: url("../imgs/compute.png");
-    }
-    .box-2 {
-        background: url("../imgs/network.png");
-    }
-    .box-3 {
-        background: url("../imgs/storage.png");
-    }
-    
-    // 3、配置webpack.config.js
-    const path = require('path')
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-    const HtmlWebpackPlugin = require('html-webpack-plugin')
-    const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-    const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-    
-    module.exports = {
-        entry: {
-            main: './src/index.js',
-        },
-        output: {
-            path: path.resolve(__dirname, 'dist'),
-            filename: '[name].bundle.js',
-            chunkFilename: '[name].chunk.js',
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.(scss|css)$/,
-                    use: [
-                        {
-                            loader: MiniCssExtractPlugin.loader,
-                        },
-                        {
-                            loader: 'css-loader',
-                            options: {
-                                importLoaders: 1
+```js
+// 1、安装依赖
+npm i postcss-loader postcss-sprites --save-dev
+
+// 2、src/imgs替换3张测试用的小图片，修改src/style/base.css
+.box-1 {
+    background: url("../imgs/compute.png");
+}
+.box-2 {
+    background: url("../imgs/network.png");
+}
+.box-3 {
+    background: url("../imgs/storage.png");
+}
+
+// 3、配置webpack.config.js
+const path = require('path')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+
+module.exports = {
+    entry: {
+        main: './src/index.js',
+    },
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js',
+        chunkFilename: '[name].chunk.js',
+    },
+    module: {
+        rules: [
+            {
+                test: /\.(scss|css)$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            importLoaders: 1
+                        }
+                    },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            ident: 'postcss',
+                            plugins: [require('postcss-sprites')({ // 配置postcss-sprites
+                                spritePath: './dist/images',
+                            })]
+                        }
+                    },
+                    'sass-loader'
+                ]
+            },
+            {
+                test: /\.(png|jpg|jpeg|gif)$/,
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            name: '[name]-[hash:5].min.[ext]',
+                            outputPath: 'images/',
+                            limit: 1000, // 配置1000K，为了测试不让图片被转base64
+                        }
+                    },
+                    {
+                        loader: 'image-webpack-loader',
+                        options: {
+                            mozjpeg: {
+                                progressive: true,
+                                quality: 65 // 压缩率
+                            },
+                            pngquant: {
+                                quality: '65-90',
+                                speed: 4
+                            },
+                            gifsicle: {
+                                quality: '65-90',
+                                speed: 4
                             }
-                        },
-                        {
-                            loader: 'postcss-loader',
-                            options: {
-                                ident: 'postcss',
-                                plugins: [require('postcss-sprites')({ // 配置postcss-sprites
-                                    spritePath: './dist/images',
-                                })]
-                            }
-                        },
-                        'sass-loader'
-                    ]
-                },
-                {
-                    test: /\.(png|jpg|jpeg|gif)$/,
-                    use: [
-                        {
-                            loader: 'url-loader',
-                            options: {
-                                name: '[name]-[hash:5].min.[ext]',
-                                outputPath: 'images/',
-                                limit: 1000, // 配置1000K，为了测试不让图片被转base64
-                            }
-                        },
-                        {
-                            loader: 'image-webpack-loader',
-                            options: {
-                                mozjpeg: {
-                                    progressive: true,
-                                    quality: 65 // 压缩率
-                                },
-                                pngquant: {
-                                    quality: '65-90',
-                                    speed: 4
-                                },
-                                gifsicle: {
-                                    quality: '65-90',
-                                    speed: 4
-                                }
-                            }
-                        },
-                    ]
-                },
-            ]
-        },
-        plugins: [
-            new CleanWebpackPlugin(),
-            new HtmlWebpackPlugin({
-                title: 'webpack-demo',
-                minify: {
-                    // 压缩 HTML 文件
-                    removeComments: true,
-                    collapseWhitespace: true,
-                    minifyCSS: true，
-                },
-                filename: 'index.html',
-                template: 'index.html',
-            }),
-            new MiniCssExtractPlugin({
-                filename: '[name].css',
-                chunkFilename: '[id].css'
-            }),
-            new OptimizeCssAssetsPlugin({
-                assetNameRegExp: /\.css$/g,
-                cssProcessor: require('cssnano'),
-                cssProcessorOptions: { safe: true, discardComments: { removeAll: true } },
-                canPrint: true,
-            }),
-        ],
-    }
-    
-    执行npm run build
+                        }
+                    },
+                ]
+            },
+        ]
+    },
+    plugins: [
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            title: 'webpack-demo',
+            minify: {
+                // 压缩 HTML 文件
+                removeComments: true,
+                collapseWhitespace: true,
+                minifyCSS: true，
+            },
+            filename: 'index.html',
+            template: 'index.html',
+        }),
+        new MiniCssExtractPlugin({
+            filename: '[name].css',
+            chunkFilename: '[id].css'
+        }),
+        new OptimizeCssAssetsPlugin({
+            assetNameRegExp: /\.css$/g,
+            cssProcessor: require('cssnano'),
+            cssProcessorOptions: { safe: true, discardComments: { removeAll: true } },
+            canPrint: true,
+        }),
+    ],
+}
+
+执行npm run build
+```
     
 ![Alt text](./imgs/06-09.png)
 

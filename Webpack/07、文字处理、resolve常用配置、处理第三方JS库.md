@@ -2,51 +2,55 @@
 
 文字处理一般是指iconfont字体图标，使用url-loader处理eot、woff、woff2、ttf、svg文件
 
-    // 1、src下新建fonts文件夹，放置字体文件
-    iconfont.css/eot/woff/woff2/ttf/svg
-    这里以阿里iconfont为素材
+```text
+// 1、src下新建fonts文件夹，放置字体文件
+iconfont.css/eot/woff/woff2/ttf/svg
+这里以阿里iconfont为素材
+```
     
 ![Alt text](./imgs/07-01.png)
 
-    // 2、src/index.js入口文件引入iconfont
-    import './fonts/iconfont.css';
-    
-    // 3、配置webpack.config.js
-    module: {
-        rules: [
-            ...,
-            {
-                test: /\.(eot|woff2?|ttf|svg)$/,
-                use: [
-                    {
-                        loader: 'url-loader',
-                        options: {
-                            name: '[name]-[hash:5].min.[ext]',
-                            limit: 1, // base64转码限制大小，与图片处理相同，这里设置1不让它base64转码方便测试
-                            publicPath: 'fonts/',
-                            outputPath: 'fonts/'
-                        }
+```js
+// 2、src/index.js入口文件引入iconfont
+import './fonts/iconfont.css';
+
+// 3、配置webpack.config.js
+module: {
+    rules: [
+        ...,
+        {
+            test: /\.(eot|woff2?|ttf|svg)$/,
+            use: [
+                {
+                    loader: 'url-loader',
+                    options: {
+                        name: '[name]-[hash:5].min.[ext]',
+                        limit: 1, // base64转码限制大小，与图片处理相同，这里设置1不让它base64转码方便测试
+                        publicPath: 'fonts/',
+                        outputPath: 'fonts/'
                     }
-                ]
-            },
-        ]
-    },
-    
-    // 4、index.html加入iconfont测试
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title><%= htmlWebpackPlugin.options.title %></title>
-    </head>
-    <body>
-        <i class="iconfont icon-tianjia"></i>
-        <i class="iconfont icon-bianji-01"></i>
-        <i class="iconfont icon-shanchu"></i>
-    </body>
-    </html>
-    
-    执行npm run build
+                }
+            ]
+        },
+    ]
+},
+
+// 4、index.html加入iconfont测试
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+</head>
+<body>
+    <i class="iconfont icon-tianjia"></i>
+    <i class="iconfont icon-bianji-01"></i>
+    <i class="iconfont icon-shanchu"></i>
+</body>
+</html>
+
+执行npm run build
+```
     
 ![Alt text](./imgs/07-02.png)
 
@@ -67,7 +71,9 @@ resolve配置告诉webpack如何去寻找对应的模块，默认会使用内置
 
 例如有个文件的引入非常繁琐: 
 
+```js
 import { scrollPosition } from '../../../../utils/dom/scroll.js';
+```
 
 这一连串的路径不仅让我们对模块的引入非常不方便，代码也不美观
 
@@ -75,40 +81,42 @@ import { scrollPosition } from '../../../../utils/dom/scroll.js';
 
 ![Alt text](./imgs/07-05.png)
 
-    // utils/common.js
-    export function fn() {
-        return 'fn';
-    }
-    
-    // 这时在入口文件src/index.js引入common.js的路径是这样的
-    import { fn } from '../utils/common.js';
-    console.log(fn());
-    
-    我们可以通过如下配置让引入更为的方便:
-    
-    // 1、配置webpack.config.js
-    module.exports = {
-        entry: {
-            main: './src/index.js',
+```js
+// utils/common.js
+export function fn() {
+    return 'fn';
+}
+
+// 这时在入口文件src/index.js引入common.js的路径是这样的
+import { fn } from '../utils/common.js';
+console.log(fn());
+
+我们可以通过如下配置让引入更为的方便:
+
+// 1、配置webpack.config.js
+module.exports = {
+    entry: {
+        main: './src/index.js',
+    },
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js',
+        chunkFilename: '[name].chunk.js',
+    },
+    resolve: {
+        alias: {
+            Common: path.resolve(__dirname, 'utils/common') // 为utils下的common.js设置别名为'Common'
         },
-        output: {
-            path: path.resolve(__dirname, 'dist'),
-            filename: '[name].bundle.js',
-            chunkFilename: '[name].chunk.js',
-        },
-        resolve: {
-            alias: {
-                Common: path.resolve(__dirname, 'utils/common') // 为utils下的common.js设置别名为'Common'
-            },
-        },
-        ...
-    }
-    
-    // 2、修改入口文件src/index.js
-    import { fn } from 'Common'; // 直接用别名Common引入即可
-    console.log(fn());
-    
-    执行npm run build
+    },
+    ...
+}
+
+// 2、修改入口文件src/index.js
+import { fn } from 'Common'; // 直接用别名Common引入即可
+console.log(fn());
+
+执行npm run build
+```
 
 ![Alt text](./imgs/07-06.png)
 (打开打包后的index.html，可以看到引入是没有出错的)
@@ -125,29 +133,31 @@ import from 'base.css'
 
 配置extensions后，webpack会自动带上配置的后缀去尝试访问文件是否存在，默认是\['js', 'json']
 
-    // 1、入口文件src/index.js
-    import './style/base' // 省略.css后缀
-    
-    // 2、配置webpack.config.js
-    module.exports = {
-        entry: {
-            main: './src/index.js',
+```js
+// 1、入口文件src/index.js
+import './style/base' // 省略.css后缀
+
+// 2、配置webpack.config.js
+module.exports = {
+    entry: {
+        main: './src/index.js',
+    },
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js',
+        chunkFilename: '[name].chunk.js',
+    },
+    resolve: {
+        extensions: ['.js', '.json', '.css'], // 当导入没有后缀时，webpack会依次带上这些后缀查看是否有对应的文件
+        alias: {
+            Common: path.resolve(__dirname, 'utils/common')
         },
-        output: {
-            path: path.resolve(__dirname, 'dist'),
-            filename: '[name].bundle.js',
-            chunkFilename: '[name].chunk.js',
-        },
-        resolve: {
-            extensions: ['.js', '.json', '.css'], // 当导入没有后缀时，webpack会依次带上这些后缀查看是否有对应的文件
-            alias: {
-                Common: path.resolve(__dirname, 'utils/common')
-            },
-        },
-        ...
-    }
-    
-    执行npm run build，可以看到不会报错了
+    },
+    ...
+}
+
+执行npm run build，可以看到不会报错了
+```
     
 ### modules
 
@@ -163,34 +173,36 @@ import from 'base.css'
 
 通过配置modules，我可以将utils下的引入，变成: import { DOMComputedStyle } from 'dom';
 
-    // 1、配置webpack.config.js
-    module.exports = {
-        entry: {
-            main: './src/index.js',
+```js
+// 1、配置webpack.config.js
+module.exports = {
+    entry: {
+        main: './src/index.js',
+    },
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js',
+        chunkFilename: '[name].chunk.js',
+    },
+    resolve: {
+        extensions: ['.js', '.json', '.css'],
+        alias: {
+            Common: path.resolve(__dirname, 'utils/common')
         },
-        output: {
-            path: path.resolve(__dirname, 'dist'),
-            filename: '[name].bundle.js',
-            chunkFilename: '[name].chunk.js',
-        },
-        resolve: {
-            extensions: ['.js', '.json', '.css'],
-            alias: {
-                Common: path.resolve(__dirname, 'utils/common')
-            },
-            modules: [
-                path.resolve(__dirname, 'utils'), 'node_modules'  // 当有如import ... from 'X'时，告诉webpack去这些地方找
-            ],
-        },
-        ...
-    }
-    
-    // 2、入口文件src/index.js
-    import { DOMComputedStyle } from 'dom'; // 只需要'dom'，webpack看到这种会去找extensions的配置路径
-    console.log(DOMComputedStyle());
+        modules: [
+            path.resolve(__dirname, 'utils'), 'node_modules'  // 当有如import ... from 'X'时，告诉webpack去这些地方找
+        ],
+    },
+    ...
+}
 
-    
-    执行npm run build会看到文件引入成功，可以正常使用
+// 2、入口文件src/index.js
+import { DOMComputedStyle } from 'dom'; // 只需要'dom'，webpack看到这种会去找extensions的配置路径
+console.log(DOMComputedStyle());
+
+
+执行npm run build会看到文件引入成功，可以正常使用
+```
 
 ## 处理第三方JS库
     
@@ -220,35 +232,35 @@ webpack.ProvidePlugin搜索方式:
 
 ![Alt text](./imgs/07-07.png)
 
-````````
-    // 1、配置webpack.config.js
-    const path = require('path')
-    const webpack = require('webpack')
+```js
+// 1、配置webpack.config.js
+const path = require('path')
+const webpack = require('webpack')
+...
+
+module.exports = {
+    entry: {
+        main: './src/index.js',
+    },
+    resolve: {
+        extensions: ['.js', '.json', '.css'],
+        alias: {
+            jQuery: path.resolve(__dirname, 'src/vendors/jquery.min.js'), // 设置别名，指向下载的min.js
+        },
+    },
     ...
-    
-    module.exports = {
-        entry: {
-            main: './src/index.js',
-        },
-        resolve: {
-            extensions: ['.js', '.json', '.css'],
-            alias: {
-                jQuery: path.resolve(__dirname, 'src/vendors/jquery.min.js'), // 设置别名，指向下载的min.js
-            },
-        },
+    plugins: [
         ...
-        plugins: [
-            ...
-            new webpack.ProvidePlugin({
-                $: 'jQuery' // $对应项目中的变量名，jQuery对应alias的属性
-            })
-        ],
-    }
-    
-    // 2、入口文件src/index,js
-    console.log($); // 不用import引入，直接使用$符号
-    
-    执行npm run build，打开生成的index.html
-````````
+        new webpack.ProvidePlugin({
+            $: 'jQuery' // $对应项目中的变量名，jQuery对应alias的属性
+        })
+    ],
+}
+
+// 2、入口文件src/index,js
+console.log($); // 不用import引入，直接使用$符号
+
+执行npm run build，打开生成的index.html
+```
 
 ![Alt text](./imgs/07-08.png)
