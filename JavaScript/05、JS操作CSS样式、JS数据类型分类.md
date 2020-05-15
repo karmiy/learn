@@ -164,7 +164,7 @@ var wrap = document.getElementById('wrap'); // 如果找不到，得到是null
     
 ### object对象
 
-```js
+```text
 // 对象可以拥有很多属性（其他基础数据类型除了JS规定的属性外，不能再添加独有的属性）
 
 // 分类
