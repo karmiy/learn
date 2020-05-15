@@ -111,7 +111,7 @@ export default Logo;
 
 但是让我们要用到 children 时，是不是又需要定义 children 类型：
 
-```tsx
+```ts
 interface ILogoProps {
     src: string;
     className?: string;
@@ -160,7 +160,7 @@ interface ILogoProps {
 
 假设需要编写一个有状态组件 Todo，在 jsx 的写法为：
 
-```ts
+```tsx
 import * as React from 'react';
 
 export default class Todo extends React.Component {
@@ -181,7 +181,7 @@ export default class Todo extends React.Component {
 
 并且 React 的声明文件已经自动帮我们加上了 **readonly** 标记，不需要我们手动为 props 与 state 加只读标记：
 
-```ts
+```tsx
 import * as React from 'react';
 
 interface ITodoProps {
@@ -206,7 +206,7 @@ export default class Todo extends React.Component<ITodoProps, ITodoState> {
 
 因为大多情况下，该方法是组件的私有方法，这时需要使用 **private** 访问控制符：
 
-```ts
+```tsx
 export default class TodoInput extends React.Component<ITodoInputProps, ITodoInputState> {
     constructor(props: ITodoInputProps) {
         super(props);
@@ -278,63 +278,67 @@ export default class Input extends React.Component<IInputProps, IInputState> {
 
 将上例的 Input 组件改为受控组件：
 
-    import * as React from 'react';
+```tsx
+import * as React from 'react';
 
-    interface IInputProps {
-        autoFocus?: boolean;
+interface IInputProps {
+    autoFocus?: boolean;
+}
+interface IInputState {
+    value: string;
+}
+
+export default class Input extends React.Component<IInputProps, IInputState> {
+    state = {
+        value: '',
     }
-    interface IInputState {
-        value: string;
+
+    private onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            value: e.target.value,
+        })
     }
 
-    export default class Input extends React.Component<IInputProps, IInputState> {
-        state = {
-            value: '',
-        }
-
-        private onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            this.setState({
-                value: e.target.value,
-            })
-        }
-
-        render() {
-            return (
-                <div>
-                    <input type="text" value={this.state.value} onChange={this.onChange} />
-                </div>
-            )
-        }
+    render() {
+        return (
+            <div>
+                <input type="text" value={this.state.value} onChange={this.onChange} />
+            </div>
+        )
     }
+}
+```
 
 ### 事件处理
 
 可以看到，对于事件 e 的类型定义，需要用到 **React.ChangeEvent\<T>**，同样，对于表单事件需要用到 **React.FormEvent\<T>**：
 
-    export default class Input extends React.Component<IInputProps, IInputState> {
-        state = {
-            value: '',
-        }
-
-        private onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            this.setState({
-                value: e.target.value,
-            })
-        }
-        private onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-
-        }
-
-        render() {
-            return (
-                <div>
-                    <form onSubmit={this.onSubmit}>
-                        <input type="text" value={this.state.value} onChange={this.onChange} />
-                    </form>
-                </div>
-            )
-        }
+```tsx
+export default class Input extends React.Component<IInputProps, IInputState> {
+    state = {
+        value: '',
     }
+
+    private onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            value: e.target.value,
+        })
+    }
+    private onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+    }
+
+    render() {
+        return (
+            <div>
+                <form onSubmit={this.onSubmit}>
+                    <input type="text" value={this.state.value} onChange={this.onChange} />
+                </form>
+            </div>
+        )
+    }
+}
+```
 
 > React 在合成事件上有这么多的定义，在遇到各种事件时应该如何搜索正确的类型？技巧：在组件上输入事件对应的名称通过提示了解事件类型
 
@@ -364,24 +368,74 @@ export default class Input extends React.Component<IInputProps, IInputState> {
 
 React 声明文件所提供了 EventHandler 类型别名，通过不同事件的 EventHandler 的类型别名来定义事件处理函数的类型：
 
-    
-    type EventHandler<E extends SyntheticEvent<any>> = { bivarianceHack(event: E): void }["bivarianceHack"];
-    type ReactEventHandler<T = Element> = EventHandler<SyntheticEvent<T>>;
-    type ClipboardEventHandler<T = Element> = EventHandler<ClipboardEvent<T>>;
-    type DragEventHandler<T = Element> = EventHandler<DragEvent<T>>;
-    type FocusEventHandler<T = Element> = EventHandler<FocusEvent<T>>;
-    type FormEventHandler<T = Element> = EventHandler<FormEvent<T>>;
-    type ChangeEventHandler<T = Element> = EventHandler<ChangeEvent<T>>;
-    type KeyboardEventHandler<T = Element> = EventHandler<KeyboardEvent<T>>;
-    type MouseEventHandler<T = Element> = EventHandler<MouseEvent<T>>;
-    type TouchEventHandler<T = Element> = EventHandler<TouchEvent<T>>;
-    type PointerEventHandler<T = Element> = EventHandler<PointerEvent<T>>;
-    type UIEventHandler<T = Element> = EventHandler<UIEvent<T>>;
-    type WheelEventHandler<T = Element> = EventHandler<WheelEvent<T>>;
-    type AnimationEventHandler<T = Element> = EventHandler<AnimationEvent<T>>;
-    type TransitionEventHandler<T = Element> = EventHandler<TransitionEvent<T>>;
+```ts
+type EventHandler<E extends SyntheticEvent<any>> = { bivarianceHack(event: E): void }["bivarianceHack"];
+type ReactEventHandler<T = Element> = EventHandler<SyntheticEvent<T>>;
+type ClipboardEventHandler<T = Element> = EventHandler<ClipboardEvent<T>>;
+type DragEventHandler<T = Element> = EventHandler<DragEvent<T>>;
+type FocusEventHandler<T = Element> = EventHandler<FocusEvent<T>>;
+type FormEventHandler<T = Element> = EventHandler<FormEvent<T>>;
+type ChangeEventHandler<T = Element> = EventHandler<ChangeEvent<T>>;
+type KeyboardEventHandler<T = Element> = EventHandler<KeyboardEvent<T>>;
+type MouseEventHandler<T = Element> = EventHandler<MouseEvent<T>>;
+type TouchEventHandler<T = Element> = EventHandler<TouchEvent<T>>;
+type PointerEventHandler<T = Element> = EventHandler<PointerEvent<T>>;
+type UIEventHandler<T = Element> = EventHandler<UIEvent<T>>;
+type WheelEventHandler<T = Element> = EventHandler<WheelEvent<T>>;
+type AnimationEventHandler<T = Element> = EventHandler<AnimationEvent<T>>;
+type TransitionEventHandler<T = Element> = EventHandler<TransitionEvent<T>>;
+```
 
 即 onChange 事件可以从:
+
+```tsx
+private onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+        value: e.target.value,
+    })
+}
+```
+
+改为：
+
+```tsx
+private onChange:React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    this.setState({
+        value: e.target.value,
+    })
+}
+```
+
+
+### 默认属性
+
+React 中有时会运用很多默认属性，我们可以直接为 defaultProps 赋值，还有一种方法是利用 class 同时声明类型和初始值
+
+```tsx
+import * as React from 'react';
+
+interface InputSetting {
+    placeholder: string
+    maxlength: number
+}
+
+class IInputProps {
+    public autoFocus?: boolean = false;
+    public inputSetting?: InputSetting = {
+        placeholder: '请输入',
+        maxlength: 10,
+    }
+}
+
+interface IInputState {
+    value: string;
+}
+
+export default class Input extends React.Component<IInputProps, IInputState> {
+    public static defaultProps = new IInputProps();
+    state = {
+        value: '',
+    }
 
     private onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({
@@ -389,65 +443,22 @@ React 声明文件所提供了 EventHandler 类型别名，通过不同事件的
         })
     }
 
-改为：
-
-    private onChange:React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        this.setState({
-            value: e.target.value,
-        })
+    render() {
+        const { autoFocus, inputSetting } = this.props;
+        return (
+            <div>
+                <input 
+                    type="text" 
+                    value={this.state.value} 
+                    onChange={this.onChange}
+                    maxLength={inputSetting!.maxlength}
+                    placeholder={inputSetting!.placeholder}
+                />
+            </div>
+        )
     }
-
-
-### 默认属性
-
-React 中有时会运用很多默认属性，我们可以直接为 defaultProps 赋值，还有一种方法是利用 class 同时声明类型和初始值
-
-    import * as React from 'react';
-
-    interface InputSetting {
-        placeholder: string
-        maxlength: number
-    }
-
-    class IInputProps {
-        public autoFocus?: boolean = false;
-        public inputSetting?: InputSetting = {
-            placeholder: '请输入',
-            maxlength: 10,
-        }
-    }
-
-    interface IInputState {
-        value: string;
-    }
-
-    export default class Input extends React.Component<IInputProps, IInputState> {
-        public static defaultProps = new IInputProps();
-        state = {
-            value: '',
-        }
-
-        private onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            this.setState({
-                value: e.target.value,
-            })
-        }
-
-        render() {
-            const { autoFocus, inputSetting } = this.props;
-            return (
-                <div>
-                    <input 
-                        type="text" 
-                        value={this.state.value} 
-                        onChange={this.onChange}
-                        maxLength={inputSetting!.maxlength}
-                        placeholder={inputSetting!.placeholder}
-                    />
-                </div>
-            )
-        }
-    }
+}
+```
 
 可以看到，我们将 class 直接作为类型传入了 React.Component 的泛型第一个参数中，又在 defaultProps 中直接 new 这个 class 来作为初始值
 
@@ -469,79 +480,83 @@ React 中有时会运用很多默认属性，我们可以直接为 defaultProps 
 
 第三种方案，我们可以创建一个函数，帮助我们将 props 中拥有默认值的可选属性，转为必选类型：
 
-    const createPropsGetter = <DP extends object>(defaultProps: DP) => {
-        return <P extends Partial<DP>>(props: P) => {
-            type PropsExcludingDefaults = Omit<P, keyof DP>;
-            type RecomposedProps = DP & PropsExcludingDefaults;
+```tsx
+const createPropsGetter = <DP extends object>(defaultProps: DP) => {
+    return <P extends Partial<DP>>(props: P) => {
+        type PropsExcludingDefaults = Omit<P, keyof DP>;
+        type RecomposedProps = DP & PropsExcludingDefaults;
 
-            return (props as any) as RecomposedProps
-        }
+        return (props as any) as RecomposedProps
     }
+}
+```
 
 完整使用：
 
-    import * as React from 'react';
+```tsx
+import * as React from 'react';
 
-    interface InputSetting {
-        placeholder: string
-        maxlength: number
+interface InputSetting {
+    placeholder: string
+    maxlength: number
+}
+
+const defaultProps = {
+    autoFocus: false,
+    inputSetting: {
+        placeholder: '请输入',
+        maxlength: 10,
+    }
+}
+
+class IInputProps {
+    public autoFocus?: boolean;
+    public inputSetting?: InputSetting;
+}
+
+interface IInputState {
+    value: string;
+}
+
+const createPropsGetter = <DP extends object>(defaultProps: DP) => {
+    return <P extends Partial<DP>>(props: P) => {
+        type PropsExcludingDefaults = Omit<P, keyof DP>;
+        type RecomposedProps = DP & PropsExcludingDefaults;
+
+        return (props as any) as RecomposedProps
+    }
+}
+
+const getProps = createPropsGetter(defaultProps);
+
+export default class Input extends React.Component<IInputProps, IInputState> {
+    public static defaultProps = new IInputProps();
+    state = {
+        value: '',
     }
 
-    const defaultProps = {
-        autoFocus: false,
-        inputSetting: {
-            placeholder: '请输入',
-            maxlength: 10,
-        }
+    private onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            value: e.target.value,
+        })
     }
 
-    class IInputProps {
-        public autoFocus?: boolean;
-        public inputSetting?: InputSetting;
+    render() {
+        const { autoFocus, inputSetting } = getProps(this.props);
+        return (
+            <div>
+                <input 
+                    type="text" 
+                    value={this.state.value} 
+                    onChange={this.onChange}
+                    maxLength={inputSetting.maxlength}
+                    placeholder={inputSetting.placeholder}
+                />
+            </div>
+        )
     }
-
-    interface IInputState {
-        value: string;
-    }
-
-    const createPropsGetter = <DP extends object>(defaultProps: DP) => {
-        return <P extends Partial<DP>>(props: P) => {
-            type PropsExcludingDefaults = Omit<P, keyof DP>;
-            type RecomposedProps = DP & PropsExcludingDefaults;
-
-            return (props as any) as RecomposedProps
-        }
-    }
-
-    const getProps = createPropsGetter(defaultProps);
-
-    export default class Input extends React.Component<IInputProps, IInputState> {
-        public static defaultProps = new IInputProps();
-        state = {
-            value: '',
-        }
-
-        private onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            this.setState({
-                value: e.target.value,
-            })
-        }
-
-        render() {
-            const { autoFocus, inputSetting } = getProps(this.props);
-            return (
-                <div>
-                    <input 
-                        type="text" 
-                        value={this.state.value} 
-                        onChange={this.onChange}
-                        maxLength={inputSetting.maxlength}
-                        placeholder={inputSetting.placeholder}
-                    />
-                </div>
-            )
-        }
-    }
+}
+```
 
 ### Render Props
 
@@ -549,49 +564,51 @@ React 中有时会运用很多默认属性，我们可以直接为 defaultProps 
 
 下面实现一个 render props 的 Togglable 组件：
 
-    import * as React from 'react';
+```tsx
+import * as React from 'react';
 
-    const isFunc = (f: any): f is Function => Object.prototype.toString.call(f) === '[object Function]';
+const isFunc = (f: any): f is Function => Object.prototype.toString.call(f) === '[object Function]';
 
-    const initialState = {
-        show: false,
-    }
+const initialState = {
+    show: false,
+}
 
-    type State = typeof initialState;
+type State = typeof initialState;
 
-    type Props = Partial<{
-        children: RenderCb;
-        render: RenderCb;
-    }>
+type Props = Partial<{
+    children: RenderCb;
+    render: RenderCb;
+}>
 
-    interface ToggleParams {
-        show: State['show'];
-        toggle: Togglable['toggle'];
-    }
+interface ToggleParams {
+    show: State['show'];
+    toggle: Togglable['toggle'];
+}
 
-    type RenderCb = (args: ToggleParams) => JSX.Element;
+type RenderCb = (args: ToggleParams) => JSX.Element;
 
-    const updateShowState = (prevState: State) => ({ show: !prevState.show });
+const updateShowState = (prevState: State) => ({ show: !prevState.show });
 
-    export default class Togglable extends React.Component<Props, State> {
-        state: State = initialState;
-        
-        render() {
-            const { render, children } = this.props;
-            const renderProps = {
-                show: this.state.show,
-                toggle: this.toggle,
-            };
+export default class Togglable extends React.Component<Props, State> {
+    state: State = initialState;
+    
+    render() {
+        const { render, children } = this.props;
+        const renderProps = {
+            show: this.state.show,
+            toggle: this.toggle,
+        };
 
-            if(render) {
-                return render(renderProps);
-            }
-
-            return isFunc(children) ? children(renderProps) : null;
+        if(render) {
+            return render(renderProps);
         }
 
-        private toggle = (event: React.MouseEvent<HTMLElement>) => this.setState(updateShowState);
+        return isFunc(children) ? children(renderProps) : null;
     }
+
+    private toggle = (event: React.MouseEvent<HTMLElement>) => this.setState(updateShowState);
+}
+```
 
 上例中 type RenderCb = (args: ToggleParams) => JSX.Element 返回了 JSX.Element
 
@@ -605,149 +622,165 @@ JSX.Element 与 React.ReactNode 的差别在于：React.ReactNode 可以是 Reac
 
 在使用 react-router 时有着组件注入的模式：
 
-    <Route path="/foo" component={MyView} />
+```tsx
+<Route path="/foo" component={MyView} />
+```
 
 
 组件注入即将组件传入：
 
-    type Props = Partial<{
-        children: RenderCb;
-        render: RenderCb;
-        component: React.ComponentType<ToggleParams>;
-    }>;
+```tsx
+type Props = Partial<{
+    children: RenderCb;
+    render: RenderCb;
+    component: React.ComponentType<ToggleParams>;
+}>;
 
-    // 用法
-    const { component: InjectComp } = this.props;
-    const renderProps = {
-        show: this.state.show,
-        toggle: this.toggle,
-    };
-    return <InjectComp {...renderProps} />;
+// 用法
+const { component: InjectComp } = this.props;
+const renderProps = {
+    show: this.state.show,
+    toggle: this.toggle,
+};
+return <InjectComp {...renderProps} />;
+```
 
 除此之外，我们可能还会传递一个 props 用于 component 中：
 
-    const { component: InjectComp, props } = this.props;
-    const renderProps = {
-        show: this.state.show,
-        toggle: this.toggle,
-    };
-    return <InjectComp {...renderProps} {...props} />;
+```tsx
+const { component: InjectComp, props } = this.props;
+const renderProps = {
+    show: this.state.show,
+    toggle: this.toggle,
+};
+return <InjectComp {...renderProps} {...props} />;
+```
 
 这时我们可能需要改写 type Props 为：
 
-    type Props<T extends object = {}> = Partial<{
-        children: RenderCb;
-        render: RenderCb;
-        component: React.ComponentType<ToggleParams & T>;
-        props: T
-    }>;
+```ts
+type Props<T extends object = {}> = Partial<{
+    children: RenderCb;
+    render: RenderCb;
+    component: React.ComponentType<ToggleParams & T>;
+    props: T
+}>;
+```
 
 我们期望 props 与组件 component 是对应的，即如果 component 这个组件是 ToggleParams & { name?: string }，那传入的 props 也应该只能是 { name?: string }，而不能传别的属性
 
 这就需要用到**泛型组件**
 
-    export default class Togglable<T extends object = {}> extends React.Component<Props<T>, State> {
-        ...
-    }
+```tsx
+export default class Togglable<T extends object = {}> extends React.Component<Props<T>, State> {
+    ...
+}
+```
 
 但是我们可以在 JSX 上使用泛型类型吗？不幸的是，并不行
 
 但我们可以在泛型组件上引入一个静态方法，用于注入组件的类型：
 
-    type Constructor<T = {}> = new (...args: any[]) => T;
+```tsx
+type Constructor<T = {}> = new (...args: any[]) => T;
 
-    export default class Togglable<T extends object = {}> extends React.Component<Props<T>, State> {
-        static ofType<T extends object>() {
-            return Togglable as Constructor<Togglable<T>>;
-        }
+export default class Togglable<T extends object = {}> extends React.Component<Props<T>, State> {
+    static ofType<T extends object>() {
+        return Togglable as Constructor<Togglable<T>>;
     }
+}
+```
 
 使用方式：
 
-    type ITitleProps = {
-        name?: string;
-    } & ToggleParams;
+```tsx
+type ITitleProps = {
+    name?: string;
+} & ToggleParams;
 
-    const Title: React.SFC<ITitleProps> = (props) => {
-        return (
-            <div>
-                {props.name}
-            </div>
-        )
-    }
+const Title: React.SFC<ITitleProps> = (props) => {
+    return (
+        <div>
+            {props.name}
+        </div>
+    )
+}
 
-    const TogglableWithTitle = Togglable.ofType<Omit<ITitleProps, keyof ToggleParams>>();
+const TogglableWithTitle = Togglable.ofType<Omit<ITitleProps, keyof ToggleParams>>();
 
-    function App() {
-        return (
-            <div>
-                <TogglableWithTitle 
-                    component={Title}
-                    props={{name: 'k'}}
-                />
-            </div>
-        )
-    }
+function App() {
+    return (
+        <div>
+            <TogglableWithTitle 
+                component={Title}
+                props={{name: 'k'}}
+            />
+        </div>
+    )
+}
+```
 
 完整代码：
 
-    import * as React from 'react';
+```tsx
+import * as React from 'react';
 
-    const isFunc = (f: any): f is Function => Object.prototype.toString.call(f) === '[object Function]';
+const isFunc = (f: any): f is Function => Object.prototype.toString.call(f) === '[object Function]';
 
-    const initialState = {
-        show: false,
+const initialState = {
+    show: false,
+}
+
+type State = typeof initialState;
+
+type Props<T extends object = {}> = Partial<{
+    children: RenderCb;
+    render: RenderCb;
+    component: React.ComponentType<(ToggleParams & Partial<T>) | ToggleParams>;
+    props: Partial<T>;
+}>;
+
+
+export type ToggleParams = {
+    show: State['show'];
+    toggle: Togglable['toggle'];
+};
+
+type RenderCb = (args: ToggleParams) => JSX.Element;
+
+type Constructor<T = {}> = new (...args: any[]) => T;
+
+const updateShowState = (prevState: State) => ({ show: !prevState.show });
+
+export default class Togglable<T extends object = {}> extends React.Component<Props<T>, State> {
+    state: State = initialState;
+    static ofType<T extends object>() {
+        return Togglable as Constructor<Togglable<T>>;
     }
+    render() {
+        const { render, children, component: InjectComp, props } = this.props;
+        const renderProps = {
+            show: this.state.show,
+            toggle: this.toggle,
+        };
 
-    type State = typeof initialState;
-
-    type Props<T extends object = {}> = Partial<{
-        children: RenderCb;
-        render: RenderCb;
-        component: React.ComponentType<(ToggleParams & Partial<T>) | ToggleParams>;
-        props: Partial<T>;
-    }>;
-
-
-    export type ToggleParams = {
-        show: State['show'];
-        toggle: Togglable['toggle'];
-    };
-
-    type RenderCb = (args: ToggleParams) => JSX.Element;
-
-    type Constructor<T = {}> = new (...args: any[]) => T;
-
-    const updateShowState = (prevState: State) => ({ show: !prevState.show });
-
-    export default class Togglable<T extends object = {}> extends React.Component<Props<T>, State> {
-        state: State = initialState;
-        static ofType<T extends object>() {
-            return Togglable as Constructor<Togglable<T>>;
-        }
-        render() {
-            const { render, children, component: InjectComp, props } = this.props;
-            const renderProps = {
-                show: this.state.show,
-                toggle: this.toggle,
-            };
-
-            if(InjectComp) {
-                return props ?
-                    <InjectComp {...renderProps} {...props} />
-                    :
-                    <InjectComp {...renderProps} />;
-            }
-
-            if(render) {
-                return render(renderProps);
-            }
-
-            return isFunc(children) ? children(renderProps) : null;
+        if(InjectComp) {
+            return props ?
+                <InjectComp {...renderProps} {...props} />
+                :
+                <InjectComp {...renderProps} />;
         }
 
-        private toggle = (event: React.MouseEvent<HTMLElement>) => this.setState(updateShowState);
+        if(render) {
+            return render(renderProps);
+        }
+
+        return isFunc(children) ? children(renderProps) : null;
     }
+
+    private toggle = (event: React.MouseEvent<HTMLElement>) => this.setState(updateShowState);
+}
+```
 
 ![Alt text](imgs/24-06.png)
 
@@ -757,39 +790,41 @@ JSX.Element 与 React.ReactNode 的差别在于：React.ReactNode 可以是 Reac
 
 假设有一些组件，有通用的 setting 这个 props，可以封装一个高阶组件来为组件传递通用属性：
 
-    import * as hoistNonReactStatics from 'hoist-non-react-statics'
-    import * as React from 'react'
+```tsx
+import * as hoistNonReactStatics from 'hoist-non-react-statics'
+import * as React from 'react'
 
-    const hocProps = {
-        setting: {
-            maxLength: 30,
-            placeholder: '请输入',
+const hocProps = {
+    setting: {
+        maxLength: 30,
+        placeholder: '请输入',
+    }
+}
+
+type InjectProps = Partial<typeof hocProps>;
+
+const withTodoInput = <P extends InjectProps>(UnwrappedComponent: React.ComponentType<P>) => {
+    type Props = Omit<P, keyof InjectProps>;
+
+    class WithToggleable extends React.Component<Props> {
+        public static readonly UnwrappedComponent = UnwrappedComponent;
+
+        public render() {
+            const props = {
+                ...hocProps,
+                ...this.props,
+            } as P;
+            return (
+                <UnwrappedComponent 
+                    {...props}
+                />
+            )
         }
     }
 
-    type InjectProps = Partial<typeof hocProps>;
-
-    const withTodoInput = <P extends InjectProps>(UnwrappedComponent: React.ComponentType<P>) => {
-        type Props = Omit<P, keyof InjectProps>;
-
-        class WithToggleable extends React.Component<Props> {
-            public static readonly UnwrappedComponent = UnwrappedComponent;
-
-            public render() {
-                const props = {
-                    ...hocProps,
-                    ...this.props,
-                } as P;
-                return (
-                    <UnwrappedComponent 
-                        {...props}
-                    />
-                )
-            }
-        }
-
-        return hoistNonReactStatics(WithToggleable, UnwrappedComponent)
-    }
+    return hoistNonReactStatics(WithToggleable, UnwrappedComponent)
+}
+```
 
 render 函数中需要 **as P** 的原因，可以了解 26 节 **泛型与条件类型 extends 的保守推导问题**
 
@@ -799,40 +834,46 @@ render 函数中需要 **as P** 的原因，可以了解 26 节 **泛型与条�
 
 在项目中仅仅组件之间传递属性是不够的，经常还会涉及到对状态的管理，React 中一般用 redux 来作为状态管理工具
 
-    npm i --save redux
+```ts
+npm i --save redux
+```
 
 #### Model
 
 在 model 中定义数据模型接口，假设有 2 个状态 Item 与 Shop：
 
-    // src/store/model.ts
-    export interface ItemState {
-        inputValue: string;
-        list: Array<string>;
-    }
+```ts
+// src/store/model.ts
+export interface ItemState {
+    inputValue: string;
+    list: Array<string>;
+}
 
-    export interface ShopState {
-        count: number;
-        name: string;
-    }
+export interface ShopState {
+    count: number;
+    name: string;
+}
+```
 
 #### ActionType
 
 通过**枚举**定义 ActionType **常量**：
 
-    // src/store/action-type.ts
-    export enum ItemActionConstants {
-        CHANGE_INPUT_VALUE = 'changeInputValue',
-        ADD_ITEM = 'addItem',
-        GET_LIST = 'getList',
-        GET_MY_LIST = 'getMyList',
-    }
+```ts
+// src/store/action-type.ts
+export enum ItemActionConstants {
+    CHANGE_INPUT_VALUE = 'changeInputValue',
+    ADD_ITEM = 'addItem',
+    GET_LIST = 'getList',
+    GET_MY_LIST = 'getMyList',
+}
 
-    export enum ShopActionConstants {
-        INCREMENT = 'increment',
-        DECREMENT = 'decrement',
-        RENAME = 'rename',
-    }
+export enum ShopActionConstants {
+    INCREMENT = 'increment',
+    DECREMENT = 'decrement',
+    RENAME = 'rename',
+}
+```
 
 #### Action
 
@@ -840,88 +881,91 @@ render 函数中需要 **as P** 的原因，可以了解 26 节 **泛型与条�
 
 分别合并出 ItemAction 与 ShopAction
 
-    // src/store/action-type.ts
-    /** ItemAction */
-    export type ChangeInputAction = {
-        type: ItemActionConstants.CHANGE_INPUT_VALUE;
-        value: string;
-    };
+```ts
+// src/store/action-type.ts
+/** ItemAction */
+export type ChangeInputAction = {
+    type: ItemActionConstants.CHANGE_INPUT_VALUE;
+    value: string;
+};
 
-    export type AddItemAction = {
-        type: ItemActionConstants.ADD_ITEM;
-        item: string;
-    };
+export type AddItemAction = {
+    type: ItemActionConstants.ADD_ITEM;
+    item: string;
+};
 
-    export type GetListAction = {
-        type: ItemActionConstants.GET_LIST;
-        data: Array<string>;
-    };
+export type GetListAction = {
+    type: ItemActionConstants.GET_LIST;
+    data: Array<string>;
+};
 
-    export type ItemAction = ChangeInputAction | AddItemAction | GetListAction;
+export type ItemAction = ChangeInputAction | AddItemAction | GetListAction;
 
-    /** ShopAction */
-    export type IncrementShopAction = {
-        type: ShopActionConstants.INCREMENT;
-    }
+/** ShopAction */
+export type IncrementShopAction = {
+    type: ShopActionConstants.INCREMENT;
+}
 
-    export type DecrementShopAction = {
-        type: ShopActionConstants.DECREMENT;
-    }
+export type DecrementShopAction = {
+    type: ShopActionConstants.DECREMENT;
+}
 
-    export type RenameShopAction = {
-        type: ShopActionConstants.RENAME,
-        value: string;
-    }
+export type RenameShopAction = {
+    type: ShopActionConstants.RENAME,
+    value: string;
+}
 
-    export type ShopAction = IncrementShopAction | DecrementShopAction | RenameShopAction;
+export type ShopAction = IncrementShopAction | DecrementShopAction | RenameShopAction;
+```
 
 #### ActionCreator
 
 构建 ActionCreator 函数：
 
-    // src/store/action-creator.ts
-    import { ActionCreator } from 'redux';
-    import { 
-        ItemActionConstants, 
-        ShopActionConstants,
-        ChangeInputAction,
-        AddItemAction,
-        GetListAction,
-        IncrementShopAction,
-        DecrementShopAction,
-        RenameShopAction,
-    } from './action-type';
+```ts
+// src/store/action-creator.ts
+import { ActionCreator } from 'redux';
+import { 
+    ItemActionConstants, 
+    ShopActionConstants,
+    ChangeInputAction,
+    AddItemAction,
+    GetListAction,
+    IncrementShopAction,
+    DecrementShopAction,
+    RenameShopAction,
+} from './action-type';
 
-    /** Item */
-    export const changeInput: ActionCreator<ChangeInputAction> = (value) => ({
-        type: ItemActionConstants.CHANGE_INPUT_VALUE,
-        value,
-    });
+/** Item */
+export const changeInput: ActionCreator<ChangeInputAction> = (value) => ({
+    type: ItemActionConstants.CHANGE_INPUT_VALUE,
+    value,
+});
 
-    export const addItem: ActionCreator<AddItemAction> = () => ({
-        type: ItemActionConstants.ADD_ITEM,
-        item: 'New Item',
-    });
+export const addItem: ActionCreator<AddItemAction> = () => ({
+    type: ItemActionConstants.ADD_ITEM,
+    item: 'New Item',
+});
 
-    export const getList: ActionCreator<GetListAction> = (data) => ({
-        type: ItemActionConstants.GET_LIST,
-        data,
-    });
+export const getList: ActionCreator<GetListAction> = (data) => ({
+    type: ItemActionConstants.GET_LIST,
+    data,
+});
 
-    /** Shop */
-    export const incrementShop: ActionCreator<IncrementShopAction> = () => ({
-        type: ShopActionConstants.INCREMENT,
-    });
+/** Shop */
+export const incrementShop: ActionCreator<IncrementShopAction> = () => ({
+    type: ShopActionConstants.INCREMENT,
+});
 
-    export const decrementShop: ActionCreator<DecrementShopAction> = () => ({
-        type: ShopActionConstants.DECREMENT,
-    });
+export const decrementShop: ActionCreator<DecrementShopAction> = () => ({
+    type: ShopActionConstants.DECREMENT,
+});
 
-    export const renameShop: ActionCreator<RenameShopAction> = ({ value }) => ({
-        type: ShopActionConstants.RENAME,
-        value,
-    });
-
+export const renameShop: ActionCreator<RenameShopAction> = ({ value }) => ({
+    type: ShopActionConstants.RENAME,
+    value,
+});
+```
 
 #### Reducer
 
@@ -931,154 +975,162 @@ render 函数中需要 **as P** 的原因，可以了解 26 节 **泛型与条�
 
 利用类型工具 **ReturnType** 获取 **rootState**
 
-    import { ItemActionConstants, ShopActionConstants, ItemAction, ShopAction } from './action-type';
-    import { Reducer, combineReducers } from 'redux';
-    import { ItemState, ShopState } from './model';
+```ts
+import { ItemActionConstants, ShopActionConstants, ItemAction, ShopAction } from './action-type';
+import { Reducer, combineReducers } from 'redux';
+import { ItemState, ShopState } from './model';
 
-    // Item
-    const defaultItemState: ItemState = {
-        inputValue: 'something',
-        list: [
-            '4:00 起床',
-            '5:00 跑步'
-        ]
-    };
+// Item
+const defaultItemState: ItemState = {
+    inputValue: 'something',
+    list: [
+        '4:00 起床',
+        '5:00 跑步'
+    ]
+};
 
-    const itemReducer: Reducer<ItemState, ItemAction> = (state = defaultItemState, action) => {
-        switch (action.type) {
-            case ItemActionConstants.CHANGE_INPUT_VALUE:
-                return {
-                    ...state,
-                    inputValue: action.value,
-                }
-            case ItemActionConstants.ADD_ITEM:
-                return {
-                    ...state,
-                    list: [
-                        ...state.list,
-                        action.item,
-                    ]
-                }
-            case ItemActionConstants.GET_LIST:
-                return {
-                    ...state,
-                    list: action.data,
-                }
-            default:
-                return state;
-        }
+const itemReducer: Reducer<ItemState, ItemAction> = (state = defaultItemState, action) => {
+    switch (action.type) {
+        case ItemActionConstants.CHANGE_INPUT_VALUE:
+            return {
+                ...state,
+                inputValue: action.value,
+            }
+        case ItemActionConstants.ADD_ITEM:
+            return {
+                ...state,
+                list: [
+                    ...state.list,
+                    action.item,
+                ]
+            }
+        case ItemActionConstants.GET_LIST:
+            return {
+                ...state,
+                list: action.data,
+            }
+        default:
+            return state;
     }
+}
 
-    // Item
-    const defaultShopState: ShopState = {
-        count: 0,
-        name: 'k013'
-    };
+// Item
+const defaultShopState: ShopState = {
+    count: 0,
+    name: 'k013'
+};
 
-    const shopReducer: Reducer<ShopState, ShopAction> = (state = defaultShopState, action) => {
-        switch (action.type) {
-            case ShopActionConstants.INCREMENT:
-                return {
-                    ...state,
-                    count: state.count + 1,
-                }
-            case ShopActionConstants.DECREMENT:
-                return {
-                    ...state,
-                    count: state.count - 1,
-                }
-            case ShopActionConstants.RENAME:
-                return {
-                    ...state,
-                    name: action.value,
-                }
-            default:
-                return state;
-        }
+const shopReducer: Reducer<ShopState, ShopAction> = (state = defaultShopState, action) => {
+    switch (action.type) {
+        case ShopActionConstants.INCREMENT:
+            return {
+                ...state,
+                count: state.count + 1,
+            }
+        case ShopActionConstants.DECREMENT:
+            return {
+                ...state,
+                count: state.count - 1,
+            }
+        case ShopActionConstants.RENAME:
+            return {
+                ...state,
+                name: action.value,
+            }
+        default:
+            return state;
     }
+}
 
-    const rootReducer = combineReducers({
-        item: itemReducer,
-        shop: shopReducer,
-    });
+const rootReducer = combineReducers({
+    item: itemReducer,
+    shop: shopReducer,
+});
 
-    export type RootState = ReturnType<typeof rootReducer>;
-    export default rootReducer;
+export type RootState = ReturnType<typeof rootReducer>;
+export default rootReducer;
+```
 
 #### Store
 
 构造 Store：
 
-    // src/store/index.ts
-    import { createStore } from 'redux';
-    import reducer from './reducer';
+```ts
+// src/store/index.ts
+import { createStore } from 'redux';
+import reducer from './reducer';
 
-    const store = createStore(reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+const store = createStore(reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
-    export default store;
+export default store;
+```
 
 其中 **__REDUX_DEVTOOLS_EXTENSION__** 是 Redux 调试工具 **Redux DevTools** 的变量，需要为其声明类型：
 
-    // src/types/index.ts
-    interface Window {
-        __REDUX_DEVTOOLS_EXTENSION__(): any;
-    }
+```ts
+// src/types/index.ts
+interface Window {
+    __REDUX_DEVTOOLS_EXTENSION__(): any;
+}
+```
 
 #### 常规使用
 
 创建组件 TodoItem，用于展示 ItemState 的内容：
 
-    // src/components/todo-item.tsx
-    import * as React from 'react';
-    import store from '../store';
-    import { changeInput, addItem } from '../store/action-creator';
-    import { RootState } from '../store/reducer';
+```tsx
+// src/components/todo-item.tsx
+import * as React from 'react';
+import store from '../store';
+import { changeInput, addItem } from '../store/action-creator';
+import { RootState } from '../store/reducer';
 
-    interface ITodoItemState extends RootState {}
-    interface ITodoItemProps {}
+interface ITodoItemState extends RootState {}
+interface ITodoItemProps {}
 
-    class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
-        state = store.getState();
-        constructor(props: ITodoItemProps) {
-            super(props);
-            store.subscribe(() => {
-                this.setState(store.getState());
-            });
-        }
-
-        onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            const action = changeInput(e.target.value);
-            store.dispatch(action);
-        }
-
-        addItem = () => {
-            const action = addItem();
-            store.dispatch(action);
-        }
-
-        render() {
-            return (
-                <div>
-                    这是TodoItem页面
-                    <input type="text" value={this.state.item.inputValue} onChange={this.onInputChange} />
-                    <button onClick={this.addItem}>Add list item</button>
-                    list: {this.state.item.list}
-                </div>
-            )
-        }
+class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
+    state = store.getState();
+    constructor(props: ITodoItemProps) {
+        super(props);
+        store.subscribe(() => {
+            this.setState(store.getState());
+        });
     }
 
-    export default TodoItem;
-
-    // src/app.tsx
-    import * as React from 'react';
-    import TodoItem from './components/todo-item';
-
-    function App() {
-        <div className={'app'}>
-            <TodoItem />
-        </div>
+    onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const action = changeInput(e.target.value);
+        store.dispatch(action);
     }
+
+    addItem = () => {
+        const action = addItem();
+        store.dispatch(action);
+    }
+
+    render() {
+        return (
+            <div>
+                这是TodoItem页面
+                <input type="text" value={this.state.item.inputValue} onChange={this.onInputChange} />
+                <button onClick={this.addItem}>Add list item</button>
+                list: {this.state.item.list}
+            </div>
+        )
+    }
+}
+
+export default TodoItem;
+
+// src/app.tsx
+import * as React from 'react';
+import TodoItem from './components/todo-item';
+
+function App() {
+    <div className={'app'}>
+        <TodoItem />
+    </div>
+}
+```
 
 这时 Redux 已经可以正常使用了
 
@@ -1090,247 +1142,265 @@ render 函数中需要 **as P** 的原因，可以了解 26 节 **泛型与条�
 
 react-redux 可以以组件的形式融合对 redux 的使用，将 state 与 dispatch 合并到组件的 props 中
 
-    // src/app.tsx
-    import * as React from 'react';
-    import TodoItem from './components/todo-item';
-    import { Provider } from 'react-redux';
-    import store from './store';
+```tsx
+// src/app.tsx
+import * as React from 'react';
+import TodoItem from './components/todo-item';
+import { Provider } from 'react-redux';
+import store from './store';
 
-    function App() {
-        <div className={'app'}>
-            <Provider store={store}>
-                <TodoItem />
-            </Provider>
-        </div>
+function App() {
+    <div className={'app'}>
+        <Provider store={store}>
+            <TodoItem />
+        </Provider>
+    </div>
+}
+
+// src/components/todo-item.tsx
+import * as React from 'react';
+import { ItemState, ShopState } from '../store/model';
+import { changeInput, addItem } from '../store/action-creator';
+import { Dispatch, bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { RootState } from '../store/reducer';
+
+interface ITodoItemState {
+}
+
+interface ITodoItemProps extends ItemState, ShopState {
+    onInputChange(value: string): void;
+    addItem(): void;
+}
+
+class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
+    constructor(props: ITodoItemProps) {
+        super(props);
     }
 
-    // src/components/todo-item.tsx
-    import * as React from 'react';
-    import { ItemState, ShopState } from '../store/model';
-    import { changeInput, addItem } from '../store/action-creator';
-    import { Dispatch, bindActionCreators } from 'redux';
-    import { connect } from 'react-redux';
-    import { RootState } from '../store/reducer';
-
-    interface ITodoItemState {
+    onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.props.onInputChange(e.target.value);
     }
 
-    interface ITodoItemProps extends ItemState, ShopState {
-        onInputChange(value: string): void;
-        addItem(): void;
+    render() {
+        return (
+            <div>
+                这是TodoItem页面
+                <input type="text" value={this.props.inputValue} onChange={this.onInputChange} />
+                <button onClick={this.props.addItem}>Add list item</button>
+                list: {this.props.list}
+            </div>
+        )
     }
+}
 
-    class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
-        constructor(props: ITodoItemProps) {
-            super(props);
-        }
-
-        onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            this.props.onInputChange(e.target.value);
-        }
-
-        render() {
-            return (
-                <div>
-                    这是TodoItem页面
-                    <input type="text" value={this.props.inputValue} onChange={this.onInputChange} />
-                    <button onClick={this.props.addItem}>Add list item</button>
-                    list: {this.props.list}
-                </div>
-            )
-        }
+const stateToProps = (state: RootState)=>{
+    const { item, shop } = state;
+    return {
+        inputValue: item.inputValue,
+        list: item.list,
+        count: shop.count,
+        name: shop.name,
     }
+}
 
-    const stateToProps = (state: RootState)=>{
-        const { item, shop } = state;
-        return {
-            inputValue: item.inputValue,
-            list: item.list,
-            count: shop.count,
-            name: shop.name,
-        }
-    }
+const dispatchToProps = (dispatch: Dispatch) => {
+    return bindActionCreators({
+        onInputChange: value => changeInput(value),
+        addItem,
+    }, dispatch);
+}
 
-    const dispatchToProps = (dispatch: Dispatch) => {
-        return bindActionCreators({
-            onInputChange: value => changeInput(value),
-            addItem,
-        }, dispatch);
-    }
-
-    export default connect(stateToProps, dispatchToProps)(TodoItem);
+export default connect(stateToProps, dispatchToProps)(TodoItem);
+```
 
 #### redux-thunk
 
 redux-thunk 是中间件 middleware，它允许我们在 action 中进行异步操作，将 action 从返回对象扩展到可以是返回函数
 
-    npm i --save redux-thunk
+```ts
+npm i --save redux-thunk
+```
 
 下面我们创建一个 ThunkActionCreator 为 getTodoList 函数，模拟请求后端数据，2s 后返回 2 条数据覆盖 ItemState 的 list
 
 使用 redux-thunk：
 
-    // src/store/index.ts
-    import { createStore, applyMiddleware, compose } from 'redux';
-    import reducer from './reducer';
+```ts
+// src/store/index.ts
+import { createStore, applyMiddleware, compose } from 'redux';
+import reducer from './reducer';
 
-    import thunk from 'redux-thunk';
-    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
-    const enhancer = composeEnhancers(applyMiddleware(thunk));
+import thunk from 'redux-thunk';
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
+const enhancer = composeEnhancers(applyMiddleware(thunk));
 
-    const store = createStore(reducer, enhancer);
+const store = createStore(reducer, enhancer);
 
-    export default store;
+export default store;
+```
 
 其中 __REDUX_DEVTOOLS_EXTENSION_COMPOSE__ 变量也需要定义类型：
 
-    // src/types/index.ts
-    interface Window {
-        __REDUX_DEVTOOLS_EXTENSION__(): any;
-        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__(option: object): any;
-    }
+```ts
+// src/types/index.ts
+interface Window {
+    __REDUX_DEVTOOLS_EXTENSION__(): any;
+    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__(option: object): any;
+}
+```
 
 新增常量 GET_LIST 为获取列表的 ActionType，并新增 GetListAction：
 
-    // src/store/action-type.ts
-    export enum ItemActionConstants {
-        CHANGE_INPUT_VALUE = 'changeInputValue',
-        ADD_ITEM = 'addItem',
-        GET_LIST = 'getList',
-    };
+```ts
+// src/store/action-type.ts
+export enum ItemActionConstants {
+    CHANGE_INPUT_VALUE = 'changeInputValue',
+    ADD_ITEM = 'addItem',
+    GET_LIST = 'getList',
+};
 
-    export type GetListAction = {
-        type: ItemActionConstants.GET_LIST;
-        data: Array<string>;
-    };
+export type GetListAction = {
+    type: ItemActionConstants.GET_LIST;
+    data: Array<string>;
+};
 
-    export type ItemAction = ChangeInputAction | AddItemAction | GetListAction;
+export type ItemAction = ChangeInputAction | AddItemAction | GetListAction;
+```
 
 新增 ActionCreator：
 
-    // src/store/action-creator.ts
-    export const getList: ActionCreator<GetListAction> = (data) => ({
-        type: ItemActionConstants.GET_LIST,
-        data,
-    });
+```ts
+// src/store/action-creator.ts
+export const getList: ActionCreator<GetListAction> = (data) => ({
+    type: ItemActionConstants.GET_LIST,
+    data,
+});
+```
 
 创建 ThunkActionCreator，返回**异步函数**：
 
-    // src/store/action-creator.ts
-    import { Dispatch, Action, ActionCreator } from 'redux';
-    import { ThunkAction } from 'redux-thunk';
+```ts
+// src/store/action-creator.ts
+import { Dispatch, Action, ActionCreator } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 
-    // R: return; S: State; E: extraArgument; A: Action
-    type ThunkActionCreator<R, S, E, A extends Action> = (...args: any[]) => ThunkAction<R, S ,E ,A>;
+// R: return; S: State; E: extraArgument; A: Action
+type ThunkActionCreator<R, S, E, A extends Action> = (...args: any[]) => ThunkAction<R, S ,E ,A>;
 
-    export const getTodoList: ThunkActionCreator<void, ItemState, void, GetListAction> = () => {
-        return async (dispach, getState) => {
-            const data = await new Promise<string[]>(r => {
-                setTimeout(() => {
-                    const data = [
-                        '11:00 喝水',
-                        '12:00 吃饭'
-                    ];
-                    r(data);
-                }, 2000);
-            });
-            const action = getList(data);
-            dispach(action);
-        }
-    };
+export const getTodoList: ThunkActionCreator<void, ItemState, void, GetListAction> = () => {
+    return async (dispach, getState) => {
+        const data = await new Promise<string[]>(r => {
+            setTimeout(() => {
+                const data = [
+                    '11:00 喝水',
+                    '12:00 吃饭'
+                ];
+                r(data);
+            }, 2000);
+        });
+        const action = getList(data);
+        dispach(action);
+    }
+};
+```
 
 reducer 补充条件：
 
-    // src/store/reducer.ts
-    const itemReducer: Reducer<ItemState, ItemAction> = (state = defaultItemState, action) => {
-        switch (action.type) {
-            case ItemActionConstants.CHANGE_INPUT_VALUE:
-                return {
-                    ...state,
-                    inputValue: action.value,
-                }
-            case ItemActionConstants.ADD_ITEM:
-                return {
-                    ...state,
-                    list: [
-                        ...state.list,
-                        action.item,
-                    ]
-                }
-            case ItemActionConstants.GET_LIST:
-                return {
-                    ...state,
-                    list: action.data,
-                }
-            default:
-                return state;
-        }
+```ts
+// src/store/reducer.ts
+const itemReducer: Reducer<ItemState, ItemAction> = (state = defaultItemState, action) => {
+    switch (action.type) {
+        case ItemActionConstants.CHANGE_INPUT_VALUE:
+            return {
+                ...state,
+                inputValue: action.value,
+            }
+        case ItemActionConstants.ADD_ITEM:
+            return {
+                ...state,
+                list: [
+                    ...state.list,
+                    action.item,
+                ]
+            }
+        case ItemActionConstants.GET_LIST:
+            return {
+                ...state,
+                list: action.data,
+            }
+        default:
+            return state;
     }
+}
+```
 
 组件内使用 ThunkActionCreator getTodoList 函数：
 
-    // src/components/todo-item.tsx
-    import * as React from 'react';
-    import { ItemState, ShopState } from '../store/model';
-    import { changeInput, addItem, getTodoList } from '../store/action-creator';
-    import { Dispatch, bindActionCreators } from 'redux';
-    import { connect } from 'react-redux';
-    import { RootState } from '../store/reducer';
+```tsx
+// src/components/todo-item.tsx
+import * as React from 'react';
+import { ItemState, ShopState } from '../store/model';
+import { changeInput, addItem, getTodoList } from '../store/action-creator';
+import { Dispatch, bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { RootState } from '../store/reducer';
 
-    interface ITodoItemState {
+interface ITodoItemState {
+}
+
+interface ITodoItemProps extends ItemState, ShopState {
+    onInputChange(value: string): void;
+    addItem(): void;
+    getList(): void;
+}
+
+class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
+    constructor(props: ITodoItemProps) {
+        super(props);
     }
 
-    interface ITodoItemProps extends ItemState, ShopState {
-        onInputChange(value: string): void;
-        addItem(): void;
-        getList(): void;
+    componentDidMount() {
+        this.props.getList();
     }
 
-    class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
-        constructor(props: ITodoItemProps) {
-            super(props);
-        }
-
-        componentDidMount() {
-            this.props.getList();
-        }
-
-        onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            this.props.onInputChange(e.target.value);
-        }
-
-        render() {
-            return (
-                <div>
-                    这是TodoItem页面
-                    <input type="text" value={this.props.inputValue} onChange={this.onInputChange} />
-                    <button onClick={this.props.addItem}>Add list item</button>
-                    list: {this.props.list}
-                </div>
-            )
-        }
+    onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.props.onInputChange(e.target.value);
     }
 
-    const stateToProps = (state: RootState)=>{
-        const { item, shop } = state;
-        return {
-            inputValue: item.inputValue,
-            list: item.list,
-            count: shop.count,
-            name: shop.name,
-        }
+    render() {
+        return (
+            <div>
+                这是TodoItem页面
+                <input type="text" value={this.props.inputValue} onChange={this.onInputChange} />
+                <button onClick={this.props.addItem}>Add list item</button>
+                list: {this.props.list}
+            </div>
+        )
     }
+}
 
-    const dispatchToProps = (dispatch: Dispatch) => {
-        return bindActionCreators({
-            onInputChange: value => changeInput(value),
-            addItem,
-            getList: getTodoList,
-        }, dispatch);
+const stateToProps = (state: RootState)=>{
+    const { item, shop } = state;
+    return {
+        inputValue: item.inputValue,
+        list: item.list,
+        count: shop.count,
+        name: shop.name,
     }
+}
 
-    export default connect(stateToProps, dispatchToProps)(TodoItem);
+const dispatchToProps = (dispatch: Dispatch) => {
+    return bindActionCreators({
+        onInputChange: value => changeInput(value),
+        addItem,
+        getList: getTodoList,
+    }, dispatch);
+}
+
+export default connect(stateToProps, dispatchToProps)(TodoItem);
+```
 
 现在刷新页面，2s 后 list 的 UI 展示结果就会从 4:00 起床 5:00 跑步 变为 11:00 喝水 12:00 吃饭
 
@@ -1342,174 +1412,188 @@ redux-thunk 让我们从 ActionCreator 返回一个对象，到 ThunkActionCreat
 
 与 redux-saga 不同的是，它的处理内容一般单独放在 saga.ts 文件中，通过在 generator 函数中监听 dispatch 的 action 完成相应操作，解耦性可能更好
 
-    npm i --save redux-saga
+```ts
+npm i --save redux-saga
+```
 
 下面我们新增一个 type 为 GET_MY_LIST 的 Action 用于让 redux-saga 监听，监听到后同样模拟请求数据 2s 后返回 2 条数据覆盖 ItemState 的 list
 
 新增常量 GET_MY_LIST 用于 redux-saga 监听，并新增 GetMyListAction：
 
-    // src/store/action-type.ts
-    export enum ItemActionConstants {
-        CHANGE_INPUT_VALUE = 'changeInputValue',
-        ADD_ITEM = 'addItem',
-        GET_LIST = 'getList',
-        GET_MY_LIST = 'getMyList',
-    }
+```ts
+// src/store/action-type.ts
+export enum ItemActionConstants {
+    CHANGE_INPUT_VALUE = 'changeInputValue',
+    ADD_ITEM = 'addItem',
+    GET_LIST = 'getList',
+    GET_MY_LIST = 'getMyList',
+}
 
-    export type GetMyListAction = {
-        type: ItemActionConstants.GET_MY_LIST;
-    };
+export type GetMyListAction = {
+    type: ItemActionConstants.GET_MY_LIST;
+};
 
-    export type ItemAction = ChangeInputAction | AddItemAction | GetListAction | GetMyListAction;
+export type ItemAction = ChangeInputAction | AddItemAction | GetListAction | GetMyListAction;
+```
 
 新增 ActionCreator：
 
-    // src/store/action-creator.ts
-    export const getMyList: ActionCreator<GetMyListAction> = () => ({
-        type: ItemActionConstants.GET_MY_LIST,
-    });
+```ts
+// src/store/action-creator.ts
+export const getMyList: ActionCreator<GetMyListAction> = () => ({
+    type: ItemActionConstants.GET_MY_LIST,
+});
+```
 
 reducer 补充条件，由于 GET_MY_LIST 只用于让 redux-saga 监听，不需要在 reducer 里改变 state，返回原 state 即可：
 
-    // src/store/reducer.ts
-    const itemReducer: Reducer<ItemState, ItemAction> = (state = defaultItemState, action) => {
-        switch (action.type) {
-            case ItemActionConstants.CHANGE_INPUT_VALUE:
-                return {
-                    ...state,
-                    inputValue: action.value,
-                }
-            case ItemActionConstants.ADD_ITEM:
-                return {
-                    ...state,
-                    list: [
-                        ...state.list,
-                        action.item,
-                    ]
-                }
-            case ItemActionConstants.GET_LIST:
-                return {
-                    ...state,
-                    list: action.data,
-                }
-            case ItemActionConstants.GET_MY_LIST:
-                return state;
-            default:
-                return state;
-        }
+```ts
+// src/store/reducer.ts
+const itemReducer: Reducer<ItemState, ItemAction> = (state = defaultItemState, action) => {
+    switch (action.type) {
+        case ItemActionConstants.CHANGE_INPUT_VALUE:
+            return {
+                ...state,
+                inputValue: action.value,
+            }
+        case ItemActionConstants.ADD_ITEM:
+            return {
+                ...state,
+                list: [
+                    ...state.list,
+                    action.item,
+                ]
+            }
+        case ItemActionConstants.GET_LIST:
+            return {
+                ...state,
+                list: action.data,
+            }
+        case ItemActionConstants.GET_MY_LIST:
+            return state;
+        default:
+            return state;
     }
+}
+```
 
 新增 saga.ts 文件执行我们的异步操作：
 
-    // src/store/saga.ts
-    import { takeEvery, put } from 'redux-saga/effects';
-    import { getList } from './action-creator';
-    import { ItemActionConstants } from './action-type';
+```ts
+// src/store/saga.ts
+import { takeEvery, put } from 'redux-saga/effects';
+import { getList } from './action-creator';
+import { ItemActionConstants } from './action-type';
 
-    function* getMyList() {
-        const data: string[] = yield new Promise<string[]>(r => {
-            setTimeout(() => {
-                const data = [
-                    '11:00 喝水',
-                    '12:00 吃饭'
-                ];
-                r(data);
-            }, 2000);
-        });
-        const action = getList(data);
-        yield put(action);
-    }
+function* getMyList() {
+    const data: string[] = yield new Promise<string[]>(r => {
+        setTimeout(() => {
+            const data = [
+                '11:00 喝水',
+                '12:00 吃饭'
+            ];
+            r(data);
+        }, 2000);
+    });
+    const action = getList(data);
+    yield put(action);
+}
 
-    function* mySagas() {
-        // 监听 GET_MY_LIST 这个 action，当我们派发 GET_MY_LIST 是会触发 getMyList 函数
-        yield takeEvery(ItemActionConstants.GET_MY_LIST, getMyList);
-    }
+function* mySagas() {
+    // 监听 GET_MY_LIST 这个 action，当我们派发 GET_MY_LIST 是会触发 getMyList 函数
+    yield takeEvery(ItemActionConstants.GET_MY_LIST, getMyList);
+}
 
-    export default mySagas;
+export default mySagas;
+```
 
 使用 redux-saga：
 
-    // src/store/index.ts
-    import { createStore, applyMiddleware, compose } from 'redux';
-    import reducer from './reducer';
+```tsx
+// src/store/index.ts
+import { createStore, applyMiddleware, compose } from 'redux';
+import reducer from './reducer';
 
-    import createSagaMiddleware from 'redux-saga';
-    import mySagas from './sagas';
-    const sagaMiddleware = createSagaMiddleware();
+import createSagaMiddleware from 'redux-saga';
+import mySagas from './sagas';
+const sagaMiddleware = createSagaMiddleware();
 
-    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-        window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
 
-    const enhancer = composeEnhancers(applyMiddleware(sagaMiddleware));
+const enhancer = composeEnhancers(applyMiddleware(sagaMiddleware));
 
-    const store = createStore(reducer, enhancer);
+const store = createStore(reducer, enhancer);
 
-    sagaMiddleware.run(mySagas);
+sagaMiddleware.run(mySagas);
 
-    export default store;
+export default store;
+```
 
 组件内使用常规 dispatch 派发 getMyList 即可：
 
-    // src/components/todo-item.tsx
-    import * as React from 'react';
-    import { ItemState, ShopState } from '../store/model';
-    import { changeInput, addItem, getMyList } from '../store/action-creator';
-    import { Dispatch, bindActionCreators } from 'redux';
-    import { connect } from 'react-redux';
-    import { RootState } from '../store/reducer';
+```tsx
+// src/components/todo-item.tsx
+import * as React from 'react';
+import { ItemState, ShopState } from '../store/model';
+import { changeInput, addItem, getMyList } from '../store/action-creator';
+import { Dispatch, bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { RootState } from '../store/reducer';
 
-    interface ITodoItemState {
+interface ITodoItemState {
+}
+
+interface ITodoItemProps extends ItemState, ShopState {
+    onInputChange(value: string): void;
+    addItem(): void;
+    getList(): void;
+}
+
+class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
+    constructor(props: ITodoItemProps) {
+        super(props);
     }
 
-    interface ITodoItemProps extends ItemState, ShopState {
-        onInputChange(value: string): void;
-        addItem(): void;
-        getList(): void;
+    componentDidMount() {
+        this.props.getList();
     }
 
-    class TodoItem extends React.Component<ITodoItemProps, ITodoItemState> {
-        constructor(props: ITodoItemProps) {
-            super(props);
-        }
-
-        componentDidMount() {
-            this.props.getList();
-        }
-
-        onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            this.props.onInputChange(e.target.value);
-        }
-
-        render() {
-            return (
-                <div>
-                    这是TodoItem页面
-                    <input type="text" value={this.props.inputValue} onChange={this.onInputChange} />
-                    <button onClick={this.props.addItem}>Add list item</button>
-                    list: {this.props.list}
-                </div>
-            )
-        }
+    onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.props.onInputChange(e.target.value);
     }
 
-    const stateToProps = (state: RootState)=>{
-        const { item, shop } = state;
-        return {
-            inputValue: item.inputValue,
-            list: item.list,
-            count: shop.count,
-            name: shop.name,
-        }
+    render() {
+        return (
+            <div>
+                这是TodoItem页面
+                <input type="text" value={this.props.inputValue} onChange={this.onInputChange} />
+                <button onClick={this.props.addItem}>Add list item</button>
+                list: {this.props.list}
+            </div>
+        )
     }
+}
 
-    const dispatchToProps = (dispatch: Dispatch) => {
-        return bindActionCreators({
-            onInputChange: value => changeInput(value),
-            addItem,
-            getList: getMyList,
-        }, dispatch);
+const stateToProps = (state: RootState)=>{
+    const { item, shop } = state;
+    return {
+        inputValue: item.inputValue,
+        list: item.list,
+        count: shop.count,
+        name: shop.name,
     }
+}
 
-    export default connect(stateToProps, dispatchToProps)(TodoItem);
+const dispatchToProps = (dispatch: Dispatch) => {
+    return bindActionCreators({
+        onInputChange: value => changeInput(value),
+        addItem,
+        getList: getMyList,
+    }, dispatch);
+}
+
+export default connect(stateToProps, dispatchToProps)(TodoItem);
+```
 
 同样刷新页面，2s 后 list 的 UI 展示结果就会从 4:00 起床 5:00 跑步 变为 11:00 喝水 12:00 吃饭
