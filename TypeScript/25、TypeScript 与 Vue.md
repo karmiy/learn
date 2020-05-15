@@ -119,7 +119,9 @@ module.exports = {
 // src/main.ts
 import { Button } from 'vant';
 Vue.use(Button);
+```
 
+```html
 // src/App.vue
 <van-button type="default">默认按钮</van-button>
 ```
@@ -231,12 +233,14 @@ export default class YourCompoent extends Vue{
 
 #### Computed、Data、Methods
 
-```ts
+```html
 // <template>
 <p>{{count}}</p>
 <p>{{total}}</p>
 <van-button type="default" @click="add">+</van-button>
+```
 
+```ts
 // <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 
@@ -434,12 +438,14 @@ model: {prop?: string, event?: string} 一般用于其他如单选框来达到�
 
 示例：
 
-```ts
+```html
 // src/HelloWorld.vue
 <template>
     <input type="checkbox" :checked="checked" @change="$emit('change', $event.target.checked)">
 </template>
+```
 
+```ts
 <script>
     export default {
         name: 'HelloWorld',
@@ -459,13 +465,15 @@ model: {prop?: string, event?: string} 一般用于其他如单选框来达到�
 
 在模板中使用：
 
-```ts
+```html
 // src/App.vue
 <template>
     <hello-world v-model="selected" />
     Selected Status: {{ selected }}
 </template>
+```
 
+```ts
 <script>
     export default {
         data() {
@@ -479,17 +487,19 @@ model: {prop?: string, event?: string} 一般用于其他如单选框来达到�
 
 此模板相当于：
 
-```ts
+```html
 <hello-world :checked="selected" @change="v => selected = v" />
 ```
 
 在 TypeScript 版的 vue-property-decorator 上使用等同于：
 
-```ts    
+```html
 <template>
     <input type="checkbox" :checked="checked" @change="$emit('change', $event.target.checked)">
 </template>
+```
 
+```ts
 <script lang="ts">
     import { Component, Model, Vue } from "vue-property-decorator";
 
@@ -540,8 +550,9 @@ new Vue({
     store,
     ...
 }).$mount('#app')
+```
 
-
+```html
 // src/App.vue
 <template>
     <div>
@@ -567,13 +578,18 @@ export interface State {
 export const state: State = {
     todoList: [],
 }
+```
 
+```html
 // src/HelloWorld.vue
 <template>
     <div>
         <p>todoList: {{todoList}}</p>
     </div>
 </template>
+```
+
+```ts
 <script lang="ts">
     import { Component, Vue } from "vue-property-decorator";
     import { State } from 'vuex-class';
@@ -605,7 +621,7 @@ export const mutations: MutationTree<State> = {
 
 使用：
 
-```ts
+```html
 // src/HelloWorld.vue
 <template>
     <div>
@@ -613,6 +629,9 @@ export const mutations: MutationTree<State> = {
         <van-button type="primary" @click="createTodoHandler">add todo</van-button>
     </div>
 </template>
+```
+
+```ts
 <script lang="ts">
     import { Component, Vue } from "vue-property-decorator";
     import { State, Mutation } from 'vuex-class';
@@ -658,13 +677,18 @@ export const getters: GetterTree<State, RootState> = {
         return state.todoList.length;
     }
 }
+```
 
+```html
 // src/HelloWorld.vue
 <template>
     <div>
         <p>todoCount: {{todoCount}}</p>
     </div>
 </template>
+```
+
+```ts
 <script lang="ts">
     import { Component, Vue } from "vue-property-decorator";
     import { Getter } from 'vuex-class';
@@ -691,7 +715,9 @@ export const actions: ActionTree<State, RootState> = {
         }
     }
 }
+```
 
+```html
 // src/HelloWorld.vue
 <template>
     <div>
@@ -699,6 +725,9 @@ export const actions: ActionTree<State, RootState> = {
         <van-button type="primary" @click="createTodoHandler">add todo</van-button>
     </div>
 </template>
+```
+
+```ts
 <script lang="ts">
     import { Component, Vue } from "vue-property-decorator";
     import { State, Action } from 'vuex-class';
@@ -802,7 +831,9 @@ export default new Vuex.Store({
         cart,
     },
 })
+```
 
+```html
 // src/HelloWorld.vue
 <template>
     <div>
@@ -811,6 +842,9 @@ export default new Vuex.Store({
         <van-button type="primary" @click="addFoodHandler">add food</van-button>
     </div>
 </template>
+```
+
+```ts
 <script lang="ts">
     import { Component, Vue } from "vue-property-decorator";
     import { State, Mutation, Action, Getter } from 'vuex-class';
@@ -930,7 +964,9 @@ export default {
     actions,
     getters,
 }
+```
 
+```html
 // src/HelloWorld.vue
 <template>
     <div>
@@ -939,6 +975,9 @@ export default {
         <van-button type="primary" @click="addFoodHandler">add food</van-button>
     </div>
 </template>
+```
+
+```ts
 <script lang="ts">
     import { Component, Vue } from "vue-property-decorator";
     import { State, Mutation, Action, Getter } from 'vuex-class';
