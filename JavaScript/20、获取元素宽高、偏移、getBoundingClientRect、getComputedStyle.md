@@ -4,48 +4,56 @@
 
 ### clientWidth/clientHeight
 
-    // 说明
-    获取元素可视区域的宽高
-    width + padding（不包括出现的滚动条占据的宽度，边框）
-    只能获取，不能赋值，返回number数值
-    
-    console.log(wrap.clientWidth);
+```js
+// 说明
+获取元素可视区域的宽高
+width + padding（不包括出现的滚动条占据的宽度，边框）
+只能获取，不能赋值，返回number数值
+
+console.log(wrap.clientWidth);
+```
     
 ![Alt text](./imgs/20-01.png)
 
 ### offsetWidth/offsetHeight
 
-    // 说明
-    获取元素整体的实际宽高
-    width + padding + border + 出现的滚动条占据的宽度
-    只能获取，不能赋值，返回number数值
-    
-    console.log(wrap.offsetWidth);
+```js
+// 说明
+获取元素整体的实际宽高
+width + padding + border + 出现的滚动条占据的宽度
+只能获取，不能赋值，返回number数值
+
+console.log(wrap.offsetWidth);
+```
     
 ![Alt text](./imgs/20-02.png)
 
 ### scrollWidth/scrollHeight
 
-    // 说明
-    获取元素内容的实际宽高
-    width + padding（不包括边框）
-    正常情况下时scrollWidth === clientWidth
-    当元素内部过宽过高时，scrollWidth是其实际内容的宽度
-    只能获取，不能赋值，返回number数值
-    
-    console.log(wrap.scrollWidth);
+```js
+// 说明
+获取元素内容的实际宽高
+width + padding（不包括边框）
+正常情况下时scrollWidth === clientWidth
+当元素内部过宽过高时，scrollWidth是其实际内容的宽度
+只能获取，不能赋值，返回number数值
+
+console.log(wrap.scrollWidth);
+```
     
 ![Alt text](./imgs/20-03.png)
 
 ### innerWidth/innerHeight
 
-    // 说明
-    获取窗口可视区域大小，是window的属性
-    包括滚动条占据的宽度
-    兼容性： > IE8
-    只能获取，不能赋值，返回number数值
-    
-    console.log(window.innerWidth);
+```js
+// 说明
+获取窗口可视区域大小，是window的属性
+包括滚动条占据的宽度
+兼容性： > IE8
+只能获取，不能赋值，返回number数值
+
+console.log(window.innerWidth);
+```
 
 ![Alt text](./imgs/20-06.png)
 
@@ -53,110 +61,131 @@
 
 ### scrollLeft/scrollTop
     
-    // 说明
-    获取元素的垂直滚动高度、水平滚动偏移
-    可以获取和赋值，返回number数值
-    
-    console.log(wrap.scrollTop);
+```js
+// 说明
+获取元素的垂直滚动高度、水平滚动偏移
+可以获取和赋值，返回number数值
+
+console.log(wrap.scrollTop);
+```
     
 ![Alt text](./imgs/20-04.png)
 
-    // 获取浏览器滚动高度(有的浏览器通过body可以获取，有的通过html)
-    Math.max(document.documentElement.scrollTop, document.body.scrollTop);
-    
-    // 页面滚动到400px的位置
-    document.documentElement.scrollTop = document.body.scrollTop = 400;
-    或
-    window.scrollTop(0, 400);
+```js
+// 获取浏览器滚动高度(有的浏览器通过body可以获取，有的通过html)
+Math.max(document.documentElement.scrollTop, document.body.scrollTop);
+
+// 页面滚动到400px的位置
+document.documentElement.scrollTop = document.body.scrollTop = 400;
+或
+window.scrollTop(0, 400);
+```
     
 ### pageXOffset、pageYOffset
 
-    // 获取window的滚动高度、水平滚动偏移
-    兼容性 >= IE9，IE8及以下用上例document.body、document.documentElement的滚动距离
-    
-    console.log(window.pageXOffset, window.pageYOffset);
-    
+```js
+// 获取window的滚动高度、水平滚动偏移
+兼容性 >= IE9，IE8及以下用上例document.body、document.documentElement的滚动距离
+
+console.log(window.pageXOffset, window.pageYOffset);
+```
 
 ### offsetLeft/offsetTop
 
-    // 说明
-    获取元素到定位父级的距离
-    只能获取，不能赋值，返回number数值
+```js
+// 说明
+获取元素到定位父级的距离
+只能获取，不能赋值，返回number数值
+```
     
 ![Alt text](./imgs/20-05.png)
 
 ![Alt text](./imgs/20-05-01.png)
 
-    // 如何获取元素到body的距离
-    function getOffset(dom) {
-        var offset = {
-            left: 0,
-            top: 0,
-        };
-        while( dom !== document.body) {
-            offset.top += dom.offsetTop;
-            offset.left += dom.offsetLeft;
-            dom = dom.offsetParent;
-        }
-        return offset;
+```js
+// 如何获取元素到body的距离
+function getOffset(dom) {
+    var offset = {
+        left: 0,
+        top: 0,
+    };
+    while( dom !== document.body) {
+        offset.top += dom.offsetTop;
+        offset.left += dom.offsetLeft;
+        dom = dom.offsetParent;
     }
+    return offset;
+}
+```
     
-    // 特殊情况， translate造成的偏移对offsetLeft/Top无效
-    div {
-        position: relative;
-        width: 200px;
-        height: 100px;
-        border: 1px solid #1394ff;
-    }
-    p {
-        position: relative;
-        width: 50px;
-        height: 50px;
-        background-color: #8AC763;
-        margin-left: 50px; // 元素margin-left偏移
-    }
+```css
+// 特殊情况， translate造成的偏移对offsetLeft/Top无效
+div {
+    position: relative;
+    width: 200px;
+    height: 100px;
+    border: 1px solid #1394ff;
+}
+p {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    background-color: #8AC763;
+    margin-left: 50px; // 元素margin-left偏移
+}
+```
     
-    <div>
-        <p></p>
-    </div>
+```html
+<div>
+    <p></p>
+</div>
+```
     
-    const p = document.querySelector('p')
-    console.log(p.offsetLeft); // 输出50
+```js
+const p = document.querySelector('p')
+console.log(p.offsetLeft); // 输出50
+```
     
-    修改样式如下:
-    p {
-        position: relative;
-        width: 50px;
-        height: 50px;
-        background-color: #8AC763;
-        transform: translate(50px); // 改为translate偏移
-    }
-    
-    console.log(p.offsetLeft); // 输出0
+```css
+修改样式如下:
+p {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    background-color: #8AC763;
+    transform: translate(50px); // 改为translate偏移
+}
+```
+
+```js
+console.log(p.offsetLeft); // 输出0
+```
     
     
 ## getBoundingClientRect
 
-    // 获取元素全方位宽高、偏移信息，返回一个对象
-    // 兼容性：
-        IE下返回的对象没有x、y这2个属性，可以用left、top替代
-        >= IE9,包含width、height、top、right、bottom、left
-        IE9 > X > IE6：包含top、right、bottom、left,缺少width、height
-        
-    // 示例
-    console.log(wrap.getBoundingClientRect());
+```js
+// 获取元素全方位宽高、偏移信息，返回一个对象
+// 兼容性：
+    IE下返回的对象没有x、y这2个属性，可以用left、top替代
+    >= IE9,包含width、height、top、right、bottom、left
+    IE9 > X > IE6：包含top、right、bottom、left,缺少width、height
     
-    // 返回结果
-    {
-        x: 574.5,
-        y: 100,
-        left: 574.5,
-        top: 100,
-        bottom: 300,
-        right: 774.5,
-        height: 200,
-        width: 200,
-    }
+// 示例
+console.log(wrap.getBoundingClientRect());
+
+// 返回结果
+{
+    x: 574.5,
+    y: 100,
+    left: 574.5,
+    top: 100,
+    bottom: 300,
+    right: 774.5,
+    height: 200,
+    width: 200,
+}
+```
     
 ![Alt text](./imgs/20-07.png)
 
@@ -169,41 +198,49 @@
 
 ### getComputedStyle
 
-    // 说明
-    获取元素样式的集合，返回一个对象
-    兼容性： >= IE9
-    
-    // 示例
-    console.log(getComputedStyle(wrap));
-    console.log(getComputedStyle(wrap).borderTopWidth);
+```js
+// 说明
+获取元素样式的集合，返回一个对象
+兼容性： >= IE9
+
+// 示例
+console.log(getComputedStyle(wrap));
+console.log(getComputedStyle(wrap).borderTopWidth);
+```
     
 ![Alt text](./imgs/20-08.png)
 
-    // 注
-    属性如宽度，设置百分比50%，获取也是获取到像素值，即最终都会转化为PX；
-    颜色值获取的大多是rgb（根据浏览器），所以不要做对等判断
-    
-    // 配合
-    取宽高那些会得到字符串如'500px'，可以配合parseFloat获取数值喔
+```js
+// 注
+属性如宽度，设置百分比50%，获取也是获取到像素值，即最终都会转化为PX；
+颜色值获取的大多是rgb（根据浏览器），所以不要做对等判断
+
+// 配合
+取宽高那些会得到字符串如'500px'，可以配合parseFloat获取数值喔
+```
     
 ### dom.currentStyle
 
-    // 说明
-    获取元素样式的集合，返回一个对象
-    兼容性：全部IE，只有IE有效
-    
-    // 示例
-    console.log(wrap.currentStyle)
-    console.log(wrap.currentStyle.borderTopWidth)
+```js
+// 说明
+获取元素样式的集合，返回一个对象
+兼容性：全部IE，只有IE有效
+
+// 示例
+console.log(wrap.currentStyle)
+console.log(wrap.currentStyle.borderTopWidth)
+```
     
 ![Alt text](./imgs/20-09.png)
 
 ### 兼容性polyfill
 
-    window.getComputedStyle = 
-        window.getComputedStyle || function(dom) {
-        return dom.currentStyle;
-    }
+```js
+window.getComputedStyle = 
+    window.getComputedStyle || function(dom) {
+    return dom.currentStyle;
+}
+```
     
 ## 判断一个元素是否有滚动条
 
@@ -213,9 +250,11 @@
 
 **如何去判断？**
 
-    function hasScroll(target) {
-        return target.scrollHeight > target.clientHeight;
-    }
+```js
+function hasScroll(target) {
+    return target.scrollHeight > target.clientHeight;
+}
+```
 
 网上提供的思路，几乎全是利用clientHeight与scrollHeight去比较，当scrollHeight > clientHeight时，返回true。
 
@@ -223,24 +262,30 @@
 
 **还记得BFC那节提到过的子元素高度超出父容器是否影响外部的问题吗？**
 
-    // DOM结构
-    <div id="wrap">
-        <div class="child"></div>
-    </div>
+```html
+// DOM结构
+<div id="wrap">
+    <div class="child"></div>
+</div>
+```
     
-    // 样式
-    #wrap {
-        width: 200px;
-        height: 200px;
-        border: 5px solid greenyellow;
-    }
-    .child {
-        height: 400px;
-        border: 5px solid palevioletred;
-    }
-    
-    // JS
-    console.log(wrap.clientHeight, wrap.scrollHeight);
+```css
+// 样式
+#wrap {
+    width: 200px;
+    height: 200px;
+    border: 5px solid greenyellow;
+}
+.child {
+    height: 400px;
+    border: 5px solid palevioletred;
+}
+```
+
+```js
+// JS
+console.log(wrap.clientHeight, wrap.scrollHeight);
+```
 
 ![Alt text](./imgs/20-10.png)
 
@@ -252,25 +297,31 @@
 
 确实，但是如果是下面这种情况呢？
 
-    // DOM结构
-    <div id="wrap">
-        <div class="child"></div>
-    </div>
-    
-    // 样式
-    #wrap {
-        width: 200px;
-        border: 5px solid greenyellow;
-    }
-    .child {
-        position: relative;
-        height: 400px;
-        border: 5px solid palevioletred;
-        top: 1px;
-    }
-    
-    // JS
-    console.log(wrap.clientHeight, wrap.scrollHeight);
+```html
+// DOM结构
+<div id="wrap">
+    <div class="child"></div>
+</div>
+```
+
+```css
+// 样式
+#wrap {
+    width: 200px;
+    border: 5px solid greenyellow;
+}
+.child {
+    position: relative;
+    height: 400px;
+    border: 5px solid palevioletred;
+    top: 1px;
+}
+```
+
+```js
+// JS
+console.log(wrap.clientHeight, wrap.scrollHeight);
+```
     
 ![Alt text](./imgs/20-11.png)
 
@@ -286,22 +337,24 @@
 
 常规元素滚动条的出现，并不是单纯内部超出自动产生的，而是需要我们去设置overflow为scroll或auto。反过来说，一个元素有滚动条，那它应该要有overflow是auto或scroll的样式，判断函数如下：
     
-    /**
-     * des：是否有滚动条（这里我们只判断垂直滚动条）
-     * params: target: DOMElement 
-     */
-    function isScrollTarget(target) {
-        if(!target)
-          return false;
-        
-        // 只取overflowY，不管样式是设置overflow: auto/scroll，还是overflowY: auto/scroll，取overflowY都可以得到结果
-        var overflowY = DOMComputedStyle(target).overflowY;
-        return (overflowY === 'auto' || overflowY === 'scroll') && (target.scrollHeight > target.clientHeight);
-    }
+```js
+/**
+    * des：是否有滚动条（这里我们只判断垂直滚动条）
+    * params: target: DOMElement 
+    */
+function isScrollTarget(target) {
+    if(!target)
+        return false;
     
-    function DOMComputedStyle(dom) {
-        return getComputedStyle ? getComputedStyle(dom) : dom.currentStyle;
-    }
+    // 只取overflowY，不管样式是设置overflow: auto/scroll，还是overflowY: auto/scroll，取overflowY都可以得到结果
+    var overflowY = DOMComputedStyle(target).overflowY;
+    return (overflowY === 'auto' || overflowY === 'scroll') && (target.scrollHeight > target.clientHeight);
+}
+
+function DOMComputedStyle(dom) {
+    return getComputedStyle ? getComputedStyle(dom) : dom.currentStyle;
+}
+```
     
 **关于body、html的滚动条**
 
