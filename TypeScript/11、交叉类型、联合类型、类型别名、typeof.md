@@ -4,7 +4,7 @@
 
 交叉类型使用 & 符号连接：
 
-```ts
+```typescript
 interface A {
     id: number;
     name: string;
