@@ -150,31 +150,31 @@ new Promise((resolve, reject) => {
 么多.then都这样做，非常繁琐与冗余
 
 // 改为catch捕获
-    new Promise((resolve, reject) => {
-    setTimeout(() => {
-        reject(401);
-    }, 2000);
-    }).then(data => {
-    console.log(data);
-    }).then(data => {
-    console.log(data);
-    }).catch(err => {
-    console.log(err); // 401
-    })
-    使用catch替代，链式调用过程中报错，会一直往下找到catch并执行里面的回调，即catch可以
-    接收前面全部then的reject错误
-    
-    // 关于promise内部常规报错
-    new Promise((resolve, reject) => {
-    throw Error('error');
-    }).then(() => {
-    
-    }).catch(err => {
-    console.log('错误：', err); // 错误： Error: error
-    });
-    console.log(999); // 输出999，不会因为上面Promise报错而不执行
-    
-    注：Promise内部发生错误时，只存在于promise内部，不影响全局，由自己吞掉，让.then第二个回调参数或.catch来接收错误
+new Promise((resolve, reject) => {
+setTimeout(() => {
+    reject(401);
+}, 2000);
+}).then(data => {
+console.log(data);
+}).then(data => {
+console.log(data);
+}).catch(err => {
+console.log(err); // 401
+})
+使用catch替代，链式调用过程中报错，会一直往下找到catch并执行里面的回调，即catch可以
+接收前面全部then的reject错误
+
+// 关于promise内部常规报错
+new Promise((resolve, reject) => {
+throw Error('error');
+}).then(() => {
+
+}).catch(err => {
+console.log('错误：', err); // 错误： Error: error
+});
+console.log(999); // 输出999，不会因为上面Promise报错而不执行
+
+注：Promise内部发生错误时，只存在于promise内部，不影响全局，由自己吞掉，让.then第二个回调参数或.catch来接收错误
 ```
      
  ### 关于then的返回值
@@ -193,18 +193,18 @@ new Promise((resolve, reject) => {
 
 结论：then返回非Promise对象时，会包装为状态是resolve成功的Promise对象，即上面的例子等价于：
 
-    new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve();
-        }, 2000);
-    }).then(() => {
-        // return 999;
-        return new Promise(resolve => {
-            resolve(999);
-        })
-    }).then(data => {
-        console.log(data); // 999
+new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve();
+    }, 2000);
+}).then(() => {
+    // return 999;
+    return new Promise(resolve => {
+        resolve(999);
     })
+}).then(data => {
+    console.log(data); // 999
+})
     
 // 示例二（没有return）
 new Promise((resolve, reject) => {
