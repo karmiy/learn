@@ -235,7 +235,7 @@ export default class TodoInput extends React.Component<ITodoInputProps, ITodoInp
 
 如在 Input 组件更新完毕后，要让 input 输入框 focus 聚焦：
 
-```ts
+```tsx
 import * as React from 'react';
 
 interface IInputProps {
