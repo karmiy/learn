@@ -18,14 +18,16 @@ console.log(t, tt);
     
 ![Alt text](./imgs/07-01.png)
 
-```js
+```html
 // 其他常见类数组
 我们获取的dom元素集合（NodeList、HTMLCollection）就是个类数组
 
 <p>...</p>
 <p>...</p>
 <p>...</p>
+```
 
+```js
 var oP = document.querySelectorAll('p');
 var uP = document.getElementsByTagName('p');
 console.log(oP, uP);
