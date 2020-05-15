@@ -44,7 +44,7 @@ export default class Question extends Component {
 
 钩子函数：
 
-```js
+```jsx
 import React, { Component } from 'react'
 
 export default class Question extends Component {
@@ -70,7 +70,7 @@ export default class Question extends Component {
 
 原生事件：
 
-```js
+```jsx
 import React, { Component, createRef } from 'react'
 
 export default class Question extends Component {
@@ -99,7 +99,7 @@ export default class Question extends Component {
 
 setTimeout：
 
-```js
+```jsx
 import React, { Component } from 'react'
 
 export default class Question extends Component {
@@ -154,7 +154,7 @@ React16 之后移除的生命周期（未删除，17 后准备完全移除，保
 
 - getDerivedStateFromProps：static getDerivedStateFromProps(nextProps, prevState)，是个**静态方法**，在组件初始化、prop 或 state 改变时都会调用，需要一个返回值为新的 state 状态，即使 state 不变也要返回 null。一般用于接收新 props 而修改 state
 
-```js
+```jsx
 static getDerivedStateFromProps(nextProps, prevState) {
     console.log(nextProps, prevState);
     // return null; // 返回 null 表示 state 不变
@@ -193,14 +193,14 @@ static getDerivedStateFromProps(nextProps, prevState) {
 
 受控组件：
 
-```js
+```jsx
 // 通过 value 状态 和 changeValue 合并事件控制显示的值
 <input value={this.state.value} onChange={this.changeValue} />
 ```
 
 非受控组件：
 
-```js
+```jsx
 // 直接通过 ref 获取原生 DOM，而不是用组件 state 去控制它
 ref = createRef();
 
@@ -211,7 +211,7 @@ ref = createRef();
 
 当我们在 React 中写如下代码：
 
-```js
+```jsx
 <div onClick={this.click}>...</div>
 ```
 
@@ -241,7 +241,7 @@ React 利用事件代理，在 document 监听所有支持的事件，再通过 
 
 利用 Context 的 Consumer 和 Provider 进行通讯，可以实现父子组件**跨级通讯**
 
-```js
+```jsx
 const { Consumer, Provider } = React.createContext();
 
 // 父组件
@@ -263,7 +263,7 @@ const { Consumer, Provider } = React.createContext();
 
 使用 events 插件定义全局事件机制
 
-```js
+```jsx
 npm install events --save
 
 // event.js
@@ -296,7 +296,7 @@ click = () => {
 
 组件页面之间通过路由传参也算是一种通讯方式：
 
-```js
+```jsx
 // 示例一
 <Route path='/path/:name' component={Path}/>
 <link to="/path/2">xxx</Link>
@@ -330,7 +330,7 @@ this.props.location.search
 
 父组件传递一个 onRef 函数的 props 给子组件，子组件将自己的 this 作为参数传递，这样父组件就可以调用子组件的 this，从而调用子组件里的状态和方法
 
-```js
+```jsx
 // 子组件
 componentDidMount() {
     this.props.onRef(this);
@@ -352,7 +352,7 @@ childRef = ref => {
 
 直接利用 ref 获取整个子组件实例
 
-```js
+```jsx
 // 父组件
 childRef = null;
 
@@ -392,7 +392,7 @@ ref 可以获取组件实例或 DOM 节点
 
 - 回调形式
 
-```js
+```jsx
 inputRef = null;
 componentDidMount() {
     this.inputRef; // input DOM 节点
@@ -405,7 +405,7 @@ componentDidMount() {
 
 React16.3 后使用 createRef 创建 ref，该 ref 的 current 可以拿到 DOM 节点或组件实例
 
-```js
+```jsx
 inputRef = React.createRef();
 componentDidMount() {
     this.inputRef.current; // input DOM 节点
@@ -418,7 +418,7 @@ componentDidMount() {
 
 React.forwardRef 可以将 ref 作为普通 prop 传递，一般用于高阶组件
 
-```js
+```jsx
 function withinButton(Comp) {
     return React.forwardRef((props, ref) => {
         return <Component {...props} myRef={ref} />
@@ -444,7 +444,7 @@ class Wrap extends React.Component {
 
 使用 propTypes 可以为组件的 props 定义类型：
 
-```js
+```jsx
 class Wrap extends React.Component {
     ...
 }
@@ -469,7 +469,7 @@ class Wrap extends React.Component {
 
 ## React 有哪些定义组件方法的方式
 
-```js
+```jsx
 // 方式一
 export default class Question extends Component {
     click() {
@@ -543,7 +543,7 @@ export default class Question extends Component {
 
 - 自定义异步加载组件
 
-```js
+```jsx
  export default class Bundle extends React.Component {
     state = {
         mod: null,
@@ -584,11 +584,11 @@ class App extends Component {
 
 - 使用 react-loadable
 
-```js
+```jsx
 npm install react-loadable --save
 ```
 
-```js
+```jsx
 import Loadable from 'react-loadable';
 
 function Loading({error, pastDelay}) {
@@ -623,7 +623,7 @@ class App extends Component {
 
 React16.6 新出的 API，可以实现懒加载组件
 
-```js
+```jsx
 const AsyncQuestion = React.lazy(() => import('./components/todo/question'));
 
 // 使用
@@ -650,7 +650,7 @@ suspense 可以实现多 lazy 多级应用，不仅仅可以包裹一个 lazy �
 
 - 代码重用、逻辑抽象
 
-```js
+```jsx
 如许多组件都需要响应一个鼠标移动事件，可以封装一个高阶组件保存 mouse 状态向下传递：
 
     function withinMouse(Comp) {
@@ -701,7 +701,7 @@ suspense 可以实现多 lazy 多级应用，不仅仅可以包裹一个 lazy �
 
 如利用反向继承，做到条件型渲染：
 
-```js
+```jsx
 function withinRender(Comp) {
     return class extends Comp {
         render() {
@@ -721,7 +721,7 @@ class App extends React.Component {
 
 利用反向继承修改 React ElementS Tree：
 
-```js
+```jsx
 function withinRender(Comp) {
     return class extends Comp {
         render() {
@@ -753,7 +753,7 @@ render props 同样是提高组件复用和抽象的手段
 
 那这时，这些组件都依赖于这个按钮是状态，就可以封装成一个抽象组件，使用 render props 来调用其它组件
 
-```js
+```jsx
 // 抽象按钮
 class ToggleButton extends React.Component {
     state = {
@@ -856,7 +856,7 @@ React.Component 需要使用 shouldComponentUpdate 手动去对比 state 或 pro
 
 React.PureComponent 可以自动通过 state 与 props 进行浅比较，判断是否需要更新组件，提供组件性能
 
-```js
+```jsx
 class Child extends React.Component {
     ....
 }
@@ -878,7 +878,7 @@ class App extends React.Component {
 
 而使用 React.PureComponent 了后，就可以自动浅比较 state 与 props，如不需要 render，组件将不会耗费性能重新渲染：
 
-```js
+```jsx
 class Child extends React.PureComponent {
     ....
 }
@@ -888,7 +888,7 @@ React.PureComponent 并不适用于函数组件，且函数组件也没有 shoul
 
 React16.6 新增了 React.memo 用于函数组件：
 
-```js
+```jsx
 function Child(props) {
     ...
 }
@@ -903,7 +903,7 @@ export default React.memo(Child, (prevProps, nextProps) => {
 
 一般在组件 render 中，我们写如下代码：
 
-```js
+```jsx
 render() {
     return (
         <div>
@@ -919,7 +919,7 @@ Modal 是一个模态框，绝对定位在 body 之下
 
 ReactDOM.createPortal 就是为了解决这个问题而存在，它提供了让子节点渲染到存在于父节点之外的 DOM 节点的方案
 
-```js
+```jsx
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
@@ -956,7 +956,7 @@ export default class modal extends Component {
 
 ## 如何在 React 中使用 innerHTML
 
-```js
+```jsx
 <div dangerouslySetInnerHTML={{__html: '<span>content</span>'}}></div>
 ```
 
@@ -966,7 +966,7 @@ React.createElement( type, [props], [...children] )
 
 JSX 即是 React.createElement 的语法糖，JSX 编译后生成的 js 都是 React.createElement：
 
-```js
+```jsx
 // jsx
 <div id='wrap'>
     <span id="item">something</span>
@@ -984,7 +984,7 @@ React.createElement(
 
 一般用于克隆一个 React 元素，或为 React 元素添加或修改 props，会返回一个新的 React 元素
 
-```js
+```jsx
 React.cloneElement(
     element,
     [props],
@@ -1031,7 +1031,7 @@ React.Children.map(this.props.children, child => {
 
 - 在调用 super() 之前，子类构造函数无法使用 this 引用
 
-```js
+```jsx
 constructor() {
     console.log(this); // 报错
     super();
@@ -1042,7 +1042,7 @@ constructor() {
 
 传入 props：
 
-```js
+```jsx
 class MyComponent extends React.Component {
     constructor(props) {
         super(props);
@@ -1053,7 +1053,7 @@ class MyComponent extends React.Component {
 
 没传入 props：
 
-```js
+```jsx
 class MyComponent extends React.Component {
     constructor(props) {
         super();
@@ -1095,7 +1095,7 @@ constructor 是 React 使用 ES6 class 定义组件初始状态时使用
 
 getInitialState 是在 React.createClass 中使用
 
-```js
+```jsx
 class MyComponent extends React.Component {
     constructor(props) {
         super(props);
@@ -1121,7 +1121,7 @@ var MyComponent = React.createClass({
 
 如果一个组件有 static getDerivedStateFromError() 或 componentDidCatch 中的任何一个（或两个），就变成一个错误边界
 
-```js
+```jsx
 class ErrorBoundary extends Component {
     state = { hasError: false };
     static getDerivedStateFromError(error) {
@@ -1220,7 +1220,7 @@ react-redux 的核心模块：
 
 示例：
 
-```js
+```jsx
 // app.jsx
 import { Provider } from 'react-redux';
 
@@ -1274,7 +1274,7 @@ export default connect(stateToProps, dispatchToProps)(Child);
 
 - 根据 export default connect(stateToProps, dispatchToProps)(Child) 可以看出，connect 函数的结构应该是：
 
-```js
+```jsx
 function connect(mapStateToProps, mapDispatchToProps, ...) {
     return function wrapWithConnect(WrappedComponent) {
         class Connect extends Component {
