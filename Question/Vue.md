@@ -266,10 +266,12 @@ props: {
 
 子 => 父
 
-```js
+```html
 // 父
 <header @titleChange="titleChange" />
+```
 
+```js
 // 子
 this.$emit('titleChange', 'new title');
 ```
@@ -282,10 +284,12 @@ this.$emit('titleChange', 'new title');
 
 $attrs 获取父组件传递下来的属性中，不在 props 中的项（也除了 class 和 style）：
 
-```js
+```html
 // 父
 <header title='title' width='80' height='80' />
+```
 
+```js
 // 子
 props: [],
 mounted() {
@@ -300,10 +304,12 @@ mounted() {
 
 $listeners 为父组件传递的方法：
 
-```js
+```html
 // 父
 <header @titleChange="titleChange" />
+```
 
+```js
 // 子
 mounted() {
     // 里面有 titleChange 方法
@@ -365,9 +371,11 @@ $parent 获取父组件实例
 
 获取子组件实例或 DOM 节点
 
-```js
+```html
 <header ref='header' />
+```
 
+```js
 mounted() {
     this.$refs.header; // header 组件实例
 }
@@ -381,13 +389,15 @@ mounted() {
 
 双向绑定的功能
 
-```js
+```html
 // 父
 <header :title.sync='titie' />
 
 等价于
 <header :title='title' @update:title='val => title = val' />
+```
 
+```js
 // 子
 mounted() {
     this.$emit('update:title', 'new title');
