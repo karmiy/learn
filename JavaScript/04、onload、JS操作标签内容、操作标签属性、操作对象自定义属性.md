@@ -112,10 +112,14 @@ removeAttribute 移除
 
 // 兼容性
 兼容所有
+```
 
+```html
 // 用法
 <div id='wrap'></div>
+```
 
+```js
 wrap.setAttribute('zz', '我自定义的属性'); // 显示 <div id='wrap' zz='我自定义的属性'></div>
 wrap.setAttribute('id', 'karmiy'); // 可以设置合法属性，不过不推荐，直接.id就好了
 wrap.setAttribute('class', ''); // 把class属性设为''，还是有这个属性，只是没内容，会显示<div id='wrap' class></div>
