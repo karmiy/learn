@@ -14,7 +14,7 @@
 
 ### 初始化package.json配置文件
     
-```js
+```text
 新建一个空文件夹，进入后运行以下命令初始化一个package.json文件：
 npm init
 
@@ -24,7 +24,7 @@ npm init -y直接生成
     
 ![Alt text](./imgs/01-02.png) 
 
-```js
+```text
 再执行npm i webpack webpack-cli --save-dev安装webpack4
 安装后package.json会出现devDependencies的配置项
 在scripts处加上build命令来运行webpack
@@ -36,7 +36,7 @@ npm init -y直接生成
 
 ![Alt text](./imgs/01-03.png)
 
-```js
+```text
 webpack4默认会以src下的index.js作为入口，我们在项目下新建src/index.js后再重新执行npm run build
 ```
     
@@ -54,19 +54,19 @@ webpack4默认会以src下的index.js作为入口，我们在项目下新建src/
 
 在webpack4中，我们可以在没有配置文件的情况下实现不同模式**最基本**的打包
 
-```js
+```text
 1、补充package.json的scripts
 ```
     
 ![Alt text](./imgs/01-07.png)
 
-```js
+```text
 2、执行npm run dev
 ```
     
 ![Alt text](./imgs/01-08.png) 
 
-```js
+```text
 3、执行npm run build
 ```
 
