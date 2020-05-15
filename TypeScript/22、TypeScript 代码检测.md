@@ -46,28 +46,34 @@ ESLint 需要额外的兼容工作来兼容 TypeScript，ESLint 做的一直不�
 
 全局安装：
 
-    npm install -g eslint
+```ts
+npm install -g eslint
 
-    // 初始化配置文件
-    eslint --init
+// 初始化配置文件
+eslint --init
+```
 
 局部安装：
 
-    npm install eslint --save-dev
+```ts
+npm install eslint --save-dev
 
-    // 初始化配置文件
-    ./node_modules/.bin/eslint --init
+// 初始化配置文件
+./node_modules/.bin/eslint --init
+```
 
 初始化 ESLint：
 
-    // 创建目录 demo-eslint，初始化项目
-    npm init -y
+```ts
+// 创建目录 demo-eslint，初始化项目
+npm init -y
 
-    // 先安装 TypeScript 
-    npm i -D typescript
+// 先安装 TypeScript 
+npm i -D typescript
 
-    // 初始化 ESLint
-    eslint --init
+// 初始化 ESLint
+eslint --init
+```
 
 交互式问答环节：
 
@@ -99,30 +105,32 @@ ESLint 的初始化给了三个流行的方案：[Airbnb](https://github.com/air
 
 初始化完毕后生成了 .eslintrc.js 文件：
 
-    module.exports = {
-        env: {
-            browser: true,
-            es6: true,
-            node: true,
-        },
-        extends: [
-            'airbnb-base',
-        ],
-        globals: {
-            Atomics: 'readonly',
-            SharedArrayBuffer: 'readonly',
-        },
-        parser: '@typescript-eslint/parser',
-        parserOptions: {
-            ecmaVersion: 2018,
-            sourceType: 'module',
-        },
-        plugins: [
-            '@typescript-eslint',
-        ],
-        rules: {
-        },
-    };
+```ts
+module.exports = {
+    env: {
+        browser: true,
+        es6: true,
+        node: true,
+    },
+    extends: [
+        'airbnb-base',
+    ],
+    globals: {
+        Atomics: 'readonly',
+        SharedArrayBuffer: 'readonly',
+    },
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+        ecmaVersion: 2018,
+        sourceType: 'module',
+    },
+    plugins: [
+        '@typescript-eslint',
+    ],
+    rules: {
+    },
+};
+```
 
 这个配置文件不仅仅可以是 .js，也可以是以下这些形式：
 
@@ -144,14 +152,16 @@ ESLint 的初始化给了三个流行的方案：[Airbnb](https://github.com/air
 
 指定环境，每个环境都有自己预定义的全局变量，可以同时指定多个环境：
 
-     env: {
-        browser: true,
-        es6: true,
-        node: true,
-        commonjs: true,
-        mocha: true,
-        jquery: true,
-    },
+```ts
+env: {
+    browser: true,
+    es6: true,
+    node: true,
+    commonjs: true,
+    mocha: true,
+    jquery: true,
+},
+```
 
 如我们在浏览器环境就需要设置 browser: true，node 环境则 node: true 等
 
@@ -161,9 +171,11 @@ ESLint 的初始化给了三个流行的方案：[Airbnb](https://github.com/air
 
 如我们继承了 Airbnb 的配置：
 
-    extends: [
-        'airbnb-base',
-    ],
+```ts
+extends: [
+    'airbnb-base',
+],
+```
 
 继承其他配置规则后依然可以对继承规则修改、覆盖与拓展：
 
@@ -193,10 +205,12 @@ ESLint 的初始化给了三个流行的方案：[Airbnb](https://github.com/air
 
 如我们创造了全局变量 Atomics、SharedArrayBuffer，就需要进行如下配置，告诉 ESLint 我们额外创造了这些全局变量，并配置是可写 writable 还是只读 readonly
 
-     globals: {
-        Atomics: 'readonly',
-        SharedArrayBuffer: 'readonly',
-    },
+```ts
+globals: {
+    Atomics: 'readonly',
+    SharedArrayBuffer: 'readonly',
+},
+```
 
 #### parser
 
@@ -204,7 +218,9 @@ ESLint 默认使用 Espree 作为其解析器，你可以在配置文件中指�
 
 当我们在使用 TypeScript 时，就要用上 TypeScript 团队与 ESLint 联合发布的 typescript-eslint 解析器：
 
-    parser: '@typescript-eslint/parser'
+```ts
+parser: '@typescript-eslint/parser'
+```
 
 #### parserOptions
 
@@ -216,25 +232,29 @@ parser 解析代码时的配置参数
 
 指定资源类型为 module，即 ESMAScript 模块：
 
-     parserOptions: {
-        ecmaVersion: 2018,
-        sourceType: 'module',
-    }
+```ts
+parserOptions: {
+    ecmaVersion: 2018,
+    sourceType: 'module',
+}
+```
 
 如果要使用额外的语言特性还可以添加 ecmafeatures 对象：
 
-    parserOption: {
-        ecmafeatures: {
-            //允许在全局作用域下使用return语句
-            globalReturn: false,
-            //启用全局strict模式（严格模式）
-            impliedStrict: false,
-            //启用JSX
-            jsx: false,
-            //启用对实验性的objectRest/spreadProperties的支持
-            experimentalObjectRestSpread: false
-        }
+```ts
+parserOption: {
+    ecmafeatures: {
+        //允许在全局作用域下使用return语句
+        globalReturn: false,
+        //启用全局strict模式（严格模式）
+        impliedStrict: false,
+        //启用JSX
+        jsx: false,
+        //启用对实验性的objectRest/spreadProperties的支持
+        experimentalObjectRestSpread: false
     }
+}
+```
 
 #### plugins
 
@@ -260,11 +280,13 @@ ESLint 具体规则的配置，我们通常情况下是使用社区比较刘的�
 
 在 react 环境下使用 eslint
 
-    npm i -D 
-    eslint 
-    eslint-plugin-react 
-    @typescript-eslint/parser 
-    @typescript-eslint/eslint-plugin
+```ts
+npm i -D 
+eslint 
+eslint-plugin-react 
+@typescript-eslint/parser 
+@typescript-eslint/eslint-plugin
+```
 
 - eslint：代码检查工具
 
@@ -276,33 +298,37 @@ ESLint 具体规则的配置，我们通常情况下是使用社区比较刘的�
 
 配置 .eslintrc.js：
 
-    module.exports = {
-        parser: '@typescript-eslint/parser',
-        settings: {
-            react: {
-                version: 'detect'
-            }
-        },
-        parserOptions: {
-            project: './tsconfig.json',
-        },
-        plugins: ['@typescript-eslint'],
-        extends: [
-            'plugin:react/recommended',
-            'plugin:@typescript-eslint/recommended',
-        ],
-        rules: {
-            "@typescript-eslint/explicit-function-return-type": "off",
+```ts
+module.exports = {
+    parser: '@typescript-eslint/parser',
+    settings: {
+        react: {
+            version: 'detect'
         }
+    },
+    parserOptions: {
+        project: './tsconfig.json',
+    },
+    plugins: ['@typescript-eslint'],
+    extends: [
+        'plugin:react/recommended',
+        'plugin:@typescript-eslint/recommended',
+    ],
+    rules: {
+        "@typescript-eslint/explicit-function-return-type": "off",
     }
+}
+```
 
 配置 package.json 的 script：
 
-     "scripts": {
-        ...
-        "lint": "eslint \"src/**\"",
-        "lint:f": "eslint \"src/**\" --fix "
-    },
+```ts
+"scripts": {
+    ...
+    "lint": "eslint \"src/**\"",
+    "lint:f": "eslint \"src/**\" --fix "
+},
+```
 
 - npm run lint：检测 src/ 项目的代码
 

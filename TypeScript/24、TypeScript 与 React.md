@@ -10,7 +10,9 @@
 
 - 官方脚手架
 
-    create-react-app react-ts-app --scripts-version=react-scripts-ts
+```ts
+create-react-app react-ts-app --scripts-version=react-scripts-ts
+```
 
 - 本地搭建 webpack 环境
 
@@ -18,45 +20,51 @@
 
 安装依赖包：
 
-    npm install -D @types/react @types/react-dom ts-loader typescript
+```ts
+npm install -D @types/react @types/react-dom ts-loader typescript
+```
 
 webpack 的 rules 配置：
 
-    {
-        test:/\.tsx?$/,
-        exclude: /node_modules/,
-        loader:"ts-loader"
-    },
+```ts
+{
+    test:/\.tsx?$/,
+    exclude: /node_modules/,
+    loader:"ts-loader"
+},
+```
 
 根目录 tsconfig.json：
 
-    {
-        // 编译选项
-        "compilerOptions": {
-            "target": "es5",                            // 指定 ECMAScript 目标版本: 'ES5'
-            "module": "commonjs",                       // 指定使用模块: 'commonjs', 'amd', 'system', 'umd' or 'es2015'
-            "moduleResolution": "node",                 // 选择模块解析策略
-            "experimentalDecorators": true,             // 启用实验性的ES装饰器
-            "allowSyntheticDefaultImports": true,       // 允许从没有设置默认导出的模块中默认导入。
-            "sourceMap": true,                          // 把 ts 文件编译成 js 文件的时候，同时生成对应的 map 文件
-            "strict": true,                             // 启用所有严格类型检查选项
-            "noImplicitAny": true,                      // 在表达式和声明上有隐含的 any类型时报错
-            "alwaysStrict": true,                       // 以严格模式检查模块，并在每个文件里加入 'use strict'
-            "declaration": true,                        // 生成相应的.d.ts文件
-            "removeComments": true,                     // 删除编译后的所有的注释
-            "noImplicitReturns": true,                  // 不是函数的所有返回路径都有返回值时报错
-            "noImplicitThis": true,
-            "importHelpers": true,                      // 从 tslib 导入辅助工具函数
-            "lib": ["es6", "dom", "ESNext"],                      // 指定要包含在编译中的库文件
-            "typeRoots": ["node_modules/@types"],
-            "outDir": "./dist",
-            "jsx": "react", // jsx的版本,使用这个就不需要额外使用babel了，会编译成React.createElement
-        },
-        // 为了加快整个编译过程，我们指定相应的路径
-        "include": [
-            "./src/**/*"
-        ]
-    }
+```ts
+{
+    // 编译选项
+    "compilerOptions": {
+        "target": "es5",                            // 指定 ECMAScript 目标版本: 'ES5'
+        "module": "commonjs",                       // 指定使用模块: 'commonjs', 'amd', 'system', 'umd' or 'es2015'
+        "moduleResolution": "node",                 // 选择模块解析策略
+        "experimentalDecorators": true,             // 启用实验性的ES装饰器
+        "allowSyntheticDefaultImports": true,       // 允许从没有设置默认导出的模块中默认导入。
+        "sourceMap": true,                          // 把 ts 文件编译成 js 文件的时候，同时生成对应的 map 文件
+        "strict": true,                             // 启用所有严格类型检查选项
+        "noImplicitAny": true,                      // 在表达式和声明上有隐含的 any类型时报错
+        "alwaysStrict": true,                       // 以严格模式检查模块，并在每个文件里加入 'use strict'
+        "declaration": true,                        // 生成相应的.d.ts文件
+        "removeComments": true,                     // 删除编译后的所有的注释
+        "noImplicitReturns": true,                  // 不是函数的所有返回路径都有返回值时报错
+        "noImplicitThis": true,
+        "importHelpers": true,                      // 从 tslib 导入辅助工具函数
+        "lib": ["es6", "dom", "ESNext"],                      // 指定要包含在编译中的库文件
+        "typeRoots": ["node_modules/@types"],
+        "outDir": "./dist",
+        "jsx": "react", // jsx的版本,使用这个就不需要额外使用babel了，会编译成React.createElement
+    },
+    // 为了加快整个编译过程，我们指定相应的路径
+    "include": [
+        "./src/**/*"
+    ]
+}
+```
     
 ### 无状态组件
 
@@ -64,15 +72,17 @@ webpack 的 rules 配置：
 
 假设要封装一个 Logo 组件，在 jsx 中一般是这样封装的：
 
-    // logo.tsx
-    import * as React from 'react';
+```ts
+// logo.tsx
+import * as React from 'react';
 
-    function Logo(props) {
-        const { className, src, alt } = props;
-        return <img className={className} src={src} alt={alt} />
-    }
+function Logo(props) {
+    const { className, src, alt } = props;
+    return <img className={className} src={src} alt={alt} />
+}
 
-    export default Logo;
+export default Logo;
+```
 
 然而仅仅这样，在 tsx 中是会报错的：
 
@@ -80,59 +90,67 @@ webpack 的 rules 配置：
 
 因为我们没有定义 props 的类型，接着使用 interface 定义 props 的类型：
 
-    import * as React from 'react';
+```ts
+import * as React from 'react';
 
-    interface ILogoProps {
-        src: string;
-        className?: string;
-        alt?: string;
-    }
+interface ILogoProps {
+    src: string;
+    className?: string;
+    alt?: string;
+}
 
-    function Logo(props: ILogoProps) {
-        const { className, src, alt } = props;
-        return <img className={className} src={src} alt={alt} />
-    }
+function Logo(props: ILogoProps) {
+    const { className, src, alt } = props;
+    return <img className={className} src={src} alt={alt} />
+}
 
-    export default Logo;
+export default Logo;
+```
 
 可以看到，报错消失了，似乎没有问题
 
 但是让我们要用到 children 时，是不是又需要定义 children 类型：
 
-    interface ILogoProps {
-        src: string;
-        className?: string;
-        alt?: string;
-        children?: React.ReactNode;
-    }
+```ts
+interface ILogoProps {
+    src: string;
+    className?: string;
+    alt?: string;
+    children?: React.ReactNode;
+}
+```
 
 其实 React 的提供了更规范的用法, **type SFC\<P>**，这个工具类型里已经定义了 children 类型：
 
-    import * as React from 'react';
+```ts
+import * as React from 'react';
 
-    interface ILogoProps {
-        src: string;
-        className?: string;
-        alt?: string;
-    }
+interface ILogoProps {
+    src: string;
+    className?: string;
+    alt?: string;
+}
 
-    const Logo: React.FC<ILogoProps> = (props) => {
-        const { className, src, alt } = props;
-        return <img className={className} src={src} alt={alt} />
-    }
+const Logo: React.FC<ILogoProps> = (props) => {
+    const { className, src, alt } = props;
+    return <img className={className} src={src} alt={alt} />
+}
 
-    export default Logo;
+export default Logo;
+```
 
 还可以在 interface 上加注释：
 
-    interface ILogoProps {
-        /**
-        * logo 地址
-        */
-        src: string;
-        className?: string;
-        alt?: string;
-    }
+```ts
+interface ILogoProps {
+    /**
+    * logo 地址
+    */
+    src: string;
+    className?: string;
+    alt?: string;
+}
+```
 
 在使用时不仅 props 会有提示，还会显示注释信息：
 
@@ -142,16 +160,18 @@ webpack 的 rules 配置：
 
 假设需要编写一个有状态组件 Todo，在 jsx 的写法为：
 
-    import * as React from 'react';
+```ts
+import * as React from 'react';
 
-    export default class Todo extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = {
-                itemText: '',
-            }
+export default class Todo extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            itemText: '',
         }
     }
+}
+```
 
 这同样会报错：
 
@@ -161,49 +181,53 @@ webpack 的 rules 配置：
 
 并且 React 的声明文件已经自动帮我们加上了 **readonly** 标记，不需要我们手动为 props 与 state 加只读标记：
 
-    import * as React from 'react';
+```ts
+import * as React from 'react';
 
-    interface ITodoProps {
-        handleSubmit: (value: string) => void
-    }
+interface ITodoProps {
+    handleSubmit: (value: string) => void
+}
 
-    interface ITodoState {
-        itemText: string
-    }
+interface ITodoState {
+    itemText: string
+}
 
-    export default class Todo extends React.Component<ITodoProps, ITodoState> {
-        constructor(props: ITodoProps) {
-            super(props);
-            this.state = {
-                itemText: '',
-            }
+export default class Todo extends React.Component<ITodoProps, ITodoState> {
+    constructor(props: ITodoProps) {
+        super(props);
+        this.state = {
+            itemText: '',
         }
     }
+}
+```
 
 接着还可以为组件添加方法
 
 因为大多情况下，该方法是组件的私有方法，这时需要使用 **private** 访问控制符：
 
-    export default class TodoInput extends React.Component<ITodoInputProps, ITodoInputState> {
-        constructor(props: ITodoInputProps) {
-            super(props);
-            this.state = {
-                itemText: '',
-            }
-        }
-
-        private updateValue = (value: string) => {
-            this.setState({ itemText: value })
-        }
-
-        render() {
-            return (
-                <div>
-                    {this.state.itemText}
-                </div>
-            )
+```ts
+export default class TodoInput extends React.Component<ITodoInputProps, ITodoInputState> {
+    constructor(props: ITodoInputProps) {
+        super(props);
+        this.state = {
+            itemText: '',
         }
     }
+
+    private updateValue = (value: string) => {
+        this.setState({ itemText: value })
+    }
+
+    render() {
+        return (
+            <div>
+                {this.state.itemText}
+            </div>
+        )
+    }
+}
+```
 
 ### 非受控组件
 
@@ -211,38 +235,40 @@ webpack 的 rules 配置：
 
 如在 Input 组件更新完毕后，要让 input 输入框 focus 聚焦：
 
-    import * as React from 'react';
+```ts
+import * as React from 'react';
 
-    interface IInputProps {
-        autoFocus?: boolean;
+interface IInputProps {
+    autoFocus?: boolean;
+}
+interface IInputState {
+    currentValue: string;
+}
+
+export default class Input extends React.Component<IInputProps, IInputState> {
+    private inputRef:React.RefObject<HTMLInputElement> = React.createRef<HTMLInputElement>();
+    state = {
+        currentValue: '',
     }
-    interface IInputState {
-        currentValue: string;
+
+    componentDidUpdate() {
+        const inputEl = this.inputRef.current as HTMLInputElement;
+        inputEl.focus();
+        this.setState({
+            currentValue: inputEl.value,
+        })
     }
 
-    export default class Input extends React.Component<IInputProps, IInputState> {
-        private inputRef:React.RefObject<HTMLInputElement> = React.createRef<HTMLInputElement>();
-        state = {
-            currentValue: '',
-        }
-
-        componentDidUpdate() {
-            const inputEl = this.inputRef.current as HTMLInputElement;
-            inputEl.focus();
-            this.setState({
-                currentValue: inputEl.value,
-            })
-        }
-
-        render() {
-            return (
-                <div>
-                    {this.state.currentValue}
-                    <input type="text" ref={this.inputRef} />
-                </div>
-            )
-        }
+    render() {
+        return (
+            <div>
+                {this.state.currentValue}
+                <input type="text" ref={this.inputRef} />
+            </div>
+        )
     }
+}
+```
 
 需要注意的是 createRef 需要一个泛型
 

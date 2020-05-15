@@ -64,16 +64,22 @@ Jest 正是基于 Jasmine 开发而来，它比 Jasmine 更大而全，更开箱
 
 全局安装：
 
-    npm i jest -g
+```ts
+npm i jest -g
+```
 
 项目中安装：
 
-    npm i -D jest ts-jest @types/jest
+```ts
+npm i -D jest ts-jest @types/jest
+```
 
 #### 初始化
 
-    根目录执行：
-    jest --init
+```ts
+根目录执行：
+jest --init
+```
 
 问答：
 
@@ -92,12 +98,14 @@ Jest 正是基于 Jasmine 开发而来，它比 Jasmine 更大而全，更开箱
 
 package.json 中配置 script:
 
-    "scripts": {
-        ...
-        "test": "jest",
-        "test:c": "jest --coverage",
-        "test:w": "jest --watchAll --coverage"
-    },
+```ts
+"scripts": {
+    ...
+    "test": "jest",
+    "test:c": "jest --coverage",
+    "test:w": "jest --watchAll --coverage"
+},
+```
 
 - jest：运行测试
 
@@ -113,23 +121,25 @@ package.json 中配置 script:
 
 如果想在 TypeScript 中使用，需要进一步配置：
 
-    {
-        moduleFileExtensions: [
-            'ts',
-            'tsx',
-            'js',
-            'json',
-            'jsx',
-            'node',
-        ],
-        transform: {
-            '^.+\\.tsx?$': 'ts-jest',
-        },
-        testMatch: [
-            '**/__tests__/**/*.[jt]s?(x)',
-            '**/?(*.)+(spec|test).[tj]s?(x)',
-        ],
-    }
+```ts
+{
+    moduleFileExtensions: [
+        'ts',
+        'tsx',
+        'js',
+        'json',
+        'jsx',
+        'node',
+    ],
+    transform: {
+        '^.+\\.tsx?$': 'ts-jest',
+    },
+    testMatch: [
+        '**/__tests__/**/*.[jt]s?(x)',
+        '**/?(*.)+(spec|test).[tj]s?(x)',
+    ],
+}
+```
 
 - moduleFileExtensions：模块文件扩展名，如当我们 import 'foo' 没有带后缀，会依次尝试这些拓展名
 
@@ -147,27 +157,33 @@ Jest 有很多强大的功能，这里只示例一般会用到的部分，更多
 
 新建 src 文件夹，创建 add.ts：
 
-    export function add(item: number, ...rest: number[]) {
-        return rest.reduce((a: number, b: number) => a + b, item)
-    }
+```ts
+export function add(item: number, ...rest: number[]) {
+    return rest.reduce((a: number, b: number) => a + b, item)
+}
+```
 
 我们对这个累加器进行一个测试
 
 新建 add.test.ts 文件：
 
-    import { add } from './add';
+```ts
+import { add } from './add';
 
-    test('is four', () => {
-        expect(add(2, 2)).toBe(4);
-    });
+test('is four', () => {
+    expect(add(2, 2)).toBe(4);
+});
 
-    test('is not six', () => {
-        expect(add(2, 2)).not.toBe(6);
-    });
+test('is not six', () => {
+    expect(add(2, 2)).not.toBe(6);
+});
+```
 
 此代码中，expect(add(2, 2)) 返回一个"期望"对象，toBe(4) 是匹配器，期望这个函数运行结果是 4，not.toBe(6) 是期望运行结果不等于 6。如果匹配失败， Jest 会跟踪所有失败的匹配器，以便打印出错误信息
 
-    执行 npm run test
+```ts
+执行 npm run test
+```
 
 ![Alt text](imgs/23-01.png)
 
@@ -177,31 +193,35 @@ Jest 有很多强大的功能，这里只示例一般会用到的部分，更多
 
 新建 person.ts：
 
-    export class Person {
-        public name: string;
-        public age: number;
-        constructor(name: string, age: number) {
-            this.age = age;
-            this.name = name;
-        }
-
-        public say() {
-            return 'hello';
-        }
+```ts
+export class Person {
+    public name: string;
+    public age: number;
+    constructor(name: string, age: number) {
+        this.age = age;
+        this.name = name;
     }
+
+    public say() {
+        return 'hello';
+    }
+}
+```
 
 新建 person.test.ts：
 
-    import { Person } from './person';
+```ts
+import { Person } from './person';
 
-    test('test person', () => {
-        const person = new Person('karmiy', 18);
+test('test person', () => {
+    const person = new Person('karmiy', 18);
 
-        expect(person).toBeInstanceOf(Person);
-        expect(person).not.toEqual({
-            name: 'karloy',
-        })
-    });
+    expect(person).toBeInstanceOf(Person);
+    expect(person).not.toEqual({
+        name: 'karloy',
+    })
+});
+```
 
 toBeInstanceOf 用于匹配实例是否由 Person 创建，toEqual 比较两个对象是否相等
 
@@ -209,17 +229,21 @@ toBeInstanceOf 用于匹配实例是否由 Person 创建，toEqual 比较两个�
 
 新建 async.ts：
 
-    export const getUsers = () => new Promise(resolve => resolve(['karmiy', 'karloy']));
+```ts
+export const getUsers = () => new Promise(resolve => resolve(['karmiy', 'karloy']));
+```
 
 新建 async.test.ts：
 
-    import { getUsers } from './async';
+```ts
+import { getUsers } from './async';
 
-    test('test async', async () => {
-        const users = await getUsers() as Array<string>;
-        expect(users).not.toBeUndefined();
-        expect(users.length).toEqual(2);
-    })
+test('test async', async () => {
+    const users = await getUsers() as Array<string>;
+    expect(users).not.toBeUndefined();
+    expect(users.length).toEqual(2);
+})
+```
 
 使用 async 关键字传递到 test 是测试场景中非常常见的
 
@@ -227,36 +251,42 @@ toBeInstanceOf 用于匹配实例是否由 Person 创建，toEqual 比较两个�
 
 新建 func.ts：
 
-    export function myForEach(items: number[], callback: (a: number) => void) {
-        for (let index = 0; index < items.length; index++) {
-            callback(items[index]);
-        }
+```ts
+export function myForEach(items: number[], callback: (a: number) => void) {
+    for (let index = 0; index < items.length; index++) {
+        callback(items[index]);
     }
+}
+```
 
 新建 func.test.ts：
 
-    import { myForEach } from './func';
+```ts
+import { myForEach } from './func';
 
-    test('test func', () => {
-        const callback = jest.fn();
-        myForEach([0, 1], callback);
-        
-        // 模拟函数被调用 2 次
-        expect(callback.mock.calls.length).toBe(2);
-        // 第一次调用，第一个参数是 0
-        expect(callback.mock.calls[0][0]).toBe(0);
-        // 第二次调用，第一个参数是 1
-        expect(callback.mock.calls[1][0]).toBe(1);
-    })
+test('test func', () => {
+    const callback = jest.fn();
+    myForEach([0, 1], callback);
+    
+    // 模拟函数被调用 2 次
+    expect(callback.mock.calls.length).toBe(2);
+    // 第一次调用，第一个参数是 0
+    expect(callback.mock.calls[0][0]).toBe(0);
+    // 第二次调用，第一个参数是 1
+    expect(callback.mock.calls[1][0]).toBe(1);
+})
+```
 
 除此之外上面测试中用到的模拟函数 callback 有一个 mock 属性，它保存了此函数被调用的一系列信息，打印 callback.mock 为如下结果：
 
-    {
-        calls: [[0], [1]],
-        instances: [undefined, undefined],
-        invocationCallOrder: [1, 2],
-        results: [
-            { type: 'return', value: undefined },
-            { type: 'return', value: undefined }
-        ]
-    }
+```ts
+{
+    calls: [[0], [1]],
+    instances: [undefined, undefined],
+    invocationCallOrder: [1, 2],
+    results: [
+        { type: 'return', value: undefined },
+        { type: 'return', value: undefined }
+    ]
+}
+```
