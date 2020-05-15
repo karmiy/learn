@@ -186,7 +186,7 @@ data() {
 
 - class
 
-```js
+```vue
 // 数组形式
 <div :class="[isActive ? 'show' : 'hide', 'wrap']"></div>
 
