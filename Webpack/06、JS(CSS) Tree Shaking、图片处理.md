@@ -6,25 +6,27 @@ Tree Shaking即摇树优化，项目中没有使用的代码会在打包时被�
 
 **JS Tree Shaking**依赖的是ES6的import、export
 
-    // 1、在src下新建utils.js
-    export function a() {
-        return 'this is function a'
-    }
-    
-    export function b() {
-        return 'this is function b'
-    }
-    
-    export function c() {
-        return 'this is function c'
-    }
-    
-    // 2、在入口文件src/index.js引入
-    import { a } from "./utils";
-    
-    console.log(a());
-    
-    执行npm run build
+```js
+// 1、在src下新建utils.js
+export function a() {
+    return 'this is function a'
+}
+
+export function b() {
+    return 'this is function b'
+}
+
+export function c() {
+    return 'this is function c'
+}
+
+// 2、在入口文件src/index.js引入
+import { a } from "./utils";
+
+console.log(a());
+
+执行npm run build
+```
     
 ![Alt text](./imgs/06-01.png)
 
@@ -36,12 +38,14 @@ Tree Shaking即摇树优化，项目中没有使用的代码会在打包时被�
 
 以lodash为例:
 
-    // src/index.js
-    import { chunk } from 'lodash'
-    
-    console.log(chunk([1, 2, 3], 2));
-    
-    执行npm run build
+```js
+// src/index.js
+import { chunk } from 'lodash'
+
+console.log(chunk([1, 2, 3], 2));
+
+执行npm run build
+```
     
 ![Alt text](./imgs/06-02.png)
 
@@ -55,12 +59,14 @@ Tree Shaking即摇树优化，项目中没有使用的代码会在打包时被�
 
 安装lodash.js的ES版本: **npm install lodash-es --save**
 
-    // 修改src/index.js
-    import { chunk } from 'lodash-es'
-    
-    console.log(chunk([1, 2, 3], 2));
-    
-    执行npm run build
+```js
+// 修改src/index.js
+import { chunk } from 'lodash-es'
+
+console.log(chunk([1, 2, 3], 2));
+
+执行npm run build
+```
     
 ![Alt text](./imgs/06-03.png)
 
@@ -84,49 +90,51 @@ CSS Tree Shaking与JS Tree Shaking不同，需要依赖第三方库PurifyCSS去�
 
 webpack的图片处理主要依赖url-loader与file-loader这2个loader
 
-    // 1、安装依赖
-    npm install url-loader file-loader --save-dev
-    
-    // 2、src下新建imgs文件夹，放入图片
-    1.png   363KB
-    2.jpg   243KB
-    3.gif   2.88KB
-    
-    // 3、src/style/base.css
-    .box-1 {
-        background: url("../imgs/1.png");
-    }
-    .box-2 {
-        background: url("../imgs/2.jpg");
-    }
-    .box-3 {
-        background: url("../imgs/3.gif");
-    }
-    
-    // 4、入口文件src/index.js
-    import './style/base.css'
-    
-    // 5、webpack.config.js
-    module: {
-        rules: [
-            ...
-            {
-                test: /\.(png|jpg|jpeg|gif)$/,
-                use: [
-                    {
-                        loader: 'url-loader',
-                        options: {
-                            name: '[name].[ext]',
-                            outputPath: 'images/', // 输出到 images 文件夹
-                            limit: 10000, // 小于10000K的文件会被转为base64格式
-                        }
+```js
+// 1、安装依赖
+npm install url-loader file-loader --save-dev
+
+// 2、src下新建imgs文件夹，放入图片
+1.png   363KB
+2.jpg   243KB
+3.gif   2.88KB
+
+// 3、src/style/base.css
+.box-1 {
+    background: url("../imgs/1.png");
+}
+.box-2 {
+    background: url("../imgs/2.jpg");
+}
+.box-3 {
+    background: url("../imgs/3.gif");
+}
+
+// 4、入口文件src/index.js
+import './style/base.css'
+
+// 5、webpack.config.js
+module: {
+    rules: [
+        ...
+        {
+            test: /\.(png|jpg|jpeg|gif)$/,
+            use: [
+                {
+                    loader: 'url-loader',
+                    options: {
+                        name: '[name].[ext]',
+                        outputPath: 'images/', // 输出到 images 文件夹
+                        limit: 10000, // 小于10000K的文件会被转为base64格式
                     }
-                ]
-            }
-        ]
-    },
-    
-    执行npm run build
+                }
+            ]
+        }
+    ]
+},
+
+执行npm run build
+```
     
 ![Alt text](./imgs/06-04.png)
 
