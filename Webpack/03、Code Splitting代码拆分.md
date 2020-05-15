@@ -5,31 +5,33 @@
 
 ### 常规打包结果
 
-    // 1、安装loadsh(项目开发中一般用lodash-es，这里我们以lodash为示例)
-    npm i lodash --save
-    
-    // 2、src/index.js中使用lodash
-    import _ from 'lodash'
-    
-    console.log(_.join(['a', 'b', 'c']))
-    
-    // 3、配置webpack.config.js，运行npm run build
-    const path = require('path')
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-    
-    module.exports = {
-        entry: {
-            main: './src/index.js' // 需要打包的文件入口
-        },
-        output: {
-            publicPath: __dirname + '/dist/', // js 引用的路径或者 CDN 地址
-            path: path.resolve(__dirname, 'dist'), // 打包文件的输出目录
-            filename: '[name].bundle.js', // 代码打包后的文件名
-        },
-        plugins: [
-            new CleanWebpackPlugin() // 默认情况下，此插件将删除 webpack output.path目录中的所有文件，以及每次成功重建后所有未使用的 webpack 资产。
-        ],
-    }
+```js
+// 1、安装loadsh(项目开发中一般用lodash-es，这里我们以lodash为示例)
+npm i lodash --save
+
+// 2、src/index.js中使用lodash
+import _ from 'lodash'
+
+console.log(_.join(['a', 'b', 'c']))
+
+// 3、配置webpack.config.js，运行npm run build
+const path = require('path')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+
+module.exports = {
+    entry: {
+        main: './src/index.js' // 需要打包的文件入口
+    },
+    output: {
+        publicPath: __dirname + '/dist/', // js 引用的路径或者 CDN 地址
+        path: path.resolve(__dirname, 'dist'), // 打包文件的输出目录
+        filename: '[name].bundle.js', // 代码打包后的文件名
+    },
+    plugins: [
+        new CleanWebpackPlugin() // 默认情况下，此插件将删除 webpack output.path目录中的所有文件，以及每次成功重建后所有未使用的 webpack 资产。
+    ],
+}
+```
     
 ![Alt text](./imgs/03-01.png)
 
@@ -47,39 +49,43 @@ webpack4之前使用**commonsChunkPlugin**拆分公共代码，现在使用**spl
 
 ### splitChunksPlugins拆分出第三方库vendors包
     
-    // src/index.js
-    import _ from 'lodash'
-        
-    console.log(_.join(['a', 'b', 'c']))
+```js
+// src/index.js
+import _ from 'lodash'
     
-    // 给webpack.config.js添加 optimization 配置
-    
-    const path = require('path')
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-    
-    module.exports = {
-        entry: {
-            main: './src/index.js' // 需要打包的文件入口
-        },
-        output: {
-            publicPath: __dirname + '/dist/', // js 引用的路径或者 CDN 地址
-            path: path.resolve(__dirname, 'dist'), // 打包文件的输出目录
-            filename: '[name].bundle.js', // 代码打包后的文件名
-            chunkFilename: '[name].js' // 代码拆分后的文件名
-        },
-        optimization: {
-            splitChunks: {
-                chunks: 'all'
-            }
-        },
-        plugins: [
-            new CleanWebpackPlugin() // 默认情况下，此插件将删除 webpack output.path目录中的所有文件，以及每次成功重建后所有未使用的 webpack 资产。
-        ],
-    }
+console.log(_.join(['a', 'b', 'c']))
+
+// 给webpack.config.js添加 optimization 配置
+
+const path = require('path')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+
+module.exports = {
+    entry: {
+        main: './src/index.js' // 需要打包的文件入口
+    },
+    output: {
+        publicPath: __dirname + '/dist/', // js 引用的路径或者 CDN 地址
+        path: path.resolve(__dirname, 'dist'), // 打包文件的输出目录
+        filename: '[name].bundle.js', // 代码打包后的文件名
+        chunkFilename: '[name].js' // 代码拆分后的文件名
+    },
+    optimization: {
+        splitChunks: {
+            chunks: 'all'
+        }
+    },
+    plugins: [
+        new CleanWebpackPlugin() // 默认情况下，此插件将删除 webpack output.path目录中的所有文件，以及每次成功重建后所有未使用的 webpack 资产。
+    ],
+}
+```
     
 上方**optimization**处的配置，表示要做代码分割，**chunks: 'all'** 是分割所有代码，包括同步、异步代码，webpack默认是 **chunks: 'async'** 分割异步
 
-    // 执行npm run dev(dev下代码不压缩，方便查看)
+```js
+// 执行npm run dev(dev下代码不压缩，方便查看)
+```
     
 ![Alt text](./imgs/03-02.png)
 
@@ -97,17 +103,19 @@ webpack默认在cacheGroups中有vendors组，这个组匹配的是node_modules�
 
 下面我们修改vendors组的name:
 
-    // 配置打出来的vendor包的名称
-    optimization: {
-        splitChunks: {
-            chunks: 'all',
-            cacheGroups: {
-                vendors: {
-                    name: 'vendors'
-                }
+```js
+// 配置打出来的vendor包的名称
+optimization: {
+    splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+            vendors: {
+                name: 'vendors'
             }
         }
-    },
+    }
+},
+```
     
 ![Alt text](./imgs/03-06.png)
 
@@ -123,44 +131,48 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
     
 并且我们看到splitChunks下的chunks是'async'，表示只有异步才会被分割，为了验证，我们去除webpack.config.js中splitChunks下的内容(去除后会使用默认配置)，运行npm run build
     
-    // src/index.js
-    import _ from 'lodash'
-    
-    console.log(_.join(['a', 'b', 'c']))
-    
-    // webpack.config.js
-    
-    const path = require('path')
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-    
-    module.exports = {
-        entry: {
-            main: './src/index.js' // 需要打包的文件入口
-        },
-        output: {
-            publicPath: __dirname + '/dist/', // js 引用的路径或者 CDN 地址
-            path: path.resolve(__dirname, 'dist'), // 打包文件的输出目录
-            filename: '[name].bundle.js', // 代码打包后的文件名
-            chunkFilename: '[name].js' // 代码拆分后的文件名
-        },
-        optimization: {
-            splitChunks: { // 去除splitChunks下的内容
-            }
-        },
-        plugins: [
-            new CleanWebpackPlugin() // 默认情况下，此插件将删除 webpack output.path目录中的所有文件，以及每次成功重建后所有未使用的 webpack 资产。
-        ],
-    }
+```js
+// src/index.js
+import _ from 'lodash'
+
+console.log(_.join(['a', 'b', 'c']))
+
+// webpack.config.js
+
+const path = require('path')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+
+module.exports = {
+    entry: {
+        main: './src/index.js' // 需要打包的文件入口
+    },
+    output: {
+        publicPath: __dirname + '/dist/', // js 引用的路径或者 CDN 地址
+        path: path.resolve(__dirname, 'dist'), // 打包文件的输出目录
+        filename: '[name].bundle.js', // 代码打包后的文件名
+        chunkFilename: '[name].js' // 代码拆分后的文件名
+    },
+    optimization: {
+        splitChunks: { // 去除splitChunks下的内容
+        }
+    },
+    plugins: [
+        new CleanWebpackPlugin() // 默认情况下，此插件将删除 webpack output.path目录中的所有文件，以及每次成功重建后所有未使用的 webpack 资产。
+    ],
+}
+```
     
 ![Alt text](./imgs/03-08.png)
 
 这时我们改用异步引入的方式，npm run dev
 
-    // src/index.js
-    import('lodash').then(({ default: _ }) => {
-        // 使用 异步的形式导入 lodash，default: _ 表示用 _ 代指 lodash
-        console.log(_.join(['hello', 'world'], '-'));
-    })
+```js
+// src/index.js
+import('lodash').then(({ default: _ }) => {
+    // 使用 异步的形式导入 lodash，default: _ 表示用 _ 代指 lodash
+    console.log(_.join(['hello', 'world'], '-'));
+})
+```
     
 ![Alt text](./imgs/03-09.png)
 
@@ -172,25 +184,29 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
 
 我们可以通过注释的方式手动修改异步import打出的包名:
     
-    // 以/* webpackChunkName: 'lodash'*/为前缀注释，webpack可以读懂这个注释将其作为该包打出的名称
-    import(/* webpackChunkName: 'lodash'*/ 'lodash').then(({ default: _ }) => {
-        console.log(_.join(['hello', 'world'], '-'));
-    })
-    
-    执行npm run dev
+```js
+// 以/* webpackChunkName: 'lodash'*/为前缀注释，webpack可以读懂这个注释将其作为该包打出的名称
+import(/* webpackChunkName: 'lodash'*/ 'lodash').then(({ default: _ }) => {
+    console.log(_.join(['hello', 'world'], '-'));
+})
+
+执行npm run dev
+```
     
 ![Alt text](./imgs/03-10-01.png)
 
-    如上图表述，因为lodash包也算vendors组的，且vendors组没有设置name(这个要注意，下面会示例设置name的情况)
-    如果我们将cacheGroups的vendors组去掉，就可以得到我们想要的lodash.js包了:
-    
-    optimization: {
-        splitChunks: {
-            cacheGroups: {
-                vendors: false, // 去除vendors组
-            }
+```js
+如上图表述，因为lodash包也算vendors组的，且vendors组没有设置name(这个要注意，下面会示例设置name的情况)
+如果我们将cacheGroups的vendors组去掉，就可以得到我们想要的lodash.js包了:
+
+optimization: {
+    splitChunks: {
+        cacheGroups: {
+            vendors: false, // 去除vendors组
         }
-    },
+    }
+},
+```
     
     
 ![Alt text](./imgs/03-10-02.png)
@@ -198,26 +214,29 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
 
 如果匹配的组设置了name，则webpackChunkName就会无效
 
-    optimization: {
-        splitChunks: {
-            cacheGroups: {
-                vendors: {
-                    name: 'vendors', // 给vendors组设置了name
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: -10
-                },
-            }
+```js
+optimization: {
+    splitChunks: {
+        cacheGroups: {
+            vendors: {
+                name: 'vendors', // 给vendors组设置了name
+                test: /[\\/]node_modules[\\/]/,
+                priority: -10
+            },
         }
-    },
+    }
+},
+```
     
 ![Alt text](./imgs/03-10-03.png)
 
-    // 总结
-    异步import:
-    1、cacheGroups里匹配的组没有设置name，且没有设置webpackChunkName，打出的包会以id为编号，如0.js
-    2、cacheGroups里匹配的组没有设置name，但设置webpackChunkName，打出的包以groupKey~webpackChunkName为名
-    3、cacheGroups里匹配的组有设置name，且设置webpackChunkName，打出的包以设置cacheGroups的name为主
-    
+```js
+// 总结
+异步import:
+1、cacheGroups里匹配的组没有设置name，且没有设置webpackChunkName，打出的包会以id为编号，如0.js
+2、cacheGroups里匹配的组没有设置name，但设置webpackChunkName，打出的包以groupKey~webpackChunkName为名
+3、cacheGroups里匹配的组有设置name，且设置webpackChunkName，打出的包以设置cacheGroups的name为主
+```
     
 ### dynamicImport 打包可能会报错的问题
 
@@ -255,37 +274,43 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
 
 示例中我们在output设置了chunkFilename属性，这个属性用来配置打出的chunk包的名称
     
-    // src/index.js
-    import('lodash')
-    
-    // 1、不配置chunkFilename
-    output: {
-        publicPath: __dirname + '/dist/',
-        path: path.resolve(__dirname, 'dist'),
-        filename: '[name].bundle.js',
-    },
-    
-    执行npm run build
+```js
+// src/index.js
+import('lodash')
+
+// 1、不配置chunkFilename
+output: {
+    publicPath: __dirname + '/dist/',
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].bundle.js',
+},
+
+执行npm run build
+```
     
 ![Alt text](./imgs/03-14-01.png)
 
-    // 2、配置chunkFilename
-    output: {
-        publicPath: __dirname + '/dist/',
-        path: path.resolve(__dirname, 'dist'),
-        filename: '[name].bundle.js',
-        chunkFilename: '[name].chunk.js', // 代码拆分后的文件名
-    },
-    
-    执行npm run build
+```js
+// 2、配置chunkFilename
+output: {
+    publicPath: __dirname + '/dist/',
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].bundle.js',
+    chunkFilename: '[name].chunk.js', // 代码拆分后的文件名
+},
+
+执行npm run build
+```
     
 ![Alt text](./imgs/03-14-02.png)
 
-    // 3、异步import加webpackChunkName配置解析
-        // src/index.js
-        import(/* webpackChunkName: 'lodash'*/  'lodash')
-        
-    执行npm run build
+```js
+// 3、异步import加webpackChunkName配置解析
+    // src/index.js
+    import(/* webpackChunkName: 'lodash'*/  'lodash')
+    
+执行npm run build
+```
     
 ![Alt text](./imgs/03-14-03.png)
 
@@ -296,30 +321,32 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
 
 现在我们将默认配置拷贝至webpack.config.js中进行分析
 
-    optimization: {
-        splitChunks: {
-            chunks: 'async',
-            minSize: 30000, // 抽取出来的文件在压缩前的最小大小（其实就是超过30Kb才拆分这个包）
-            maxSize: 0, // 抽取出来的文件在压缩前的最大大小(默认0，表示不限制最大大小，超过30KB就拆包)
-            minChunks: 1, // 被引用次数(分割前必须共享模块的最小块数，注意: 是不同entry引用次数，之后会示例解释)
-            maxAsyncRequests: 5, // 最大的异步并行请求数，下面会示例
-            maxInitialRequests: 3, // entry文件请求的chunks不应该超过此值，下面会示例
-            automaticNameDelimiter: '~', // 名称拼接的符号，如vendors和main合集的包会是vendors~main.bundle.js
-            automaticNameMaxLength: 30,
-            name: true,
-            cacheGroups: {
-                vendors: {
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: -10
-                },
-                default: {
-                    minChunks: 2,
-                    priority: -20,
-                    reuseExistingChunk: true
-                }
+```js
+optimization: {
+    splitChunks: {
+        chunks: 'async',
+        minSize: 30000, // 抽取出来的文件在压缩前的最小大小（其实就是超过30Kb才拆分这个包）
+        maxSize: 0, // 抽取出来的文件在压缩前的最大大小(默认0，表示不限制最大大小，超过30KB就拆包)
+        minChunks: 1, // 被引用次数(分割前必须共享模块的最小块数，注意: 是不同entry引用次数，之后会示例解释)
+        maxAsyncRequests: 5, // 最大的异步并行请求数，下面会示例
+        maxInitialRequests: 3, // entry文件请求的chunks不应该超过此值，下面会示例
+        automaticNameDelimiter: '~', // 名称拼接的符号，如vendors和main合集的包会是vendors~main.bundle.js
+        automaticNameMaxLength: 30,
+        name: true,
+        cacheGroups: {
+            vendors: {
+                test: /[\\/]node_modules[\\/]/,
+                priority: -10
+            },
+            default: {
+                minChunks: 2,
+                priority: -20,
+                reuseExistingChunk: true
             }
         }
-    },
+    }
+},
+```
     
 **webpack代码分割的配置:**
 
@@ -331,31 +358,33 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
 
 我们也可以继续分割，单独把lodash分割出一个包
     
-    // src/index.js
-    import('lodash').then(({ default: _ }) => {
-        console.log(_.join(['hello', 'world'], '-'));
-    })
-    
-    // webpack.config.js
-    cacheGroups: {
-        lodash: {
-            name: 'lodash',
-            test: /[\\/]node_modules[\\/]lodash[\\/]/, // 如果用cnpm install安装的包，可能会有镜像有问题这种test匹配不了的问题，建议用npm安装依赖，有问题可以用下面这种test
-            // test: /lodash/,
-            priority: 5 // 优先级要大于vendors组，不然会被打入vendors中
-        },
-        vendors: {
-            test: /[\\/]node_modules[\\/]/,
-            priority: -10
-        },
-        default: {
-            minChunks: 2,
-            priority: -20,
-            reuseExistingChunk: true
-        }
+```js
+// src/index.js
+import('lodash').then(({ default: _ }) => {
+    console.log(_.join(['hello', 'world'], '-'));
+})
+
+// webpack.config.js
+cacheGroups: {
+    lodash: {
+        name: 'lodash',
+        test: /[\\/]node_modules[\\/]lodash[\\/]/, // 如果用cnpm install安装的包，可能会有镜像有问题这种test匹配不了的问题，建议用npm安装依赖，有问题可以用下面这种test
+        // test: /lodash/,
+        priority: 5 // 优先级要大于vendors组，不然会被打入vendors中
+    },
+    vendors: {
+        test: /[\\/]node_modules[\\/]/,
+        priority: -10
+    },
+    default: {
+        minChunks: 2,
+        priority: -20,
+        reuseExistingChunk: true
     }
-    
-    执行npm run dev
+}
+
+执行npm run dev
+```
     
 ![Alt text](./imgs/03-15.png)
 
@@ -367,43 +396,47 @@ vendors组的 test: /[\\\\/]node_modules[\\\\/]/ 是正则过滤，表示只有n
 
 为了试验，我们将import添加webpackChunkName:
 
-    // src/index.js
-    import(/* webpackChunkName: 'lodash-chunk'*/ 'lodash').then(({ default: _ }) => {
-        console.log(_.join(['hello', 'world'], '-'));
-    })
-    
-    运行npm run dev
+```js
+// src/index.js
+import(/* webpackChunkName: 'lodash-chunk'*/ 'lodash').then(({ default: _ }) => {
+    console.log(_.join(['hello', 'world'], '-'));
+})
+
+运行npm run dev
+```
 
 ![Alt text](./imgs/03-15-01.png)
 
 我们换jquery来试验
 
-    执行 npm install jquery --save
-    
-    // src/index.js
-    import(/* webpackChunkName: 'jquery-chunk'*/ 'jquery').then(({ default: $ }) => {
-        console.log($);
-    })
-    
-    // webpack.config.js
-    cacheGroups: {
-        jquery: {
-            name: 'jquery',
-            test: /[\\/]node_modules[\\/]jquery[\\/]/,
-            priority: 5
-        },
-        vendors: {
-            test: /[\\/]node_modules[\\/]/,
-            priority: -10
-        },
-        default: {
-            minChunks: 2,
-            priority: -20,
-            reuseExistingChunk: true
-        }
+```js
+执行 npm install jquery --save
+
+// src/index.js
+import(/* webpackChunkName: 'jquery-chunk'*/ 'jquery').then(({ default: $ }) => {
+    console.log($);
+})
+
+// webpack.config.js
+cacheGroups: {
+    jquery: {
+        name: 'jquery',
+        test: /[\\/]node_modules[\\/]jquery[\\/]/,
+        priority: 5
+    },
+    vendors: {
+        test: /[\\/]node_modules[\\/]/,
+        priority: -10
+    },
+    default: {
+        minChunks: 2,
+        priority: -20,
+        reuseExistingChunk: true
     }
-    
-    执行 npm run dev
+}
+
+执行 npm run dev
+```
     
 ![Alt text](./imgs/03-15-02.png)
 
@@ -429,45 +462,26 @@ cacheGroups 会继承和覆盖splitChunks的配置项，但是**test、priorty�
 
 cacheGroups里的组设置name与否影响了该组打出的包是否会整合在一起
     
-    // 1、没有设置name的情况
-    // pageA.js
-    import './a.js';
-    import './b.js';
-    
-    // pageB.js
-    import './b.js';
-    import './c.js';
-    
-    // pageC.js
-    import './b.js';
-    import './c.js';
-    
-    module.exports = {
-        entry: {
-            pageA: './src/pageA.js', // 入口pageA
-            pageB: './src/pageB.js', // 入口pageB
-            pageC: './src/pageC.js', // 入口pageC
-        },
-        optimization: {
-            splitChunks: {
-                chunks: "all",
-                minSize: 0, // 设置最小0就拆，否则默认30kb
-                cacheGroups: {
-                    common: {
-                        test: /[\\/]src[\\/]/,
-                        minChunks: 2, // 被引用2次则被分到common组
-                        priority: 5,
-                    },
-                }
-            }
-        },
-    }
-    
-    执行npm run dev
-    
-![Alt text](./imgs/03-18.png)
+```js
+// 1、没有设置name的情况
+// pageA.js
+import './a.js';
+import './b.js';
 
-    // 2、设置name的情况
+// pageB.js
+import './b.js';
+import './c.js';
+
+// pageC.js
+import './b.js';
+import './c.js';
+
+module.exports = {
+    entry: {
+        pageA: './src/pageA.js', // 入口pageA
+        pageB: './src/pageB.js', // 入口pageB
+        pageC: './src/pageC.js', // 入口pageC
+    },
     optimization: {
         splitChunks: {
             chunks: "all",
@@ -475,13 +489,36 @@ cacheGroups里的组设置name与否影响了该组打出的包是否会整合�
             cacheGroups: {
                 common: {
                     test: /[\\/]src[\\/]/,
-                    name: 'common', // 设置了name
                     minChunks: 2, // 被引用2次则被分到common组
                     priority: 5,
                 },
             }
         }
     },
+}
+
+执行npm run dev
+```
+    
+![Alt text](./imgs/03-18.png)
+
+```js
+// 2、设置name的情况
+optimization: {
+    splitChunks: {
+        chunks: "all",
+        minSize: 0, // 设置最小0就拆，否则默认30kb
+        cacheGroups: {
+            common: {
+                test: /[\\/]src[\\/]/,
+                name: 'common', // 设置了name
+                minChunks: 2, // 被引用2次则被分到common组
+                priority: 5,
+            },
+        }
+    }
+},
+```
     
 ![Alt text](./imgs/03-19.png)
     
@@ -496,24 +533,74 @@ minChunks表示一个模块被引用一定次数，就会被拆包
 
 可是，真的仅仅是这样吗？
     
-    示例: index.js引入a.js、b.js，其中a.js与b.js同时引入c.js
+```js
+示例: index.js引入a.js、b.js，其中a.js与b.js同时引入c.js
+
+// index.js
+import './a.js'
+import './b.js'
+
+// a.js
+import './c.js';
+console.log('a');
+
+// b.js
+import './c.js';
+console.log('b');
+
+// c.js
+console.log('common');
+
+// webpack.config.js
+optimization: {
+    splitChunks: {
+        chunks: "all",
+        minSize: 0, // 设置最小0就拆，否则默认30kb
+        cacheGroups: {
+            common: {
+                name: 'common',
+                minChunks: 2, // 被引用2次则被分到common组
+                priority: 5,
+            }
+        }
+    }
+},
+
+执行npm run dev
+按理解而言，这时c.js被引用了2次，会被分入common组，拆出一个common.js的包供引用
+```
     
-    // index.js
-    import './a.js'
-    import './b.js'
-    
-    // a.js
-    import './c.js';
-    console.log('a');
-    
-    // b.js
-    import './c.js';
-    console.log('b');
-    
-    // c.js
-    console.log('common');
-    
-    // webpack.config.js
+![Alt text](./imgs/03-15-02-01.png)
+
+```js
+???????????????
+为什么只有一个包，c.js是被引用了2次的，chunks也设成'all'，minSize也是0，为什么没有被分入common.js?
+```
+
+minChunks表示一个模块被引用一定次数，这个解释并不是非常准确
+
+minChunks更进一步的定义，应该是指被**不同chunk包**引用的次数
+
+```js
+示例: a.js与b.js同时引入c.js，且以a.js与b.js作为入口
+
+// a.js
+import './c.js';
+console.log('a');
+
+// b.js
+import './c.js';
+console.log('b');
+
+// c.js
+console.log('common');
+
+// webpack.config.js
+module.exports = {
+    entry: {
+        a: './src/a.js', // 需要打包的文件入口1
+        b: './src/b.js', // 需要打包的文件入口2
+    },
     optimization: {
         splitChunks: {
             chunks: "all",
@@ -527,55 +614,11 @@ minChunks表示一个模块被引用一定次数，就会被拆包
             }
         }
     },
-    
-    执行npm run dev
-    按理解而言，这时c.js被引用了2次，会被分入common组，拆出一个common.js的包供引用
-    
-![Alt text](./imgs/03-15-02-01.png)
+    ...
+}
 
-    ???????????????
-    为什么只有一个包，c.js是被引用了2次的，chunks也设成'all'，minSize也是0，为什么没有被分入common.js?
-
-minChunks表示一个模块被引用一定次数，这个解释并不是非常准确
-
-minChunks更进一步的定义，应该是指被**不同chunk包**引用的次数
-
-    示例: a.js与b.js同时引入c.js，且以a.js与b.js作为入口
-    
-    // a.js
-    import './c.js';
-    console.log('a');
-    
-    // b.js
-    import './c.js';
-    console.log('b');
-    
-    // c.js
-    console.log('common');
-    
-    // webpack.config.js
-    module.exports = {
-        entry: {
-            a: './src/a.js', // 需要打包的文件入口1
-            b: './src/b.js', // 需要打包的文件入口2
-        },
-        optimization: {
-            splitChunks: {
-                chunks: "all",
-                minSize: 0, // 设置最小0就拆，否则默认30kb
-                cacheGroups: {
-                    common: {
-                        name: 'common',
-                        minChunks: 2, // 被引用2次则被分到common组
-                        priority: 5,
-                    }
-                }
-            }
-        },
-        ...
-    }
-    
-    执行npm run dev
+执行npm run dev
+```
     
 ![Alt text](./imgs/03-15-02-02.png)
 
@@ -585,46 +628,50 @@ minChunks更进一步的定义，应该是指被**不同chunk包**引用的次�
 
 并不是，再看下面这个示例
 
-    示例: index.js异步引入a.js、b.js，其中a.js与b.js同时引入c.js
-    // index.js
-    import('./a.js')
-    import('./b.js')
-    
-    // a.js
-    import './c.js';
-    console.log('a');
-    
-    // b.js
-    import './c.js';
-    console.log('b');
-    
-    // c.js
-    console.log('common');
-    
-    // webpack.config.js
-    module.exports = {
-        entry: {
-            main: './src/index.js', // 需要打包的文件入口
-        },
-        optimization: {
-            splitChunks: {
-                chunks: "all",
-                minSize: 0, // 设置最小0就拆，否则默认30kb
-                cacheGroups: {
-                    common: {
-                        name: 'common',
-                        minChunks: 2, // 被引用2次则被分到common组
-                        priority: 5,
-                    }
+```js
+示例: index.js异步引入a.js、b.js，其中a.js与b.js同时引入c.js
+// index.js
+import('./a.js')
+import('./b.js')
+
+// a.js
+import './c.js';
+console.log('a');
+
+// b.js
+import './c.js';
+console.log('b');
+
+// c.js
+console.log('common');
+
+// webpack.config.js
+module.exports = {
+    entry: {
+        main: './src/index.js', // 需要打包的文件入口
+    },
+    optimization: {
+        splitChunks: {
+            chunks: "all",
+            minSize: 0, // 设置最小0就拆，否则默认30kb
+            cacheGroups: {
+                common: {
+                    name: 'common',
+                    minChunks: 2, // 被引用2次则被分到common组
+                    priority: 5,
                 }
             }
-        },
-        ...
-    }
+        }
+    },
+    ...
+}
+```
     
 ![Alt text](./imgs/03-15-02-03.png)
 
-    总结: minChunks并不是单单指被模块引用2次，而是被Chunks最小引用次数
+```js
+总结: minChunks并不是单单指被模块引用2次，而是被Chunks最小引用次数
+```
     
 #### maxAsyncRequests
 
@@ -634,136 +681,144 @@ maxAsyncRequests是最大的按需(异步)加载次数，默认为 5，可以设
 
 很少需要对maxAsyncRequests和maxInitialRequests进行修改，这里我们稍作了解，以免遇到与之相关的问题
 
-    // src/index.js
-    import('./a.js');
-    import('./b.js');
-    import('./c.js');
-    import('./d.js');
-    
-    // a.js
-    console.log('a');
-    import './b.js'
-    
-    // b.js
-    console.log('b');
-    import './c.js'
-    
-    // c.js
-    console.log('c');
-    import './d.js'
-    
-    // d.js
-    console.log('d');
-    
-    // webpack.config.js
-    optimization: {
-        splitChunks: {
-            maxAsyncRequests: 5,
-            minSize: 0, // 设置最小0就拆，否则默认30kb
-        }
+```js
+// src/index.js
+import('./a.js');
+import('./b.js');
+import('./c.js');
+import('./d.js');
+
+// a.js
+console.log('a');
+import './b.js'
+
+// b.js
+console.log('b');
+import './c.js'
+
+// c.js
+console.log('c');
+import './d.js'
+
+// d.js
+console.log('d');
+
+// webpack.config.js
+optimization: {
+    splitChunks: {
+        maxAsyncRequests: 5,
+        minSize: 0, // 设置最小0就拆，否则默认30kb
     }
-    
-    当maxAsyncRequests: 5时:
-    执行 npm run dev
+}
+
+当maxAsyncRequests: 5时:
+执行 npm run dev
+```
     
 ![Alt text](./imgs/03-15-03.png)
     
-    注:
-    打出4个文件，是因为我们入口4个异步的import，和maxAsyncRequests无关
-    
-    可以看到这4个文件大小较小的，我们可以依次打开这4个文件进行分析:
-    0.js中含有我们d.js中的 console.log('d')
-    1.js中含有我们c.js中的 console.log('c')
-    2.js中含有我们b.js中的 console.log('b')
-    3.js中含有我们a.js中的 console.log('a')
-    
-    即a、b、c、d.js这4个文件被拆成了4份:
-    按需加载import('a.js')时，需要并发请求4个文件(0.js、1.js、2.js、3.js)
-    按需加载import('b.js')时，需要并发请求3个文件(0.js、1.js、2.js)
-    按需加载import('c.js')时，需要并发请求2个文件(0.js、1.js)
-    按需加载import('d.js')时，需要并发请求1个文件(0.js)
-    
-    
-    接着我们设置maxAsyncRequests: 1
-    // webpack.config.js
-    optimization: {
-        splitChunks: {
-            maxAsyncRequests: 1,
-            minSize: 0,
-        }
+```js
+注:
+打出4个文件，是因为我们入口4个异步的import，和maxAsyncRequests无关
+
+可以看到这4个文件大小较小的，我们可以依次打开这4个文件进行分析:
+0.js中含有我们d.js中的 console.log('d')
+1.js中含有我们c.js中的 console.log('c')
+2.js中含有我们b.js中的 console.log('b')
+3.js中含有我们a.js中的 console.log('a')
+
+即a、b、c、d.js这4个文件被拆成了4份:
+按需加载import('a.js')时，需要并发请求4个文件(0.js、1.js、2.js、3.js)
+按需加载import('b.js')时，需要并发请求3个文件(0.js、1.js、2.js)
+按需加载import('c.js')时，需要并发请求2个文件(0.js、1.js)
+按需加载import('d.js')时，需要并发请求1个文件(0.js)
+
+
+接着我们设置maxAsyncRequests: 1
+// webpack.config.js
+optimization: {
+    splitChunks: {
+        maxAsyncRequests: 1,
+        minSize: 0,
     }
-    
-    执行 npm run dev
+}
+
+执行 npm run dev
+```
     
 ![Alt text](./imgs/03-15-04.png)
 
-    再次打开这4个文件进行分析:
-    打开0.js，里面同时含有4个文件a、b、c、d.js中的console.log('a')/log('b')/log('c')/log('d')
-    打开1.js，里面同时含有3个文件b、c、d.js中的console.log('b')/log('c')/log('d')
-    打开2.js，里面同时含有2个文件c、d.js中的console.log('c')/log('d')
-    打开3.js，里面同时含有1个文件d.js中的console.log('d')
-    
-    即a、b、c、d.js这4个文件被重复打包了:
-    按需加载import('./a.js')时,只会并发请求1个文件(0.js)，这个文件同时包含了a、b、c、d.js的内容
-    按需加载import('./b.js')时,只会并发请求1个文件(1.js)，这个文件同时包含了b、c、d.js的内容
-    按需加载import('./c.js')时,只会并发请求1个文件(2.js)，这个文件同时包含了c、d.js的内容
-    按需加载import('./d.js')时,只会并发请求1个文件(3.js)，这个文件同时包含了d.js的内容
-    
-    可以看到maxAsyncRequests: 1 限制了公共代码的分离，使得只能并发请求1个文件
-    
-    maxAsyncRequests起的便是这样的作用:
-    当maxAsyncRequests: 1时，公共代码没有分离，虽然只请求了1次，但是重复加载了公共的代码，严重冗余
-    当maxAsyncRequests: 5时，代码没有冗余，但请求a.js时发起4次请求，以增加请求数换取代码冗余
-    
-    一般而言，以增加请求来公共代码分离是更优的，不过没有最好的方案，只有最合适的做法
+```js
+再次打开这4个文件进行分析:
+打开0.js，里面同时含有4个文件a、b、c、d.js中的console.log('a')/log('b')/log('c')/log('d')
+打开1.js，里面同时含有3个文件b、c、d.js中的console.log('b')/log('c')/log('d')
+打开2.js，里面同时含有2个文件c、d.js中的console.log('c')/log('d')
+打开3.js，里面同时含有1个文件d.js中的console.log('d')
+
+即a、b、c、d.js这4个文件被重复打包了:
+按需加载import('./a.js')时,只会并发请求1个文件(0.js)，这个文件同时包含了a、b、c、d.js的内容
+按需加载import('./b.js')时,只会并发请求1个文件(1.js)，这个文件同时包含了b、c、d.js的内容
+按需加载import('./c.js')时,只会并发请求1个文件(2.js)，这个文件同时包含了c、d.js的内容
+按需加载import('./d.js')时,只会并发请求1个文件(3.js)，这个文件同时包含了d.js的内容
+
+可以看到maxAsyncRequests: 1 限制了公共代码的分离，使得只能并发请求1个文件
+
+maxAsyncRequests起的便是这样的作用:
+当maxAsyncRequests: 1时，公共代码没有分离，虽然只请求了1次，但是重复加载了公共的代码，严重冗余
+当maxAsyncRequests: 5时，代码没有冗余，但请求a.js时发起4次请求，以增加请求数换取代码冗余
+
+一般而言，以增加请求来公共代码分离是更优的，不过没有最好的方案，只有最合适的做法
+```
 
 #### maxInitialRequests
 
 与maxAsyncRequests有所不同，maxInitialRequests是指**entry文件请求的chunk数不应超过的值**，默认是3
 
-    // a.js(入口1)，引入了c.js与jquery
-    import './c.js';
-    import 'jquery';
-    console.log('a');
-    
-    // b.js(入口2)，也引入了c.js与jquery
-    import './c.js';
-    import 'jquery';
-    console.log('b');
-    
-    // c.js
-    console.log('common');
-    
-    // webpack.config.js
-    module.exports = {
-        entry: {
-            a: './src/a.js',
-            b: './src/b.js',
-        },
-        optimization: {
-            splitChunks: {
-                chunks: "all",
-                minSize: 0,
-                maxInitialRequests: 3, // 入口请求的最大chunks数是3
-                cacheGroups: {
-                    vendors: {
-                        test: /[\\/]node_modules[\\/]/,
-                        name: 'vendors',
-                        priority: -10
-                    },
-                    common: {
-                        test: /[\\/]src[\\/]/,
-                        name: 'common',
-                        minChunks: 2,
-                        priority: 5,
-                    }
+```js
+// a.js(入口1)，引入了c.js与jquery
+import './c.js';
+import 'jquery';
+console.log('a');
+
+// b.js(入口2)，也引入了c.js与jquery
+import './c.js';
+import 'jquery';
+console.log('b');
+
+// c.js
+console.log('common');
+
+// webpack.config.js
+module.exports = {
+    entry: {
+        a: './src/a.js',
+        b: './src/b.js',
+    },
+    optimization: {
+        splitChunks: {
+            chunks: "all",
+            minSize: 0,
+            maxInitialRequests: 3, // 入口请求的最大chunks数是3
+            cacheGroups: {
+                vendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendors',
+                    priority: -10
+                },
+                common: {
+                    test: /[\\/]src[\\/]/,
+                    name: 'common',
+                    minChunks: 2,
+                    priority: 5,
                 }
             }
-        },
-        ...
-    }
-    
-    执行npm run dev
+        }
+    },
+    ...
+}
+
+执行npm run dev
+```
     
 ![Alt text](./imgs/03-16.png)
 
@@ -784,66 +839,76 @@ webpack打出的包，含有一小部分管理模块执行的代码，这小部�
 
 为了充分利用浏览器的缓存策略，可以把它单独抽出，否则可能导致: 一个文件内容发生改动，另一个文件并没有修改，却导致没有修改的文件hash值也发生改变
 
-    // webpack.config.js
-    entry: {
-        main: './src/index.js', // 需要打包的文件入口
-    },
-    output: {
-        publicPath: './dist/',
-        path: path.resolve(__dirname, 'dist'),
-        filename: '[name].[contentHash].bundle.js',
-        chunkFilename: '[name].[contentHash].js'
-    },
-        注：以contentHash作为文件名，内容没有修改，打出的文件名不变，充分利用浏览器环境
+```js
+// webpack.config.js
+entry: {
+    main: './src/index.js', // 需要打包的文件入口
+},
+output: {
+    publicPath: './dist/',
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].[contentHash].bundle.js',
+    chunkFilename: '[name].[contentHash].js'
+},
+    注：以contentHash作为文件名，内容没有修改，打出的文件名不变，充分利用浏览器环境
 
-    // src/index.js
-    import (/* webpackChunkName: 'a'*/ './a.js')
-    import (/* webpackChunkName: 'b'*/ './b.js')
-    
-    // a.js
-    console.log('a');
-    
-    // b.js
-    console.log('b');
-    
-    执行npm run dev    
+// src/index.js
+import (/* webpackChunkName: 'a'*/ './a.js')
+import (/* webpackChunkName: 'b'*/ './b.js')
+
+// a.js
+console.log('a');
+
+// b.js
+console.log('b');
+
+执行npm run dev    
+```
     
 ![Alt text](./imgs/03-20.png)
 
-    这时我们修改a.js
-    // a.js
-    console.log('aaaaaaa');
+```js
+这时我们修改a.js
+// a.js
+console.log('aaaaaaa');
+```
     
 ![Alt text](./imgs/03-21.png)
 
-    存在的问题:
-    我们只修改了a.js，而index.js是没有做修改的，但是却导致index.js打出的main.bundle.js的hash值发生了变化
-    这样对于浏览器缓存策略来说，就要重新请求一次根本没有发生变化的main.bundle.js
-    
-    原因:
-    我们打开main.bundle.js可以看到如下部分代码
+```js
+存在的问题:
+我们只修改了a.js，而index.js是没有做修改的，但是却导致index.js打出的main.bundle.js的hash值发生了变化
+这样对于浏览器缓存策略来说，就要重新请求一次根本没有发生变化的main.bundle.js
+
+原因:
+我们打开main.bundle.js可以看到如下部分代码
+```
     
 ![Alt text](./imgs/03-22.png)
 
-    解决:
-    我们应该把文件清单的这部分代码单独抽离出来
-    webpack4允许我们在optimization配置runtimeChunk
-    
-    // webpack.config.js
-    optimization: {
-        runtimeChunk: {
-            name: 'manifest'
-        },
-        // runtimeChunk: true, 或者这样配置
+```js
+解决:
+我们应该把文件清单的这部分代码单独抽离出来
+webpack4允许我们在optimization配置runtimeChunk
+
+// webpack.config.js
+optimization: {
+    runtimeChunk: {
+        name: 'manifest'
     },
-    
-    执行npm run dev
+    // runtimeChunk: true, 或者这样配置
+},
+
+执行npm run dev
+```
     
 ![Alt text](./imgs/03-23.png)
 
-    这时我们修改a.js
-    // a.js
-    console.log('aaaaaaabbb');
+```js
+这时我们修改a.js
+// a.js
+console.log('aaaaaaabbb');
+```
     
 ![Alt text](./imgs/03-24.png)
 

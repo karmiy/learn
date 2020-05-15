@@ -12,14 +12,16 @@
 
 > import返回的是一个Promise对象，可以进行.then操作，一些低端的浏览器不支持 promise，比如 IE ，如果要使用这种异步的代码，就要使用 babel 以及 babel-polyfill 来做转换
 
-    // src/index.js
-    document.addEventListener('click', function() {
-        import(/* webpackChunkName: 'jquery'*/ 'jquery').then(function({default: $}) {
-            console.log($)
-        })
+```js
+// src/index.js
+document.addEventListener('click', function() {
+    import(/* webpackChunkName: 'jquery'*/ 'jquery').then(function({default: $}) {
+        console.log($)
     })
-    
-    执行npm run build，将打出的main.bundle.js在index.html引入
+})
+
+执行npm run build，将打出的main.bundle.js在index.html引入
+```
     
 ![Alt text](./imgs/04-01.png)
 
@@ -27,11 +29,13 @@
 
 ![Alt text](./imgs/04-03.png)
 
-    这便是懒加载
-    在开发中，我们不仅要考虑缓存，还要考虑代码使用率
-    就像首页与详情页，在进入首页时应该将详情页的业务逻辑代码抽离来提高代码使用率
-    
-    可以F12打开开发者工具，通过coverage查看代码使用率
+```js
+这便是懒加载
+在开发中，我们不仅要考虑缓存，还要考虑代码使用率
+就像首页与详情页，在进入首页时应该将详情页的业务逻辑代码抽离来提高代码使用率
+
+可以F12打开开发者工具，通过coverage查看代码使用率
+```
     
 ![Alt text](./imgs/04-04.png)
 
@@ -51,18 +55,20 @@
 
 webpack的**Prefetching/Preloading**
 
-    // src/index.js
-    document.addEventListener('click', function() {
-        import(/* webpackPrefetch: true */).then(function({default: $}) {
-            console.log($)
-        })
+```js
+// src/index.js
+document.addEventListener('click', function() {
+    import(/* webpackPrefetch: true */).then(function({default: $}) {
+        console.log($)
     })
-    
-    webpackPrefetch: true 会等你主JS都加载完了之后，网络带宽空闲的时候，再去进行预加载
-    
-    执行npm run build，在index.html引入
-    
-    点击页面后看Network
+})
+
+webpackPrefetch: true 会等你主JS都加载完了之后，网络带宽空闲的时候，再去进行预加载
+
+执行npm run build，在index.html引入
+
+点击页面后看Network
+```
 
 ![Alt text](./imgs/04-07.png)
 
@@ -90,50 +96,52 @@ webpack提供了html-webpack-plugin来自动生成html与引入打包后的包
 
 ### 基本用法
     
-    // 1、安装依赖
-    npm i html-webpack-plugin --save-dev
-    
-    // 2、在根目录下新建index.html作为模板 (htmlWebpackPlugin.options.title接收之后配置的title)
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title><%= htmlWebpackPlugin.options.title %></title>
-    </head>
-    <body>
-    </body>
-    </html>
-    
-    // 3、配置webpack.config.js
-    const path = require('path')
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-    const HtmlWebpackPlugin = require('html-webpack-plugin')
-    
-    module.exports = {
-        entry: {
-            main: './src/index.js',
-        },
-        output: {
-            path: path.resolve(__dirname, 'dist'),
-            filename: '[name].bundle.js',
-        },
-        plugins: [
-            new CleanWebpackPlugin(),
-            new HtmlWebpackPlugin({
-                title: 'webpack-demo', // HTML中的title
-                minify: {
-                    // 压缩 HTML 文件
-                    removeComments: true, // 移除 HTML 中的注释
-                    collapseWhitespace: true, // 删除空白符与换行符
-                    minifyCSS: true // 压缩内联 css
-                },
-                filename: 'index.html', // 生成后的文件名
-                template: 'index.html' // 根据此模版生成 HTML 文件
-            })
-        ],
-    }
-    
-    执行npm run build
+```js
+// 1、安装依赖
+npm i html-webpack-plugin --save-dev
+
+// 2、在根目录下新建index.html作为模板 (htmlWebpackPlugin.options.title接收之后配置的title)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+</head>
+<body>
+</body>
+</html>
+
+// 3、配置webpack.config.js
+const path = require('path')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
+module.exports = {
+    entry: {
+        main: './src/index.js',
+    },
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js',
+    },
+    plugins: [
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            title: 'webpack-demo', // HTML中的title
+            minify: {
+                // 压缩 HTML 文件
+                removeComments: true, // 移除 HTML 中的注释
+                collapseWhitespace: true, // 删除空白符与换行符
+                minifyCSS: true // 压缩内联 css
+            },
+            filename: 'index.html', // 生成后的文件名
+            template: 'index.html' // 根据此模版生成 HTML 文件
+        })
+    ],
+}
+
+执行npm run build
+```
     
 ![Alt text](./imgs/04-08.png)
 
@@ -151,13 +159,15 @@ webpack提供了html-webpack-plugin来自动生成html与引入打包后的包
 
 当我们修改output的配置，添加 publicPath: __dirname + '/dist/'
 
-    output: {
-        publicPath: __dirname + '/dist/',
-        path: path.resolve(__dirname, 'dist'),
-        filename: '[name].bundle.js',
-    },
-    
-    执行npm run build
+```js
+output: {
+    publicPath: __dirname + '/dist/',
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].bundle.js',
+},
+
+执行npm run build
+```
     
 ![Alt text](./imgs/04-12.png)
 
@@ -175,51 +185,53 @@ chunks属性用于指定打出的index.html所引入的包
 
 要实现多页面，我们需要配置多个HtmlWebpackPlugin:
 
-    const path = require('path')
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-    const HtmlWebpackPlugin = require('html-webpack-plugin')
-    
-    module.exports = {
-        entry: {
-            a: './src/a.js', // 1、入口a
-            b: './src/b.js', // 2、入口b
-        },
-        output: {
-            path: path.resolve(__dirname, 'dist'),
-            filename: '[name].bundle.js',
-            chunkFilename: '[name].chunk.js',
-        },
-        plugins: [
-            new CleanWebpackPlugin(),
-            // 3、页面pageA
-            new HtmlWebpackPlugin({
-                title: 'webpack-demo',
-                minify: {
-                    removeComments: true,
-                    collapseWhitespace: true,
-                    minifyCSS: true,
-                },
-                filename: 'pageA.html',
-                template: 'index.html',
-                chunks: ['a'], // 4、配置pageA引入的是入口a打出的包
-            }),
-            // 5、页面pageB
-            new HtmlWebpackPlugin({
-                title: 'webpack-demo',
-                minify: {
-                    // 压缩 HTML 文件
-                    removeComments: true,
-                    collapseWhitespace: true,
-                    minifyCSS: true,
-                },
-                filename: 'pageB.html',
-                template: 'index.html',
-                chunks: ['b'], // 6、配置pageB引入的是入口b打出的包
-            })
-        ],
-    }
-    
-    执行npm run build
+```js
+const path = require('path')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
+module.exports = {
+    entry: {
+        a: './src/a.js', // 1、入口a
+        b: './src/b.js', // 2、入口b
+    },
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js',
+        chunkFilename: '[name].chunk.js',
+    },
+    plugins: [
+        new CleanWebpackPlugin(),
+        // 3、页面pageA
+        new HtmlWebpackPlugin({
+            title: 'webpack-demo',
+            minify: {
+                removeComments: true,
+                collapseWhitespace: true,
+                minifyCSS: true,
+            },
+            filename: 'pageA.html',
+            template: 'index.html',
+            chunks: ['a'], // 4、配置pageA引入的是入口a打出的包
+        }),
+        // 5、页面pageB
+        new HtmlWebpackPlugin({
+            title: 'webpack-demo',
+            minify: {
+                // 压缩 HTML 文件
+                removeComments: true,
+                collapseWhitespace: true,
+                minifyCSS: true,
+            },
+            filename: 'pageB.html',
+            template: 'index.html',
+            chunks: ['b'], // 6、配置pageB引入的是入口b打出的包
+        })
+    ],
+}
+
+执行npm run build
+```
     
 ![Alt text](./imgs/04-13.png)
 
@@ -237,48 +249,50 @@ chunks属性用于指定打出的index.html所引入的包
 
 这里我们使用 **script-ext-html-webpack-plugin** 来完成内联
 
-    // webpack.config.js
-    const path = require('path')
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-    const HtmlWebpackPlugin = require('html-webpack-plugin')
-        // 1、引入script-ext-html-webpack-plugin
-    const ScriptExtHtmlWebpackPlugin = require("script-ext-html-webpack-plugin");
-    
-    module.exports = {
-        entry: {
-            main: './src/index.js',
+```js
+// webpack.config.js
+const path = require('path')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+    // 1、引入script-ext-html-webpack-plugin
+const ScriptExtHtmlWebpackPlugin = require("script-ext-html-webpack-plugin");
+
+module.exports = {
+    entry: {
+        main: './src/index.js',
+    },
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js',
+        chunkFilename: '[name].chunk.js',
+    },
+    optimization: {
+        // 2、配置runtimeChunk
+        runtimeChunk: {
+            name: 'manifest'
         },
-        output: {
-            path: path.resolve(__dirname, 'dist'),
-            filename: '[name].bundle.js',
-            chunkFilename: '[name].chunk.js',
-        },
-        optimization: {
-            // 2、配置runtimeChunk
-            runtimeChunk: {
-                name: 'manifest'
+    },
+    plugins: [
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            title: 'webpack-demo',
+            minify: {
+                removeComments: true,
+                collapseWhitespace: true,
+                minifyCSS: true,
             },
-        },
-        plugins: [
-            new CleanWebpackPlugin(),
-            new HtmlWebpackPlugin({
-                title: 'webpack-demo',
-                minify: {
-                    removeComments: true,
-                    collapseWhitespace: true,
-                    minifyCSS: true,
-                },
-                filename: 'index.html',
-                template: 'index.html',
-            }),
-            // 3、配置script-ext-html-webpack-plugin
-            new ScriptExtHtmlWebpackPlugin({
-                //`runtime` must same as runtimeChunk name. default is `runtime`
-                inline: /manifest\..*\.js$/
-            })
-        ],
-    }
-    
-    执行npm run build
+            filename: 'index.html',
+            template: 'index.html',
+        }),
+        // 3、配置script-ext-html-webpack-plugin
+        new ScriptExtHtmlWebpackPlugin({
+            //`runtime` must same as runtimeChunk name. default is `runtime`
+            inline: /manifest\..*\.js$/
+        })
+    ],
+}
+
+执行npm run build
+```
 
 ![Alt text](./imgs/04-16.png)
