@@ -191,16 +191,22 @@ data() {
 ```html
 // 数组形式
 <div :class="[isActive ? 'show' : 'hide', 'wrap']"></div>
+```
 
+```js
 data() {
     return {
         isActive: true,
     }
 }
+```
 
+```html
 // 对象形式
 <div :class="{show: isActive, hide: !isActive, wrap: true}"></div>
+```
 
+```js
 data() {
     return {
         isActive: true,
@@ -212,7 +218,9 @@ data() {
 ```html
 // 数组形式
 <div :style="[colorStyle, fontStyle]"></div>
+```
 
+```js
 data() {
     return {
         colorStyle: {
@@ -223,7 +231,9 @@ data() {
         }
     }
 }
+```
 
+```html
 // 对象形式
 <div :style="{color: 'red', fontSize: '16px'}"></div>
 
