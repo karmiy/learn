@@ -2,12 +2,10 @@
 
 H5提供了DOMStringMap对象，让我们可以在DOM上设置data-开头的自定义属性
 
-```html
+```js
 // 基本示例
 <div id='box' data-k='自定义属性'></div>
-```
 
-```js
 const box = document.getElementById('box');
 console.log(box.dataset);
 ```
@@ -17,31 +15,19 @@ console.log(box.dataset);
 ```js
 // 增
 box.dataset.aBC = '增加的属性'
-```
 
-```html
 <div id='box' data-k='自定义属性' data-a-b-c='增加的属性'></div>
-```
 
-```js
 // 删
 box.dataset.aBC = ''
-```
 
-```html
 <div id='box' data-k='自定义属性' data-a-b-c></div>
-```
 
-```js
 // 改
 box.dataset.k = '修改的k'
-```
 
-```html
 <div id='box' data-k='修改的k' data-a-b-c></div>
-```
 
-```js
 // 查
 console.log(box.dataset.k); // '修改的k' 
 ```
