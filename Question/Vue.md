@@ -443,10 +443,14 @@ mounted() {
         <p>{{scope.name}}</p>
     </template>
 </todo-list>
+```
 
+```html
 // 子
 <slot name='todo' :name='name'>{{name}}</slot>
+```
 
+```js
 data() {
     return {
         name: 'k',
@@ -519,12 +523,18 @@ this.$route.query.id
 export const store = Vue.observable({
     name: 'observable instance',
 })
+```
 
+```js
 // 组件 A
 import store from '../store';
+```
 
+```html
 <div>{{name}}</div>
+```
 
+```js
 computed: {
     name() {
         return store.name;
@@ -765,10 +775,12 @@ components: {
 
 Vue 提供了特殊的 \<component> 元素让我们动态的挂载不同的组件：
 
-```js
+```html
 // 组件 A
 <component :is="currentComponent" />
+```
 
+```js
 import Test from './components/test';
 data() {
     return {
@@ -778,10 +790,14 @@ data() {
 components: {
     Test,
 },
+```
 
+```html
 或
 <component :is="currentComponent" />
+```
 
+```js
 import Test from './components/test';
 data() {
     return {
@@ -817,10 +833,12 @@ keep-alive 可以使用 include 与 exclude 包含与排除，因为有些组件
 
 ## 什么是递归组件
 
-```js
+```html
 // Tree 组件
 <Treelayer :list='list'>
+```
 
+```js
 data() {
     return {
         list: [
@@ -838,7 +856,9 @@ data() {
         ]
     }
 }
+```
 
+```html
 // TreeLayer 递归组件
 <ul class='menu_tree_layer'>
     <li v-for='item in list'>
@@ -846,7 +866,9 @@ data() {
         <tree-layer v-if='item.children' :list='item.children' />
     </li>
 </ul>
+```
 
+```js
 name: "Treelayer", // 必须定义 name 组件内部才可以递归
 prop: {
     list: {
@@ -884,10 +906,13 @@ context 参数上有：
 
 使用：
 
-```js
+```html
 <template functional>
     <div>test: {{props.id}} class: {{data.staticClass}} style: {{data.style}} fullName: {{fullName(props.prefix, props.name)}}</div>
 </template>
+```
+
+```js
 export default {
     props: {
         prefix: String,
@@ -915,12 +940,14 @@ export default {
 
 components 在组件内部使用，是**局部注册**，只在当前组件内注册和使用
 
-```js
+```html
 // 组件 A
 <div>
     <B />
 </div>
+```
 
+```js
 import B from './B';
 components: {
     B,
@@ -1209,9 +1236,11 @@ key 可以给每一个 vnode 唯一的 id，可以让 diff 操作更准确，更
 
 当我们改变数据时，如果在 DOM 更新后进行操作，一般都需要使用 $nextTick：
 
-```js
+```html
 <div>name: {{name}}</div>
+```
 
+```js
 data() {
     return {
         name: 'kkk',
@@ -1251,9 +1280,11 @@ Vue 内部对异步队列尝试使用，Promise.then、MutationObserver 和 setI
 
 而 $nextTick 里的回调同样与 update 操作相同，被放到异步队列里，用如 Promise.then 包起来，所以当我们在代码后面利用 this.$next 操作 DOM 时，可以拿到最新的 DOM 视图结果，因为例如是用 Promise.then，那微任务都被取出来了，DOM 的 update 代码在我们 this.$nextTick 之前操作好了，自然 $nextTick 里可以得到最新的视图数据
 
-```js
+```html
 <div>name: {{name}}</div>
+```
 
+```js
 data() {
     return {
         name: 'kkk',
@@ -1280,10 +1311,12 @@ mounted() {
 
 可以通过 @hook:XXX 监听子组件的生命周期钩子：
 
-```js
+```html
 // 监听 todo-item 组件的 mounted 钩子
 <todo-item @hook:mounted="childrenMounted" />
+```
 
+```js
 methods: {
     childrenMounted() {
         console.log('监听到子组件 mounted');
@@ -1546,10 +1579,12 @@ directives：{
 
 还可以有**动态指令参数**：
 
-```js
+```html
 // 组件中
 <div v-test:[direction]="200">...</div>
+```
 
+```js
 data() {
     return {
         direction: 'left'
