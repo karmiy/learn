@@ -3,11 +3,11 @@
 一些元素自带默认样式，可以通用reset.css清除
 
 ```css
-body{font-family:"Microsoft yahei";font-size:14px;}
-body,dl,dd,p,h1,h2,h3,h4,h5,h6{margin:0;}
-ol,ul,li{margin:0;padding:0;list-style:none;}
-img{border:none;}
-a{text-decoration:none;}
+body { font-family: "Microsoft yahei"; font-size: 14px; }
+body, dl, dd, p, h1, h2, h3, h4, h5, h6{ margin: 0; }
+ol, ul, li { margin: 0; padding: 0; list-style: none; }
+img { border: none; }
+a { text-decoration: none; }
 ```
 
 ## 块元素
@@ -21,7 +21,7 @@ a{text-decoration:none;}
 
 - 整体写法：
 
-```css
+```js
 padding: 20px; // （4个方向都是20px）
 padding: 10px 20px; // (上下10px，左右20px)
 padding: 10px 20px 30px; // （上10px，左右20px，下30px）
@@ -31,7 +31,7 @@ padding: 10px 20px 30px 40px; //（上10px,右20px,下30px,左40px）
 
 - 分解写法：
 
-```css
+```js
 padding-top: 10px;
 padding-right: 10px;
 padding-bottom: 10px;
@@ -43,7 +43,7 @@ padding-left: 10px;
 
 - 写法：
 
-```css
+```js
 // 边框宽度  线类型 颜色(注：border也同padding占宽度，如宽度200px，则宽度为202px)
 border: 1px solid #000;  
 
@@ -60,7 +60,7 @@ color: #000;
 
 - 拆分写法：
 
-```css
+```js
 border-right-width: 20px;
 botder-bottom-style: dotted;
 border-left-color: #fff;
@@ -80,7 +80,7 @@ border-color: red;
 
 - 不同颜色的4条边
 
-```css
+```js
 border: 20px solid pink;
 border-color: red green pink yellow;
 ```
@@ -89,7 +89,7 @@ border-color: red green pink yellow;
 
 - 实现:
 
-```css
+```js
 border-width: 20px 40px;
 border-style: solid;
 border-color: transparent transparent transparent pink;
@@ -103,24 +103,24 @@ border-color: transparent transparent transparent pink;
 
 - 整体写法：
 
-```css
-margin: 20px（4个方向都是20px）
-margin: 10px 20px;(上下10px，左右20px)
-margin: 10px 20px 30px（上10px，左右20px，下30px）
-margin: 10px 20px 30px 40px（上10px,右20px,下30px,左40px）
+```js
+margin: 20px; // （4个方向都是20px）
+margin: 10px 20px; // (上下10px，左右20px)
+margin: 10px 20px 30px; // （上10px，左右20px，下30px）
+margin: 10px 20px 30px 40px; // （上10px,右20px,下30px,左40px）
 ```
 - 分解写法:
 
-```css
+```js
 margin-top: 10px;
-margin-right:1 0px;
+margin-right: 10px;
 margin-bottom: 10px;
 margin-left: 10px;
 ```
 
 - margin实现左右居中:
 
-```css
+```js
 margin: 20px auto;
 ```
     
