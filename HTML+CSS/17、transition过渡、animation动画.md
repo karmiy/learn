@@ -5,7 +5,8 @@ JS控制样式、hover样式变化时，如从width: 100px 变为 width: 200px�
 ### transition-duration过渡时间
     
 ```css
-// 鼠标hover后，会以3s的动画时间从width 100变为200
+鼠标hover后，会以3s的动画时间从width 100变为200
+
 div {
     width: 100px;
     ...
@@ -31,9 +32,8 @@ div:hover {
     height: 200px;
 }
 
-// 可以设置多个值
 div {
-    transition-property: width,height;
+    transition-property: width,height; // 可以设置多个值
 }
 ```
 
@@ -224,7 +224,7 @@ div {
 ### animation-play-state动画执行状态
 
 ```css
-    div {
+div {
     animation-name: run;
     animation-duration: 2s;
     animation-delay: 3s;
