@@ -22,20 +22,20 @@ a{text-decoration:none;}
 - 整体写法：
 
 ```css
-padding : 20px（4个方向都是20px）
-padding: 10px 20px;(上下10px，左右20px)
-padding : 10px 20px 30px（上10px，左右20px，下30px）
-padding : 10px 20px 30px 40px（上10px,右20px,下30px,左40px）
+padding: 20px; // （4个方向都是20px）
+padding: 10px 20px; // (上下10px，左右20px)
+padding: 10px 20px 30px; // （上10px，左右20px，下30px）
+padding: 10px 20px 30px 40px; //（上10px,右20px,下30px,左40px）
 
 ```
 
 - 分解写法：
 
 ```css
-padding-top:10px;
-padding-right:10px;
-padding-bottom:10px;
-padding-left:10px;
+padding-top: 10px;
+padding-right: 10px;
+padding-bottom: 10px;
+padding-left: 10px;
 
 ```
 
@@ -67,8 +67,8 @@ border-left-color: #fff;
 
 border-right: 5px solid pink;
 border-width: 5px 10px 20px;
-border-style: solid dotted dashed；
-border-color: red yellow green;
+border-style: solid；
+border-color: red;
 
 ```
 
@@ -112,16 +112,16 @@ margin: 10px 20px 30px 40px（上10px,右20px,下30px,左40px）
 - 分解写法:
 
 ```css
-margin-top:10px;
-margin-right:10px;
-margin-bottom:10px;
-margin-left:10px;
+margin-top: 10px;
+margin-right:1 0px;
+margin-bottom: 10px;
+margin-left: 10px;
 ```
 
 - margin实现左右居中:
 
 ```css
-margin : 20px auto;
+margin: 20px auto;
 ```
     
 > &#9733; 贴士 
