@@ -2,58 +2,79 @@
 
 ### id选择器
     
-    #header {
-        ...
-    }
-    
-    <div id='header'>..</div>
+```css
+#header {
+    ...
+}
+```
+
+```html
+<div id='header'>..</div>
+```
     
 ### 类选择器
 
-    .txt {
-        ...
-    }
-    
-    <div class='txt'>..</div>
-    <p class='txt'>..</p>
+```css
+.txt {
+    ...
+}
+```
+
+```html
+<div class='txt'>..</div>
+<p class='txt'>..</p>
+```
     
 ### 复合选择器
 
-    span.txt {
-        ...
-    }
-    
-    <span class='txt'>...</span>
+```css
+span.txt {
+    ...
+}
+```
+
+```html
+<span class='txt'>...</span>
+```
     
 ### 后代选择器
 
-    p span {
-        ...
-    }
-    
-    div * {
-        ... // div下全部子元素
-    }
-    <p>
-        <span>...</span>
-    </p>
-    
-    <div>
-        ...
-    </div>
+```css
+p span {
+    ...
+}
+
+div * {
+    ... // div下全部子元素
+}
+```
+
+```html
+<p>
+    <span>...</span>
+</p>
+
+<div>
+    ...
+</div>
+```
     
 ### 组合选择器
 
-    a, p, span {
-        ... // a、p、span3个都满足
-    }
+```css
+a, p, span {
+    ... // a、p、span3个都满足
+}
+```
     
 ### 选中所有元素
     
-    // 选中所有元素
-    * {
-        ,..
-    }
+```css
+// 选中所有元素
+* {
+    ,..
+}
+```
    
 ## 选择器优先级
 
@@ -61,7 +82,7 @@
 
 2、如果是混合的，找出id的个数，多的权重高，相同则找class，多的权重高，再相同比较标签个数
 
-``````
+```css
 #main .hh {
     ... // 这里赢了
 } 
@@ -69,10 +90,13 @@
 #gg {
     ..
 }
+```
+
+```html
 <div id='main'>
     <p id='gg' class='hh'>...</p>
 </div>
-``````
+```
 
 3、内联样式（标签上style属性的样式）> id > class > 标签
 
@@ -86,20 +110,24 @@
 
 背景色
 
-    #k {
-        background-color: red; // 正确做法
-    }
-    #k {
-        background: red; // 最好不要这样设置颜色，对浏览器而言需要再多去查找background-color
-    }
+```css
+#k {
+    background-color: red; // 正确做法
+}
+#k {
+    background: red; // 最好不要这样设置颜色，对浏览器而言需要再多去查找background-color
+}
+```
     
 ### background-image
 
-    #k {
-        width: 200px;
-        height: 200px;
-        background-image: url('./img/ok.png'); // 默认平铺
-    }
+```css
+#k {
+    width: 200px;
+    height: 200px;
+    background-image: url('./img/ok.png'); // 默认平铺
+}
+```
     
 ![Alt text](./imgs/6-01.png)
 
@@ -121,41 +149,49 @@
 
 1、 数值
 
-    div {
-        background-position：50px 100px;// 水平50px，垂直100px
-    }
+```css
+div {
+    background-position：50px 100px;// 水平50px，垂直100px
+}
+```
 
 ![Alt text](./imgs/6-05.png)
 
 2、left、right、top、bottom、center
 
-    div {
-        background-position：20px center;// 水平20px，垂直居中
-    }
+```css
+div {
+    background-position：20px center;// 水平20px，垂直居中
+}
+```
     
 ![Alt text](./imgs/6-06.png)
 
 3、百分比
 
-    div {
-        background-position：100% 0；
-    }
-    div {
-        background-position：120% 120%；// 可以超出
-    }
-    
-    // 效果如下图
+```css
+div {
+    background-position：100% 0；
+}
+div {
+    background-position：120% 120%；// 可以超出
+}
+
+// 效果如下图
+```
     
 ![Alt text](./imgs/6-07.png)
 ![Alt text](./imgs/6-08.png)
     
 4、拆分写法
 
-    // 不推荐，一般不这么写，有些浏览器不支持
-    div {
-        background-position-x：100px;
-        background-position-y：100px;
-    }
+```css
+// 不推荐，一般不这么写，有些浏览器不支持
+div {
+    background-position-x：100px;
+    background-position-y：100px;
+}
+```
     
 ### background-size（CSS3属性）
 
@@ -163,12 +199,14 @@
 
 取值：
 
-    background-size：200px // 宽200高等比例缩放
-    background-size：200px 20px // 宽200高20
-    background-size：100% // 背景图宽和元素等宽，高等比例缩放
-    background-size：100% 100% // 背景图宽高拉伸缩放到和元素相等
-    background-size：cover; // 保持原有宽高比，放大到把空间填满，多出的部分不显示
-    background-size：contain; // 保持原有宽高比，放到到其中一边填满，即大的一边填满，另一边会有空余
+```js
+background-size：200px // 宽200高等比例缩放
+background-size：200px 20px // 宽200高20
+background-size：100% // 背景图宽和元素等宽，高等比例缩放
+background-size：100% 100% // 背景图宽高拉伸缩放到和元素相等
+background-size：cover; // 保持原有宽高比，放大到把空间填满，多出的部分不显示
+background-size：contain; // 保持原有宽高比，放到到其中一边填满，即大的一边填满，另一边会有空余
+```
     
 ### background-attachment
 
@@ -190,24 +228,28 @@
 
 示例：
 
-    background: pink no-repeaat url('...') 100% 100% / cover
-    
-    background: pink url('...') no-repeaat 100% 100%  // 没有position不能有size，可以没有size有position
-    
-    background: pink url('...') no-repeat fixed 100% 100% 
-    // 可以有fixed，一般不会把fixed写在复合写法里，不过position需要设置数值如10px 50px，因为如果position设置百分比如100% 100%，是相对于整个显示区窗口而言的
+```js
+background: pink no-repeaat url('...') 100% 100% / cover;
+
+background: pink url('...') no-repeaat 100% 100%;  // 没有position不能有size，可以没有size有position
+
+background: pink url('...') no-repeat fixed 100% 100%; 
+// 可以有fixed，一般不会把fixed写在复合写法里，不过position需要设置数值如10px 50px，因为如果position设置百分比如100% 100%，是相对于整个显示区窗口而言的
+```
     
 ### CSS3设置多背景图
     
-    // 逗号隔开
-    background: url('...') 0 0 no-repeat,
-                   url('...') 200px 0 no-repeat,
-                   url('...') 0 400px no-repeat;
-                   
-    // 或
-    background-image: url('...'),  url('...'),  url('...');
-    background-repeat: no-repeat, no-repeat, no-repeat;
-    background-position: 0 0, 200px 0, 0 400px;
+```js
+// 逗号隔开
+background: url('...') 0 0 no-repeat,
+                url('...') 200px 0 no-repeat,
+                url('...') 0 400px no-repeat;
+                
+// 或
+background-image: url('...'),  url('...'),  url('...');
+background-repeat: no-repeat, no-repeat, no-repeat;
+background-position: 0 0, 200px 0, 0 400px;
+```
     
 ### 区分background与img
 
@@ -219,13 +261,15 @@
 
 2、img要占据文档流，background不需要
 
-    <div>
-        这是插入img的标签
-        <img src='...' width='240' height='240' alt='' />
-    </div>
-    <div>
-        这是背景图片
-    </div>
+```html
+<div>
+    这是插入img的标签
+    <img src='...' width='240' height='240' alt='' />
+</div>
+<div>
+    这是背景图片
+</div>
+```
     
 ![Alt text](./imgs/6-12.png) 
 
