@@ -45,7 +45,7 @@ padding-left:10px;
 
 ```css
 // 边框宽度  线类型 颜色(注：border也同padding占宽度，如宽度200px，则宽度为202px)
-border : 1px solid #000;  
+border: 1px solid #000;  
 
 // 当border未设置颜色时，将会取color作为颜色
 
@@ -61,14 +61,14 @@ color: #000;
 - 拆分写法：
 
 ```css
-border-right-widht:20px
-botder-bottom-style : dotted;
-border-left-color : #fff;
+border-right-width: 20px;
+botder-bottom-style: dotted;
+border-left-color: #fff;
 
-border-right : 5px solid pink;
-border-width : 5px 10px 20px;
-border-style : solid dotted dashed；
-border-color : red yellow green;
+border-right: 5px solid pink;
+border-width: 5px 10px 20px;
+border-style: solid dotted dashed；
+border-color: red yellow green;
 
 ```
 
