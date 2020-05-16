@@ -5,12 +5,10 @@ JS控制样式、hover样式变化时，如从width: 100px 变为 width: 200px�
 ### transition-duration过渡时间
     
 ```css
-鼠标hover后，会以3s的动画时间从width 100变为200
-
 div {
     width: 100px;
     ...
-    transition-duration: 3s;
+    transition-duration: 3s; // 鼠标hover后，会以3s的动画时间从width 100变为200
 }
 div:hover {
     width: 200px;
@@ -88,7 +86,6 @@ div:hover {
 ```
 
 ```css
-// 对应多个属性
 div {
     width: 100px;
     height: 100px;
@@ -96,7 +93,7 @@ div {
     transition-delay: 2s;
     transition-property: width, height;
     transition-duration: 3s;
-    transition-timing-function: ease, linear
+    transition-timing-function: ease, linear; // 对应多个属性
 }
 div:hover {
     width: 200px;
@@ -106,16 +103,17 @@ div:hover {
     
 ### 复合写法
 
-```css
+```js
 // transition: 名称 时间 延迟时间 运行形势
+```
 
+```css
 div {
     transition: width 3s 3s linear;
 }
 
-// 多个值
 div {
-    transition: width 3s 3s linear, height 2s 3s ease-in;
+    transition: width 3s 3s linear, height 2s 3s ease-in; // 多个值
 }
 ```
     
