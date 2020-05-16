@@ -20,11 +20,13 @@ CSS3新增颜色模式：
 
 0 - 1，完全透明 - 不透明
 
-    .wrap {
-        width: 200px;
-        height: 200px;
-        background-color: hsl(360, 100%, 50%);
-    }
+```css
+.wrap {
+    width: 200px;
+    height: 200px;
+    background-color: hsl(360, 100%, 50%);
+}
+```
     
 **如何使用HSL封装颜色选择器组件？**
 
@@ -34,33 +36,37 @@ CSS3新增颜色模式：
 
 ## 文字阴影text-shadow
 
-    // 水平阴影偏移量、垂直阴影偏移量、模糊半径（可省略）、阴影颜色（可省略）
-    text-shadow: x y blur color;
-    
-    // 阴影叠加
-    text-shadow: x y blur color, x y blur color;
-    
-    // 案例
-    text-shadow: 3px 3px 2px #1394ff;
+```js
+// 水平阴影偏移量、垂直阴影偏移量、模糊半径（可省略）、阴影颜色（可省略）
+text-shadow: x y blur color;
+
+// 阴影叠加
+text-shadow: x y blur color, x y blur color;
+
+// 案例
+text-shadow: 3px 3px 2px #1394ff;
+```
     
 ![Alt text](./imgs/18-02.png)
 
 ## 文字描边text-stroke
 
-    // 设置或检索对象文字的描边厚度
-    text-stroke-width
-    
-    // 设置或检索对象文字的描边颜色
-    text-stroke-color
-    
-    // 兼容前缀
-    -webkit- 谷歌
-    -moz- 火狐
-    -0- 欧朋
-    -ms- IE
-    
-    // 复合写法
-    -webkit-text-stroke: 2px #1394ff;
+```js
+// 设置或检索对象文字的描边厚度
+text-stroke-width
+
+// 设置或检索对象文字的描边颜色
+text-stroke-color
+
+// 兼容前缀
+-webkit- 谷歌
+-moz- 火狐
+-0- 欧朋
+-ms- IE
+
+// 复合写法
+-webkit-text-stroke: 2px #1394ff;
+```
     
 ![Alt text](./imgs/18-03.png)
     
