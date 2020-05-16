@@ -64,23 +64,27 @@
 
 其实设置上下padding在视觉上会感觉好像把内容撑开了，其实并没有，也不会对其他元素造成影响
 
-    span {
-      padding: 10px;
-    }
-    .m1 {
-      background-color: royalblue;
-    }
-    .m2{
-      background-color: red;
-    }
-    
-    <span class="m1">
-        padding-top/bottom
-    </span>
-    <br/>
-    <span class="m2">
-        padding-top/bottom
-    </span>
+```css
+span {
+    padding: 10px;
+}
+.m1 {
+    background-color: royalblue;
+}
+.m2{
+    background-color: red;
+}
+```
+
+```html
+<span class="m1">
+    padding-top/bottom
+</span>
+<br/>
+<span class="m2">
+    padding-top/bottom
+</span>
+```
       
 ![Alt text](./imgs/5-01.png)
 
@@ -94,34 +98,42 @@
     
 1、基线问题一（一个margin带动整排）
 
-    div {
-      display: inline-block;
-      width: 100px;
-      height: 100px;
-      border: 5px solid purple;
-    }
-    .first {
-      margin-top: 20px; //只给第一个元素设置margin-top，其他却跟着往下走了
-    }
+```css
+div {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    border: 5px solid purple;
+}
+.first {
+    margin-top: 20px; //只给第一个元素设置margin-top，其他却跟着往下走了
+}
+```
     
-    <div class="first"></div>
-    <div></div>
-    <div></div>
+```html
+<div class="first"></div>
+<div></div>
+<div></div>
+```
       
 ![Alt text](./imgs/5-02.png)
 
 2、基线问题二（文本下坠）
 
-    div {
-      display: inline-block;
-      width: 100px;
-      height: 100px;
-      border: 5px solid purple;
-    }
+```css
+div {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    border: 5px solid purple;
+}
+```
     
-    <div>文本</div>
-    <div></div>
-    <div></div>
+```html
+<div>文本</div>
+<div></div>
+<div></div>
+```
     
 ![Alt text](./imgs/5-03.png) 
 

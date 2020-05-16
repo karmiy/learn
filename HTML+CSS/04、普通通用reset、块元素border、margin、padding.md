@@ -2,12 +2,14 @@
 
 一些元素自带默认样式，可以通用reset.css清除
 
-    body{font-family:"Microsoft yahei";font-size:14px;}
-    body,dl,dd,p,h1,h2,h3,h4,h5,h6{margin:0;}
-    ol,ul,li{margin:0;padding:0;list-style:none;}
-    img{border:none;}
-    a{text-decoration:none;}
-    
+```css
+body{font-family:"Microsoft yahei";font-size:14px;}
+body,dl,dd,p,h1,h2,h3,h4,h5,h6{margin:0;}
+ol,ul,li{margin:0;padding:0;list-style:none;}
+img{border:none;}
+a{text-decoration:none;}
+```
+
 ## 块元素
 
 ### padding
@@ -19,29 +21,29 @@
 
 - 整体写法：
 
-``````
+```css
 padding : 20px（4个方向都是20px）
 padding: 10px 20px;(上下10px，左右20px)
 padding : 10px 20px 30px（上10px，左右20px，下30px）
 padding : 10px 20px 30px 40px（上10px,右20px,下30px,左40px）
 
-``````
+```
 
 - 分解写法：
 
-``````
+```css
 padding-top:10px;
 padding-right:10px;
 padding-bottom:10px;
 padding-left:10px;
 
-``````
+```
 
 ### border
 
 - 写法：
 
-`````````
+```css
 // 边框宽度  线类型 颜色(注：border也同padding占宽度，如宽度200px，则宽度为202px)
 border : 1px solid #000;  
 
@@ -50,7 +52,7 @@ border : 1px solid #000;
 border: 1px solid;
 
 color: #000; 
-`````````
+```
     
 - 边框样式：
 
@@ -58,7 +60,7 @@ color: #000;
 
 - 拆分写法：
 
-``````
+```css
 border-right-widht:20px
 botder-bottom-style : dotted;
 border-left-color : #fff;
@@ -68,7 +70,7 @@ border-width : 5px 10px 20px;
 border-style : solid dotted dashed；
 border-color : red yellow green;
 
-``````
+```
 
 > &#9733; 贴士 
 
@@ -78,20 +80,20 @@ border-color : red yellow green;
 
 - 不同颜色的4条边
 
-``````
+```css
 border: 20px solid pink;
 border-color: red green pink yellow;
-``````
+```
 
 ![Alt text](./imgs/4-03.png)
 
 - 实现:
 
-``````
+```css
 border-width: 20px 40px;
 border-style: solid;
 border-color: transparent transparent transparent pink;
-``````
+```
 
 ![Alt text](./imgs/4-04.png)
 
@@ -101,26 +103,26 @@ border-color: transparent transparent transparent pink;
 
 - 整体写法：
 
-``````
+```css
 margin: 20px（4个方向都是20px）
 margin: 10px 20px;(上下10px，左右20px)
 margin: 10px 20px 30px（上10px，左右20px，下30px）
 margin: 10px 20px 30px 40px（上10px,右20px,下30px,左40px）
-``````
+```
 - 分解写法:
 
-``````
+```css
 margin-top:10px;
 margin-right:10px;
 margin-bottom:10px;
 margin-left:10px;
-``````
+```
 
 - margin实现左右居中:
 
-``````
+```css
 margin : 20px auto;
-``````
+```
     
 > &#9733; 贴士 
 
@@ -131,11 +133,13 @@ margin : 20px auto;
 
 1. 父子元素
 
-``````
+```html
 <div>
     <p>122</p>
 </div>
+```
 
+```css
 div {
     width: 200px;
     height: 200px;
@@ -147,7 +151,7 @@ p {
     background-color: pink;
     margin-top: 20px;
 }
-``````
+```
 ![Alt text](./imgs/4-05.png)
 
 原因：
@@ -160,13 +164,18 @@ div设置overflow: hidden触发BFC
 
 > &#9733; 贴士 
 
-    给父元素设置border也可以防止父子元素的垂直外边距合并喔
+```text
+给父元素设置border也可以防止父子元素的垂直外边距合并喔
+```
 
 2. 上下元素
-``````
+
+```html
 <div></div>
 <p></p>
+```
 
+```css
 div {
     width: 100px;
     height: 100px;
@@ -179,7 +188,7 @@ p {
     background-color: pink;
     margin-top: 20px;
 }
-``````
+```
 ![Alt text](./imgs/4-06.png)
 
 原因：
@@ -188,20 +197,24 @@ p {
 
 解决方法：
 
-    .wrap {
-        overflow: hidden; //用个div包起来触发BFC
-    }
-    p {
-        width: 100px;
-        height: 100px;
-        background-color: red;
-        margin-bottom: 50px;
-    }
+```css
+.wrap {
+    overflow: hidden; //用个div包起来触发BFC
+}
+p {
+    width: 100px;
+    height: 100px;
+    background-color: red;
+    margin-bottom: 50px;
+}
+```
     
-    <p> p1 </p>
-    <div class='wrap'>
-        <p> p2 </p>
-    </div>
+```html
+<p> p1 </p>
+<div class='wrap'>
+    <p> p2 </p>
+</div>
+```
 
 - *关于margin设置百分比(重要)*：
 
@@ -219,28 +232,32 @@ p {
 
 > &#9733; 贴士 
 
-    div {
-        display: inline-block;
-        vertical-align: middle;
-    }
-    .p {
-        border: 1px solid red;
-    }
-    .a {
-        width: 100px;
-        height: 100%;
-        background-color: aqua;
-    }
-    .b{
-        width: 100px;
-        height: 100px;
-        background-color: blueviolet;
-    }
-    
-    <div class="p">
-        <div class="a"></div>
-        <div class="b"></div>
-    </div>
+```css
+div {
+    display: inline-block;
+    vertical-align: middle;
+}
+.p {
+    border: 1px solid red;
+}
+.a {
+    width: 100px;
+    height: 100%;
+    background-color: aqua;
+}
+.b{
+    width: 100px;
+    height: 100px;
+    background-color: blueviolet;
+}
+```
+
+```html
+<div class="p">
+    <div class="a"></div>
+    <div class="b"></div>
+</div>
+```
     
 上例中父级由b撑起高度，a设置100%,值得注意的是：**a的高度会是0**
 

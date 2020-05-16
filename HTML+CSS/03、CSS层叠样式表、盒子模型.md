@@ -2,22 +2,24 @@
 
 在\<head>中添加\<style type='text/css'>\</style> (内部样式),type可以不写，写了必须是text/css不能写错
 
-    <!DOCTYPE HTML>
-    <html>
-        <head>
-            <meta charset='UTF-8' />
-            <title>标题</title>
-            <meta name='description' content='描述' />
-            <style type='text/css'>
-                h1 {
-                    font-size: 12px;
-                }
-            </style>
-        </head>
-        <body>
-            <h1>HTML基础</h1>
-        </body>
-    </html>
+```html
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset='UTF-8' />
+        <title>标题</title>
+        <meta name='description' content='描述' />
+        <style type='text/css'>
+            h1 {
+                font-size: 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>HTML基础</h1>
+    </body>
+</html>
+```
     
 ## 盒子模型
 
@@ -42,9 +44,10 @@
 
 4. 见名知意
 
-
-    <div id='bar'></div>
-    <div class='nav'></div>
+```html
+<div id='bar'></div>
+<div class='nav'></div>
+```
     
 
     
