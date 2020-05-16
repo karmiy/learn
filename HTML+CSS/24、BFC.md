@@ -259,34 +259,34 @@ BFC让容器内部子元素不影响容器附近的元素，是不是反过来�
 那外边距会影响吗？
 
 ```html
-    // DOM结构
-    <div id="wrap">
-        <div class="child"></div>
-    </div>
-    <div class="next"></div>
-    ```
-    
-    ```css
-    // 样式
-    #wrap {
-        display: inline-block; // 1、水平排列
-        width: 200px;
-        height: 200px;
-        border: 5px solid greenyellow;
-    }
-    .child {
-        width: 300px; // 2、子元素宽度超出
-        height: 200px;
-        border: 5px solid palevioletred;
-        margin-right: 100px; // 3、带右margin
-    }
-    .next {
-        display: inline-block; // 兄弟元素靠wrap右侧排列
-        width: 200px;
-        height: 200px;
-        border: 5px solid royalblue;
-    }
-    ```
+// DOM结构
+<div id="wrap">
+    <div class="child"></div>
+</div>
+<div class="next"></div>
+```
+
+```css
+// 样式
+#wrap {
+    display: inline-block; // 1、水平排列
+    width: 200px;
+    height: 200px;
+    border: 5px solid greenyellow;
+}
+.child {
+    width: 300px; // 2、子元素宽度超出
+    height: 200px;
+    border: 5px solid palevioletred;
+    margin-right: 100px; // 3、带右margin
+}
+.next {
+    display: inline-block; // 兄弟元素靠wrap右侧排列
+    width: 200px;
+    height: 200px;
+    border: 5px solid royalblue;
+}
+```
     
 ![Alt text](./imgs/24-10.png) 
 
