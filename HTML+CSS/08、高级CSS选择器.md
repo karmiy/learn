@@ -15,9 +15,9 @@
 ### 兄弟选择器 + 
     
 ```css
-// 兼容性：>= IE7
+兼容性：>= IE7
 
-// 紧跟着p的span标签
+紧跟着p的span标签
 p + span {
     ...
 }
@@ -31,7 +31,7 @@ p + span {
 ```
 
 ```css
-// 常用于给第2-n个（除了第一个）的li设置间距
+常用于给第2-n个（除了第一个）的li设置间距
 
 li + li {
     margin-top: 10px;
@@ -41,9 +41,9 @@ li + li {
 ### 兄弟选择器 ~
 
 ```css
-// 兼容性: >= IE7
+兼容性: >= IE7
 
-// 与+的区别：~取的是全部之后的兄弟，+是紧跟着的
+与+的区别：~取的是全部之后的兄弟，+是紧跟着的
 h4 ~ p {
     ...
 }
@@ -68,7 +68,7 @@ h4 ~ p {
 拥有这个属性的元素(**低版本IE也兼容**)
     
 ```css
-// 兼容性：>= IE7
+兼容性：>= IE7
 div[title] {
     ...
 }
@@ -79,7 +79,7 @@ div[title] {
 ```
 
 ```css
-// 自定义标签也可以
+自定义标签也可以
 [customAttr] {
     ...
 }
@@ -92,7 +92,7 @@ div[title] {
 ### 属性选择器[attr=val]
     
 ```css
-// 兼容性：>= IE7
+兼容性：>= IE7
 div[title='k'] {
     ...
 }
@@ -107,8 +107,8 @@ div[title='k'] {
 属性**包含**val值
     
 ```css
-// [attr~=val]兼容性：>= IE7 
-// [attr*=val]兼容性：>= IE8 （*=是CSS3的）
+[attr~=val]兼容性：>= IE7 
+[attr*=val]兼容性：>= IE8 （*=是CSS3的）
 
 div.box[title*='123'] {
     ...
@@ -138,8 +138,8 @@ div.box[title*='123'] {
 匹配属性以val开头
     
 ```html
-// [attr|=val]兼容性：>= IE7 
-// [attr^=val]兼容性：>= IE8 （^=是CSS3的）
+[attr|=val]兼容性：>= IE7 
+[attr^=val]兼容性：>= IE8 （^=是CSS3的）
 
 [title|='en']
 
@@ -175,7 +175,7 @@ div.box[title*='123'] {
 4、:hover 匹配鼠标悬停其上的元素（常用）
 
 ```css
-// ie6,7只兼容<a>的hover，ie8和以上可以兼容其他标签的
+ie6,7只兼容<a>的hover，ie8和以上可以兼容其他标签的
 
 a:link { 
     ...
@@ -200,7 +200,8 @@ p:first-letter {
 ```
     
 ```html
-// 会选中‘这’字
+会选中‘这’字
+
 <p>这是首字母的选择器</p>
 ```
     
@@ -213,7 +214,8 @@ p:first-line {
 ```
 
 ```html
-// 假如这个p有3行，会选中它的第一行内容
+假如这个p有3行，会选中它的第一行内容
+
 <p>...</p>
 ```
     
@@ -224,7 +226,8 @@ p:first-line {
 ```
 
 ```css
-// input获得焦点时的样式
+input获得焦点时的样式
+
 input.user:focus {
     ...
 }
@@ -235,7 +238,8 @@ input.user:focus {
 对于\<a>、\<area>、\<button>、\<input>、\<select>、\<textarea>等元素是默认可以获得焦点的，如果想让如div有焦点，需要给div设置一个属性
     
 ```html
-// 这样div就可以获得焦点了，数字越小优先级越高
+这样div就可以获得焦点了，数字越小优先级越高
+
 <div tabindex='0'></div>
 ```
     
