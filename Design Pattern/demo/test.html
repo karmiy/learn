@@ -5,38 +5,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+        .wrap {
+            padding: 30px;
+        }
+        .mt-3 {
+            margin-top: 30px;
+        }
+    </style>
 </head>
 
 <body>
-    <button id="replay">回放</button>
+    <div class="wrap">
+        <form class="form-inline">
+            <div class="form-group">
+                <label>颜色：</label>
+                <select class="form-control">
+                    <option value="blue">蓝色</option>
+                    <option value="red">红色</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>购买数量：</label>
+                <input class="form-control" placeholder="请输入">
+            </div>
+        </form>
+        <form class="form-inline mt-3">
+            <div class="form-group">
+                <label>您选择了颜色：</label>
+                <span >blue</span>
+            </div>
+        </form>
+        <form class="form-inline mt-3">
+            <div class="form-group">
+                <label>您输入了数量：</label>
+                <span >5</span>
+            </div>
+        </form>
+        <button type="button" class="btn btn-default mt-3">下一步</button>
+
+        <!-- <div class="row">
+            <div class="col-md-2">您选择了颜色：</div>
+            <div class="col-md-2">blue</div>
+        </div> -->
+    </div>
 </body>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+    crossorigin="anonymous"></script>
 <script>
-    const tooltipFactory = (function () {
-        const tooltipPool = []; // 对象池
-
-        return {
-            create() {
-                if (tooltipPool.length === 0) { // 对象池空，创建对象
-                    const div = document.createElement('div');
-                    document.body.appendChild(div);
-                    return div;
-                } else {
-                    return tooltipPool.shift(); // 从对象池取出一个
-                }
-            },
-            recover(tooltip) {
-                return tooltipPool.push(tooltip);
-            },
-        }
-    }());
-
-    const arr = [];
-
-    for (let i = 0, str; str = ['1', '2'][i++];) {
-        const tooltip = tooltipFactory.create();
-        tooltip.innerHTML = str;
-        arr.push(tooltip);
-    }
 </script>
 
 </html>
