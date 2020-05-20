@@ -62,10 +62,22 @@ console.log(String.fromCharCode(107)); // 'k'
 // 应用场景，通常用于加密
 var s = 'karmiy', newS = '';
 
-for(var i=0,len = s.length; i<len; i++) {
-    newS += String.fromCharCode(s.charCodeAt(i) + 500);
+function encrypt(s) {
+    var newS = '';
+    for(var i=0,len = s.length; i<len; i++) {
+        newS += String.fromCharCode(s.charCodeAt(i) + 500);
+    }
+    return newS;
 }
-console.log(newS); // ɟɕɦɡɝɭ
+
+function decode(s) {
+    var newS = '';
+    for(var i=0,len = s.length; i<len; i++) {
+        newS += String.fromCharCode(s.charCodeAt(i) - 500);
+    }
+    return newS;
+}
+console.log(encrypt(s)); // ɟɕɦɡɝɭ
 ```
     
 ### substring、substr、slice
