@@ -23,6 +23,7 @@
             <div class="form-group">
                 <label>颜色：</label>
                 <select class="form-control">
+                    <option value="--">请选择</option>
                     <option value="blue">蓝色</option>
                     <option value="red">红色</option>
                 </select>
@@ -35,16 +36,18 @@
         <form class="form-inline mt-3">
             <div class="form-group">
                 <label>您选择了颜色：</label>
-                <span >blue</span>
+                <span></span>
+                <!-- <span >blue</span> -->
             </div>
         </form>
         <form class="form-inline mt-3">
             <div class="form-group">
                 <label>您输入了数量：</label>
-                <span >5</span>
+                <span ></span>
             </div>
         </form>
-        <button type="button" class="btn btn-default mt-3">下一步</button>
+        <button type="button" class="btn btn-default mt-3" disabled="disabled">请选择手机颜色</button>
+        <!-- <button type="button" class="btn btn-default mt-3">加入购物车</button> -->
 
         <!-- <div class="row">
             <div class="col-md-2">您选择了颜色：</div>
