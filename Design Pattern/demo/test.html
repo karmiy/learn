@@ -79,8 +79,8 @@
             return;
         }
 
-        // 是否输入正整数
-        if (((number - 0) | 0) !== number - 0) {
+        // 是否输入正确的数字
+        if(number === '' || !Number.isInteger(+number) || +number <= 0) {
             nextBtn.disabled = true;
             nextBtn.innerHTML = '请输入正确的购买数量';
             return;
