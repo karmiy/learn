@@ -37,17 +37,15 @@
             return _self.apply(this, args);
         }
     }
-
     const username = document.getElementById('username'),
         password = document.getElementById('password'),
         submitBtn = document.getElementById('submitBtn');
 
-    const axios = function(type, url, params = {}) {
+    const axios = function (type, url, params = {}) {
         console.log(params);
         // 请求相关操作...
     }
-    
-    const validate = function() {
+    const validate = function () {
         if (username.value === '') {
             console.log('用户名不能为空');
             return false;
@@ -59,7 +57,9 @@
         return true;
     }
 
-    const formSubmit = function() {
+    function formSubmit() {
+        if (!validate()) return;
+
         const params = {
             username: username.value,
             password: password.value,
@@ -67,7 +67,8 @@
         axios('post', 'http:// xxx.com/login', params);
     }
 
-    submitBtn.onclick = formSubmit.before(validate);
+    formSubmit = formSubmit.before(validate);
+    submitBtn.onclick = formSubmit;
 </script>
 
 </html>
