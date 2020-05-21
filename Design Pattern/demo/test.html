@@ -19,22 +19,55 @@
 </head>
 
 <body>
-    <button tag="login" id="login">登录</button>
+    用户名：<input id="username" type="text" />
+    密码： <input id="password" type="password" />
+    <input id="submitBtn" type="button" value="提交">
 </body>
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
     integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
     crossorigin="anonymous"></script>
 <script>
-    function showLogin() {
-        console.log('打开登录窗口');
-        log(this.getAttribute('tag'));
+    Function.prototype.before = function(beforeFn) {
+        const _self = this;
+        return function(...args) {
+            // 如果校验未通过，不执行原函数
+            if(!beforeFn.apply(this, args)) return;
+
+            return _self.apply(this, args);
+        }
     }
-    function log(tag) {
-        // (new Image).src = 'http://XXX.com/report?tag=' + tag;
+
+    const username = document.getElementById('username'),
+        password = document.getElementById('password'),
+        submitBtn = document.getElementById('submitBtn');
+
+    const axios = function(type, url, params = {}) {
+        console.log(params);
+        // 请求相关操作...
     }
-    document.getElementById('login').onclick = showLogin
     
+    const validate = function() {
+        if (username.value === '') {
+            console.log('用户名不能为空');
+            return false;
+        }
+        if (password.value === '') {
+            console.log('密码不能为空');
+            return false;
+        }
+        return true;
+    }
+
+    const formSubmit = function() {
+        const params = {
+            username: username.value,
+            password: password.value,
+        };
+        axios('post', 'http:// xxx.com/login', params);
+    }
+
+    submitBtn.onclick = formSubmit.before(validate);
 </script>
 
 </html>
