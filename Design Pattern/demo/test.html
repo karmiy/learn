@@ -30,6 +30,14 @@
                 </select>
             </div>
             <div class="form-group">
+                <label>内存：</label>
+                <select id="memorySelect" class="form-control">
+                    <option value="">请选择</option>
+                    <option value="32G">32G</option>
+                    <option value="16G">16G</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label>购买数量：</label>
                 <input id="numberInput" class="form-control" placeholder="请输入">
             </div>
@@ -37,7 +45,13 @@
         <form class="form-inline mt-3">
             <div class="form-group">
                 <label>您选择了颜色：</label>
-                <span id="colorInfo">blue</span>
+                <span id="colorInfo"></span>
+            </div>
+        </form>
+        <form class="form-inline mt-3">
+            <div class="form-group">
+                <label>您选择了内存：</label>
+                <span id="memoryInfo"></span>
             </div>
         </form>
         <form class="form-inline mt-3">
@@ -54,45 +68,76 @@
     integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
     crossorigin="anonymous"></script>
 <script>
+
     const colorSelect = document.getElementById('colorSelect'),
+        memorySelect = document.getElementById('memorySelect'),
         numberInput = document.getElementById('numberInput'),
         colorInfo = document.getElementById('colorInfo'),
+        memoryInfo = document.getElementById('memoryInfo'),
         numberInfo = document.getElementById('numberInfo'),
         nextBtn = document.getElementById('nextBtn');
 
     const goods = { // 手机库存
-        red: 3,
-        blue: 6
+        'red|32G': 3,
+        'red|16G': 0,
+        'blue|32G': 1,
+        'blue|16G': 6
     };
 
-    colorSelect.onchange = function () {
-        const color = this.value, // 颜色
-            number = numberInput.value, // 数量
-            stock = goods[color]; // 当前库存
+    const mediator = {
+        changed(obj) {
+            const color = colorSelect.value, // 颜色
+                memory = memorySelect.value,// 内存
+                number = numberInput.value, // 数量
+                stock = goods[color + '|' + memory];
 
-        colorInfo.innerHTML = color; // 颜色信息
+            if (obj === colorSelect) {
+                colorInfo.innerHTML = color;
+            } else if (obj === memorySelect) {
+                memoryInfo.innerHTML = memory;
+            } else if (obj === numberInput) {
+                numberInfo.innerHTML = number;
+            }
 
-        // 是否选择颜色
-        if (!color) {
-            nextBtn.disabled = 'disabled';
-            nextBtn.innerHTML = '请选择手机颜色';
-            return;
-        }
+            // 是否选择颜色
+            if (!color) {
+                nextBtn.disabled = 'disabled';
+                nextBtn.innerHTML = '请选择手机颜色';
+                return;
+            }
 
-        // 是否输入正确的数字
-        if(number === '' || !Number.isInteger(+number) || +number <= 0) {
-            nextBtn.disabled = true;
-            nextBtn.innerHTML = '请输入正确的购买数量';
-            return;
-        }
+            // 是否选择内存
+            if (!memory) {
+                nextBtn.disabled = 'disabled';
+                nextBtn.innerHTML = '请选择内存大小';
+                return;
+            }
+            // 是否输入正确的数字
+            if (number === '' || !Number.isInteger(+number) || +number <= 0) {
+                nextBtn.disabled = 'disabled';
+                nextBtn.innerHTML = '请输入正确的购买数量';
+                return;
+            }
+            // 库存是否充足
+            if (number > stock) {
+                nextBtn.disabled = 'disabled';
+                nextBtn.innerHTML = '库存不足';
+                return;
+            }
+            nextBtn.disabled = false;
+            nextBtn.innerHTML = '放入购物车';
+        },
+    };
+    colorSelect.onchange = function() {
+        mediator.changed(this);
+    }
 
-        if (+number > stock) { // 当前选择数量没有超过库存量
-            nextBtn.disabled = 'disabled';
-            nextBtn.innerHTML = '库存不足';
-            return;
-        }
-        nextBtn.disabled = false;
-        nextBtn.innerHTML = '放入购物车';
+    memorySelect.onchange = function() {
+        mediator.changed(this);
+    };
+
+    numberInput.oninput = function() {
+        mediator.changed(this);
     }
 </script>
 
