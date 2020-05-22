@@ -19,56 +19,71 @@
 </head>
 
 <body>
-    用户名：<input id="username" type="text" />
-    密码： <input id="password" type="password" />
-    <input id="submitBtn" type="button" value="提交">
 </body>
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
     integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
     crossorigin="anonymous"></script>
 <script>
-    Function.prototype.before = function(beforeFn) {
-        const _self = this;
-        return function(...args) {
-            // 如果校验未通过，不执行原函数
-            if(!beforeFn.apply(this, args)) return;
 
-            return _self.apply(this, args);
+    class State {
+        constructor(light) {
+            this.light = light;
+        }
+        buttonWasPressed() {
+            throw new Error('父类的 buttonWasPressed 方法必须被重写');
         }
     }
-    const username = document.getElementById('username'),
-        password = document.getElementById('password'),
-        submitBtn = document.getElementById('submitBtn');
-
-    const axios = function (type, url, params = {}) {
-        console.log(params);
-        // 请求相关操作...
-    }
-    const validate = function () {
-        if (username.value === '') {
-            console.log('用户名不能为空');
-            return false;
+    class OffLightState extends State {
+        buttonWasPressed() {
+            console.log('弱光');
+            this.light.setState(this.light.weakLightState);
         }
-        if (password.value === '') {
-            console.log('密码不能为空');
-            return false;
+    }
+
+    class WeakLightState extends State {
+        buttonWasPressed() {
+            console.log('强光');
+            this.light.setState(this.light.strongLightState);
         }
-        return true;
     }
 
-    function formSubmit() {
-        if (!validate()) return;
-
-        const params = {
-            username: username.value,
-            password: password.value,
-        };
-        axios('post', 'http:// xxx.com/login', params);
+    class StrongLightState extends State {
+        buttonWasPressed() {
+            console.log('超强光');
+            this.light.setState(this.light.superStrongLightState);
+        }
     }
 
-    formSubmit = formSubmit.before(validate);
-    submitBtn.onclick = formSubmit;
+    class SuperStrongLightState extends State {
+        buttonWasPressed() {
+            console.log('关灯');
+            this.light.setState(this.light.offLightState);
+        }
+    }
+    class Light {
+        constructor() {
+            this.offLightState = new OffLightState(this);
+            this.weakLightState = new WeakLightState(this);
+            this.strongLightState = new StrongLightState(this);
+            this.superStrongLightState = new SuperStrongLightState(this);
+            this.button = null;
+        }
+        init() {
+            const button = document.createElement('button');
+            button.innerHTML = '开关';
+            this.button = document.body.appendChild(button);
+
+            this.currState = this.offLightState; // 设置当前状态
+            this.button.onclick = () => this.currState.buttonWasPressed();
+        }
+        setState(state) {
+            this.currState = state;
+        }
+    }
+
+    const light = new Light();
+    light.init();
 </script>
 
 </html>

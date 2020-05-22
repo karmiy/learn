@@ -1,34 +1,25 @@
-const before = function(fn, beforeFn) {
-    return function(...args) {
-        beforeFn.apply(this, args);
-        return fn.apply(this, args);
-    } 
-}
+class Light {
+    constructor() {
+        this.state = 'off';
+        this.button = null;
+    }
+    init() {
+        const button = document.createElement('button');
+        button.innerHTML = '开关';
+        this.button = document.body.appendChild(button);
 
-const after = function(fn, afterFn) {
-    return function(...args) {
-        const ret = fn.apply(this, args);
-        afterFn.apply(this, args);
-        return ret;
-    } 
-}
-
-Function.prototype.before = function(beforeFn) {
-    const _self = this; // 保存原函数引用
-    return function(...args) {
-        beforeFn.apply(this, args);
-        return _self.apply(this, args);
+        this.button.onclick = () => this.buttonWasPressed();
+    }
+    buttonWasPressed() {
+        if (this.state === 'off') {
+            console.log('开灯');
+            this.state = 'on';
+        } else if (this.state === 'on') {
+            console.log('关灯');
+            this.state = 'off';
+        }
     }
 }
 
-const getToken = function() {
-    return 'Token';
-}
-const axios = function(type, url, params = {}) {
-    console.log(params);
-    // 请求相关操作...
-}
-const axiosWithToken = axios.before(function(type, url, params = {}) {
-    params.token = getToken();
-})
-axiosWithToken('get', '/query', { key: 'k' });
+const light = new Light();
+light.init();
