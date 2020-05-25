@@ -43,6 +43,65 @@
         },
     };
 
+    class State {
+        constructor(uploadObj) {
+            this.uploadObj = uploadObj;
+        }
+        clickHandler_1() {
+            throw new Error('子类必须重写父类的 clickHandler_1 方法');
+        }
+        clickHandler_2() {
+            throw new Error('子类必须重写父类的 clickHandler_2 方法');
+        }
+    }
+    // 扫描状态
+    class SignState extends State {
+        clickHandler_1() {
+            console.log('扫描中，点击无效...');
+        }
+        clickHandler_2() {
+            console.log('文件正在上传中，不能删除');
+        }
+    }
+    // 上传中状态
+    class UploadingState extends State {
+        clickHandler_1() {
+            this.uploadObj.pause();
+        }
+        clickHandler_2() {
+            console.log('文件正在上传中，不能删除');
+        }
+    }
+    // 暂停状态
+    class PauseState extends State {
+        clickHandler_1() {
+            this.uploadObj.uploading();
+        }
+        clickHandler_2() {
+            this.uploadObj.del();
+        }
+    }
+
+    // 完成状态
+    class DoneState extends State {
+        clickHandler_1() {
+            console.log('文件已完成上传, 点击无效');
+        }
+        clickHandler_2() {
+            this.uploadObj.del();
+        }
+    }
+
+    // 错误状态
+    class ErrorState extends State {
+        clickHandler_1() {
+            console.log('文件上传失败, 点击无效');
+        }
+        clickHandler_2() {
+            this.uploadObj.del();
+        }
+    }
+
     class Upload {
         constructor(fileName) {
             this.plugin = plugin;
@@ -70,9 +129,9 @@
                 if (this.state === 'sign') { // 扫描中，操作无效
                     console.log('扫描中，点击无效...');
                 } else if (this.state === 'uploading') { // 上传中 => 暂停
-                    this.changeState('pause');
+                    this.pause();
                 } else if (this.state === 'pause') { // 暂停 => 上传中
-                    this.changeState('uploading');
+                    this.uploading();
                 } else if (this.state === 'done') { // 上传完成，操作无效
                     console.log('文件已完成上传, 点击无效');
                 } else if (this.state === 'error') { // 上传失败，操作无效
@@ -82,7 +141,7 @@
             this.button_2.onclick = () => {
                 if (this.state === 'done' || this.state === 'error' || this.state === 'pause') {
                     // 上传完成、上传失败和暂停状态下可以删除
-                    this.changeState('del');
+                    this.del();
                 } else if (this.state === 'sign') { // 扫描中，删除无效
                     console.log('文件正在扫描中，不能删除');
                 } else if (this.state === 'uploading') { // 上传中，删除无效
@@ -90,34 +149,34 @@
                 }
             };
         }
-        changeState(state) {
-            switch (state) {
-                case 'sign':
-                    this.plugin.sign();
-                    this.button_1.innerHTML = '扫描中，任何操作无效';
-                    break;
-                case 'uploading':
-                    this.plugin.uploading();
-                    this.button_1.innerHTML = '正在上传，点击暂停';
-                    break;
-                case 'pause':
-                    this.plugin.pause();
-                    this.button_1.innerHTML = '已暂停，点击继续上传';
-                    break;
-                case 'done':
-                    this.plugin.done();
-                    this.button_1.innerHTML = '上传完成';
-                    break;
-                case 'error':
-                    this.button_1.innerHTML = '上传失败';
-                    break;
-                case 'del':
-                    this.plugin.del();
-                    this.dom.parentNode.removeChild(this.dom);
-                    console.log('删除完成');
-                    break;
-            }
-            this.state = state;
+        sign() {
+            this.plugin.sign();
+            this.button_1.innerHTML = '扫描中，任何操作无效';
+            this.state = 'sign';
+        }
+        uploading() {
+            this.plugin.uploading();
+            this.button_1.innerHTML = '正在上传，点击暂停';
+            this.state = 'uploading';
+        }
+        pause() {
+            this.plugin.pause();
+            this.button_1.innerHTML = '已暂停，点击继续上传';
+            this.state = 'pause';
+        }
+        done() {
+            this.plugin.done();
+            this.button_1.innerHTML = '上传完成';
+            this.state = 'done';
+        }
+        error() {
+            this.button_1.innerHTML = '上传失败';
+            this.state = 'error';
+        }
+        del() {
+            this.plugin.del();
+            this.dom.parentNode.removeChild(this.dom);
+            console.log('删除完成');
         }
     }
 
@@ -125,11 +184,11 @@
     uploadObj.init();
 
     setTimeout(() => { // 假设 3s 后扫描完成，开始上传
-        uploadObj.changeState('uploading');
+        uploadObj.uploading();
     }, 3000);
 
     setTimeout(() => { // 假设 6s 后上传完成
-        uploadObj.changeState('done');
+        uploadObj.done();
     }, 6000);
 </script>
 
