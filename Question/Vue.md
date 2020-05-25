@@ -138,7 +138,7 @@ v-model 可以在表单 input、textarea、select 等元素上创建双向数据
 
 v-model 本质是语法糖，内部为不同的输入元素使用不同的属性与抛出不同的事件
 
-- text、textarea 元素使用 value 属性、input 事件
+- input、textarea 元素使用 value 属性、input 事件
 
 - checkbox、radio 使用 checked 属性、change 事件
 
@@ -447,7 +447,7 @@ mounted() {
 
 ```html
 // 子
-<slot name='todo' :name='name'>{{name}}</slot>
+<slot :name='name'>{{name}}</slot>
 ```
 
 ```js
