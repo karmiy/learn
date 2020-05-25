@@ -424,7 +424,9 @@ mounted() {
         <p>内容</p>
     </template>
 </todo-list>
+```
 
+```html
 // 子
 <slot>默认内容</slot>
 ```
@@ -449,6 +451,7 @@ mounted() {
 </todo-list>
 ```
 
+```html
 // 子
 <slot name='todo'>默认内容</slot>
 ```
