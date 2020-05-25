@@ -404,7 +404,7 @@ mounted() {
 }
 ```
 
-- v-slot
+- v-slot 或 #
 
 默认插槽：
 
@@ -412,6 +412,15 @@ mounted() {
 // 父
 <todo-list>
     <template v-slot:default>
+        <p>内容</p>
+    </template>
+</todo-list>
+```
+或
+```html
+// 父
+<todo-list>
+    <template #default>
         <p>内容</p>
     </template>
 </todo-list>
@@ -429,6 +438,16 @@ mounted() {
         <p>内容</p>
     </template>
 </todo-list>
+```
+或
+```html
+// 父
+<todo-list>
+    <template #todo>
+        <p>内容</p>
+    </template>
+</todo-list>
+```
 
 // 子
 <slot name='todo'>默认内容</slot>
@@ -440,6 +459,15 @@ mounted() {
 // 父
 <todo-list>
     <template v-slot:todo='scope'>
+        <p>{{scope.name}}</p>
+    </template>
+</todo-list>
+```
+或
+```html
+// 父
+<todo-list>
+    <template #todo='scope'>
         <p>{{scope.name}}</p>
     </template>
 </todo-list>
