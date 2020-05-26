@@ -34,7 +34,7 @@ ajax.open('post', '...', true);
 ajax.send();
 ajax.onreadystatechange = function() {
     // 判断本地状态
-    if(ajax.readystate === 4) {
+    if(ajax.readyState === 4) {
         // 判断服务器状态是否可行
         if(ajax.status >= 200 && ajax.status < 300 || ajax.status === 304) {
             console.log(ajax.responseText);
@@ -52,7 +52,7 @@ ajax.open('post', '...', true);
 ajax.send();
 ajax.onreadystatechange = function() {
     // 判断本地状态
-    if(ajax.readystate === 4) {
+    if(ajax.readyState === 4) {
         // 判断服务器状态是否可行
         if(ajax.status >= 200 && ajax.status < 300 || ajax.status === 304) {
             console.log(ajax.responseText);
@@ -108,7 +108,7 @@ ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 ajax.send();
 ajax.onreadystatechange = function() {
     // 判断本地状态
-    if(ajax.readystate === 4) {
+    if(ajax.readyState === 4) {
         // 判断服务器状态是否可行
         if(ajax.status >= 200 && ajax.status < 300 || ajax.status === 304) {
             console.log(ajax.responseText);
@@ -131,7 +131,7 @@ ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 ajax.send(data); // 3、数据作为send的参数
 ajax.onreadystatechange = function() {
     // 判断本地状态
-    if(ajax.readystate === 4) {
+    if(ajax.readyState === 4) {
         // 判断服务器状态是否可行
         if(ajax.status >= 200 && ajax.status < 300 || ajax.status === 304) {
             console.log(ajax.responseText);
@@ -148,7 +148,7 @@ ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 ajax.send(data); // 3、数据作为send的参数
 ajax.onreadystatechange = function() {
     // 判断本地状态
-    if(ajax.readystate === 4) {
+    if(ajax.readyState === 4) {
         // 判断服务器状态是否可行
         if(ajax.status >= 200 && ajax.status < 300 || ajax.status === 304) {
             console.log(ajax.responseText);
@@ -190,7 +190,7 @@ function ajax(obj) {
     }
     xhr.send(str || null);
     xhr.onreadystatechange = function() {
-        if(xhr.readystate !== 4)
+        if(xhr.readyState !== 4)
             return;
         if(xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
             success && success(xhr.responseText);
