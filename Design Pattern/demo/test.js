@@ -4,8 +4,8 @@ const HttpUtils = {
             url += params ? '?' + HttpUtils.createData(params) : '';
             fetch(url)
                 .then(res => res.json())
-                .then(result => resolve(result))
-                .catch(err => reject(err));
+                .then(resolve)
+                .catch(reject);
         })
     },
     post(url, params) {
@@ -19,11 +19,11 @@ const HttpUtils = {
                 body: HttpUtils.createData(params),
             })
                 .then(res => res.json())
-                .then(result => resolve(result))
-                .catch(error => reject(error));
+                .then(resolve)
+                .catch(reject);
         })
     },
-    createData(obj) {
+    createData(obj = {}) {
         return Object.keys(obj).reduce((str, prop, index) => {
             return str += (index === 0 ? '' : '&') + prop + '=' + obj[prop];
         }, '');
@@ -52,10 +52,11 @@ function ajax(obj) {
     
     xhr.send(str || null);
     xhr.onreadystatechange = function () {
+        console.log(xhr);
         if (xhr.readyState !== 4)
             return;
         if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
-            success && success(xhr.responseText);
+            success && success(JSON.parse(xhr.responseText));
         } else {
             error && error(xhr.status);
         }
@@ -63,10 +64,23 @@ function ajax(obj) {
 }
 
 function ajaxAdapter(obj) {
-    const method = obj.method || 'get',
-        data = obj.data,
-        success = obj.success,
-        error = obj.error;
+    const noop = () => {};
+    try {
+        const method = obj.method || 'get',
+            url = obj.url,
+            data = obj.data,
+            success = obj.success || noop,
+            error = obj.error || noop;
+        HttpUtils[method](url, data)
+            .then(success)
+            .catch(error);
+    } catch(err) {
+        error(err);
+    }
+}
+
+function ajax(obj) {
+    ajaxAdapter(obj);
 }
 
 ajax({

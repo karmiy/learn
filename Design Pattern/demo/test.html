@@ -26,62 +26,8 @@
     crossorigin="anonymous"></script>
     <!-- as -->
 <script src="./state-machine.min.js.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js"></script>
 <script>
-    const delegate = function (client, delegation) {
-        return {
-            buttonWasPressed(...args) { // 将客户的操作委托给 delegation 对象
-                return delegation.buttonWasPressed.apply(client, args);
-            }
-        }
-    };
-    /* const FSM = {
-        off: {
-            buttonWasPressed() {
-                console.log('关灯');
-                this.currState = this.onState;
-            },
-        },
-        on: {
-            buttonWasPressed() {
-                console.log('开灯');
-                this.currState = this.offState;
-            }
-        },
-    }; */
-    const FSM = new StateMachine({
-        init: 'off',
-        transitions: [
-            { name: 'buttonWasPressed', from: 'off', to: 'on' },
-            { name: 'buttonWasPressed', from: 'on', to: 'off' }
-        ],
-        methods: {
-            onButtonWasPressed({ fsm }) {
-                fsm.state === 'on' ? fsm.on() : fsm.off();
-            },
-            off() {
-                console.log('关灯');
-            },
-            on() {
-                console.log('开灯');
-            },
-        }
-    });
-    class Light {
-        constructor() {
-            this.currState = FSM.state; // 初始状态
-            this.button = null;
-        }
-        init() {
-            const button = document.createElement('button');
-            button.innerHTML = '开关';
-            this.button = document.body.appendChild(button);
-
-            this.button.onclick = () => FSM.buttonWasPressed();
-        }
-    }
-
-    const light = new Light();
-    light.init();
 </script>
 
 </html>
