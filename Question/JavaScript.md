@@ -616,7 +616,7 @@ getBoundingClientRect()
 Node.js是 CommonJS 主要实践者，一个文件就是一个模块，使用 module.exports（或直接 exports） 定义当前模块对外输出接口，required 加载模块：
 
 ```js
-// main.js
+// math.js
 var num = 0;
 function add(a, b) {
     return a + b;
@@ -667,7 +667,7 @@ require(["jquery","underscore"],function($,_){
 定义的模块也依赖其他模块时：
 
 ```js
-// 定义 main.js 模块
+// 定义 math.js 模块
 define(function() {
     var num = 0;
     function add(a, b) {
@@ -680,7 +680,7 @@ define(function() {
 })
 
 // 定义 b.js 模块，依赖 math 模块
-define(['main.js'], function(math) {
+define(['math.js'], function(math) {
     ...
     return {
         ...
@@ -747,7 +747,7 @@ define(function(require, exports, module) {
 })
 
 // 加载模块
-seajs.use(['main.js'], function(math) {
+seajs.use(['math.js'], function(math) {
     var sum = math.add(1, 2);
 })
 ```
@@ -778,7 +778,7 @@ add(1, 2);
 也可以使用 export default 命令指定默认导出：
 
 ```js
-// main.js
+// math.js
 var add = function(a, b) {
     return a + b;
 }
