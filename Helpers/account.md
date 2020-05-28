@@ -15,3 +15,15 @@
 
 密码：ȿɕɦɡɝɭȴȧȦȥ
 ```
+
+- icomoon
+
+```
+账号：ȩȧȦȭȬȥȨȬȥȴɥɥȢɗɣɡ
+
+密码：ȿɕɦɡɝɭȴȧȦȥ
+
+Preferences.FontName: kealm-icon
+
+Preferences.ClassPrefix: km-icon-
+```
