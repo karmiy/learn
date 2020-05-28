@@ -1,11 +1,13 @@
-## 打包Library函数库
+## 打包 Library 函数库
 
-### 生成umd的Library
+### 生成 umd 的 library
 
-我们可以开发自己的函数库，发布到npm上，通过npm install的形式安装到自己的项目中使用，也可以供他人安装使用
+我们可以开发自己的函数库，发布到 npm 上，通过npm install的形式安装到自己的项目中使用，也可以供他人安装使用
+
+打包 library 的流程其实前面都已经讲过，这里再过一下并举些常见问题
 
 ```js
-// 1、src下新建utils文件夹，新建src/utils/math.js
+// 1、src 下新建utils文件夹，新建 src/utils/math.js
 export function add(a, b) {
     return a + b
 }
@@ -21,14 +23,18 @@ export function multiply(a, b) {
 export function division(a, b) {
     return a / b
 }
+```
 
-// 2、入口文件main.js
+```js
+// 2、打包入口文件 src/index.js
 import * as math from './utils/math'
 
 export default {
     math,
 }
+```
 
+```js
 // 3、配置build/webpack.lib.conf.js
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
@@ -37,11 +43,12 @@ module.exports = {
     mode: 'production',
     context: path.resolve(__dirname, '../'), // 配置上下文，当遇到相对路径时，会以context为根目录
     entry: {
-        main: './src/main.js', // 需要打包的文件入口
+        main: './src/index.js', // 需要打包的文件入口
     },
     output: {
         path: path.resolve(__dirname, '..', 'lib'),
         filename: 'library.js',
+        library: 'demo',
     },
     module: {
         rules: [
@@ -58,21 +65,20 @@ module.exports = {
         new CleanWebpackPlugin(),
     ]
 }
+```
 
+```js
 // 4、配置package.json的scripts
 "scripts": {
-    "lib": "webpack --progress --config build/webpack.lib.conf.js",
+    "build:lib": "webpack --progress --config build/webpack.lib.conf.js"
 },
-
-
-执行npm run lib
 ```
-    
-![Alt text](./imgs/12-01.png)
 
-这时打出的**library.js**就可以在项目中使用了
+执行 npm run build:lib
 
-但是我们做开源库，用户可能会用这些方式去引用我们的library
+这时打出的 **library** 就可以在项目中使用了
+
+但是前面我们说过，做开源库，用户可能会用这些方式去引用我们的 library：
 
 ```js
 // ES module
@@ -86,30 +92,172 @@ require(['library'], function() {})
 ```
     
     
-我们需要同时支持这些形式的引入，需要在webpack.lib.conf.js中加上**libraryTarget**的配置
+我们需要同时支持这些形式的引入，那么就要加上 **libraryTarget** 的配置
 
 ```js
 output: {
     path: path.resolve(__dirname, '..', 'lib'),
     filename: 'library.js',
-    libraryTarget: 'umd', // 配置umd，能够在所有的模块定义下都可运行的方式
+    library: 'demo',
+    libraryTarget: 'umd', // 配置 umd，能够在所有的模块定义下都可运行的方式
 },
-
-在执行npm run lib，这时打出的library.js在上面几种引入方式下，都可以使用了
 ```
-    
+
+在执行 npm run build:lib ，这时打出的 library 在上面几种引入方式下，都可以使用了
+
 ### 本地引入Library得到undefined的常见问题
 
-我们用前一节搭建的开发环境，在入口index.js引入我们打包生成的library.js
+我们简单搭建一个开发环境，引入我们的 library
 
 ```js
-// src/index.js
+// build/webpack.base.conf.js
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HappyPack = require('happypack'); // 开启子线程并发处理任务
+const os = require('os');
+const HappyPackThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
+
+module.exports = {
+    context: path.resolve(__dirname, '../'), // 配置上下文，当遇到相对路径时，会以context为根目录
+    entry: ['./src/entry.js'],
+    resolve: {
+        extensions: ['.js'],
+        alias: {
+            '@': path.join(__dirname, '..', 'src'),
+        },
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js(x?)$/, // 使用正则来匹配 js 文件
+                exclude: /node_modules/, // 排除依赖包文件夹
+                use: [
+                    {
+                        // 一个loader对应一个id
+                        loader: "happypack/loader?id=hpBabel"
+                    }
+                ]
+            }
+        ]
+    },
+    plugins: [
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            title: 'kealm-react-components', // HTML中的title
+            minify: {
+                // 压缩 HTML 文件
+                removeComments: true, // 移除 HTML 中的注释
+                collapseWhitespace: true, // 删除空白符与换行符
+                minifyCSS: true // 压缩内联 css
+            },
+            favicon: path.resolve(__dirname, '..', 'favicon.ico'),
+            filename: 'index.html', // 生成后的文件名
+            template: path.resolve(__dirname, '..', 'index.html'), // 根据此模版生成 HTML 文件
+        }),
+        new CopyWebpackPlugin([
+            {
+                from: path.resolve(__dirname, '..', 'favicon.ico'),
+                to: path.resolve(__dirname, '..', 'dist', 'favicon.ico'),
+            }
+        ]),
+        new HappyPack({
+            // 用唯一的标识符id，来代表当前的HappyPack是用来处理一类特定的文件
+            id:'hpBabel',
+            // 如何处理.js文件，用法和Loader配置中一样
+            loaders:['babel-loader?cacheDirectory'],
+            threadPool: HappyPackThreadPool,
+        }),
+    ]
+}
+```
+
+```js
+// build/webpack.dev.conf.js
+const webpack = require('webpack');
+const path = require('path');
+const merge = require('webpack-merge');
+const baseConfig = require('./webpack.base.conf');
+
+module.exports = merge(baseConfig, {
+    mode: "development",
+    devtool: 'cheap-module-eval-source-map', // 开启development调试
+    output: {
+        path: path.resolve(__dirname, '..', 'dev'),
+        publicPath: '/',
+        filename: '[name].bundle.js',
+        chunkFilename: '[name].chunk.js'
+    },
+    devServer: {
+        port: 8080, // 本地服务器端口号
+        hot: true, // 热重载
+        overlay: true, // 如果代码出错，会在浏览器页面弹出“浮动层”。类似于 vue-cli 等脚手架
+        historyApiFallback: true,
+    },
+    plugins: [
+        new webpack.HotModuleReplacementPlugin(), // 热部署模块
+        new webpack.NamedModulesPlugin(),
+    ]
+})
+```
+
+```js
+// package.json
+{
+    "scripts": {
+        "dev": "cross-env NODE_ENV=dev webpack-dev-server --progress --config build/webpack.dev.conf.js",
+        "build:lib": "webpack --progress --config build/webpack.lib.conf.js"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.5.5",
+        "@babel/plugin-proposal-class-properties": "^7.5.5",
+        "@babel/plugin-transform-modules-umd": "^7.7.4",
+        "@babel/plugin-transform-runtime": "^7.5.5",
+        "@babel/preset-env": "^7.5.5",
+        "babel-loader": "^8.0.6",
+        "clean-webpack-plugin": "^3.0.0",
+        "copy-webpack-plugin": "^5.0.4",
+        "cross-env": "^5.2.0",
+        "happypack": "^5.0.1",
+        "html-webpack-plugin": "^4.3.0",
+        "resolve-url-loader": "^3.1.0",
+        "webpack": "^4.29.6",
+        "webpack-cli": "^3.3.5",
+        "webpack-dev-server": "^3.7.2",
+        "webpack-merge": "^4.2.1"
+    },
+    "dependencies": {
+        "@babel/polyfill": "^7.4.4",
+        "@babel/runtime": "^7.5.5",
+        "@babel/runtime-corejs3": "^7.7.7",
+        "core-js": "^3.2.0"
+    }
+}
+```
+
+```js
+// .babelrc
+{
+    "presets": [
+        "@babel/preset-env"
+    ],
+    "plugins": [[
+        "@babel/plugin-transform-runtime",{
+            "corejs": 3
+        }
+    ]]
+}
+```
+
+```js
+// 入口文件 src/entry.js
 import library from '../lib/library'
 
 console.log(library);
+```
 
 执行npm run dev，在localhost:8080下控制台查看输出
-```
     
 ![Alt text](./imgs/12-02.png)
 
@@ -125,21 +273,19 @@ console.log(library);
 
 也就是因为一些原因,**exports**缺失了
 
-经过不断测试，把.babelrc的配置删除以下部分
+经过不断测试，把 .babelrc 的配置删除以下部分
 
 ```js
 // 原本的.babelrc
 {
     "presets": [
-        [
-            "@babel/preset-env",
-            {
-            "useBuiltIns": "usage",
-            "corejs": 3
-            }
-        ]
+        "@babel/preset-env"
     ],
-    "plugins": ["@babel/plugin-transform-runtime"]
+    "plugins": [[
+        "@babel/plugin-transform-runtime",{
+            "corejs": 3
+        }
+    ]]
 }
 
 // 调整后的.babelrc
@@ -154,15 +300,27 @@ console.log(library);
     
 ![Alt text](./imgs/12-06.png)
 
-也就是说导致引入失败的原因，可能是@babel/plugin-transform-runtime在打补丁时导致
+也就是说导致引入失败的原因，可能是 @babel/plugin-transform-runtime 在打补丁时导致
 
 查询babel官方资料:
 
-[官方文档babel-plugin-transform-runtime](https://www.babeljs.cn/docs/babel-plugin-transform-runtime)
+[官方文档 babel-plugin-transform-runtime](https://www.babeljs.cn/docs/babel-plugin-transform-runtime)
 
 ![Alt text](./imgs/12-07.png)
 
-了解后，我们发现可能是因为commonjs语义保留问题导致
+了解后，我们发现可能是因为 commonjs 语义保留问题导致
+
+那么为什么我们使用 npm 包时，那些包也很多是 umd 包，我们在 import 导入时却可以成功引入呢？
+
+原因在于：**我们在配置 webpack 时，babel 都会 exclude 排除对 node_modules 下的编译，当然 babel-plugin-transform-runtime 就不会影响到它了，而直接放在本地环境下的文件，如我们放在本地环境下 lib/library，在编译时是会被 babel 处理的，但是我们的 library 本身在打包时已经让 babel 处理过了，在开发环境使用又再次让 babel 处理到它，这显然是多余的，而且还导致了这个问题**
+
+为了解决这个问题，我们可以引入一些 babel 插件：
+
+- @babel/plugin-transform-modules-commonjs
+
+- @babel/plugin-transform-modules-umd
+
+上面插件 2 选 1 即可
 
 ```js
 // 安装解决依赖
@@ -205,197 +363,3 @@ output: {
 ```text
 libraryTarget也可以是this、window，node环境下也可以用global，不过一般都是使用umd
 ```
-    
-### externals排除包
-
-**externals**是发布library包非常重要的配置，用于把我们库中所用到的第三方包排除，使之不被一起打入library包中
-
-例如我们的library包引用了jQuery，正常打包后，生成的library.js是包含jQuery代码的，这就导致了，如果用户使用我们的包，并且他自己也引用了jQuery，将会存在两份jQuery的代码，这是非常冗余的，并且可能会引发一些问题(如vue未排除包可能造成组件安装出错)
-
-所以我们需要配置**externals**，将jQuery包排除，使我们的library.js也去引用用户自己的jQuery，而不是一起打进包中
-
-```js
-// 配置webpack.lib.conf.js
-const path = require('path');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-
-    module.exports = {
-    mode: 'production',
-    entry: {
-        main: './src/index.js', // 需要打包的文件入口
-    },
-    output: {
-        path: path.resolve(__dirname, 'lib'),
-        filename: 'library.js',
-        libraryTarget: 'umd',
-        library: 'lib',
-    },
-    externals: {
-        "jquery": {
-            commonjs: "jQuery",
-            commonjs2: "jQuery",
-            amd: "jQuery",
-            root: "$"
-        },
-        //jquery: 'jQuery' // 也可以这样，那上方4个属性值对应的都是jQuery
-    },
-    module: {
-        rules: [
-            {
-                test: /\.js$/, // 使用正则来匹配 js 文件
-                exclude: /node_modules/, // 排除依赖包文件夹
-                use: {
-                    loader: 'babel-loader', // 使用 babel-loader
-                }
-            },
-        ]
-    },
-    plugins: [
-        new CleanWebpackPlugin(),
-    ]
-}
-    
-    注: externals可以是数组、对象、函数等，其他配置具体可以在官网文档了解
-
-// 入口文件src/index.js
-import $ from 'jquery'
-
-const jQueryObj = (text) => {
-    return $(text)
-}
-
-
-export default {
-    jQueryObj,
-}
-
-执行npm run lib生成library.js
-```
-    
-![Alt text](./imgs/12-09.png)
-(有externals)
-
-![Alt text](./imgs/12-10.png)
-(没有externals)
-
-接着我们将这个library.js包放到本地项目中
-
-![Alt text](./imgs/12-11.png)
-
-![Alt text](./imgs/12-12.png)
-
-接着我们在本地项目中安装jquery，再重新启动项目
-
-```text
-npm i jquery --save
-```
-    
-![Alt text](./imgs/12-13.png)
-
-这就是做到了让library.js在使用jQuery时，使用的是我们本地安装的jQuery，而不把jQuery打进包中，导致存在2份jQuery代码
-
-#### 分析externals配置
-
-**问题:**
-
-为什么配置externals，可以使library.js自动去引用本地项目的jQuery？
-
-externals配置中的commonjs、commonjs2、amd、root是什么意思？
-
-从如下配置分析:
-
-```js
-externals: {
-    "jquery": {
-        commonjs: "jQuery",
-        commonjs2: "jQuery",
-        amd: "jQuery",
-        root: "$",
-    }
-},
-
-执行npm run lib
-```
-    
-![Alt text](./imgs/12-14.png)
-
-可以看到，**externals**排除jQuery后，jQuery的**相关代码没有被打包进**librarys，而是**根据用户本地环境，以引入的形式**存在于代码中
-
-commonJS: require引入用户本地安装的jQuery
-
-amd: define引入用户本地安装的jQuery
-
-script: 全局使用window下的jQuery
-
-**问题:**
-
-```js
-externals: {
-    jquery: 'jQuery',
-},
-```
-
-为什么经常会见到这样配置，要配置为: jquery: 'jQuery'，而不是: jquery: 'jquery' ?
-
-因为如果配置的是jquery: 'jquery'，那会是等于如下配置:
-
-```js
-externals: {
-    "jquery": {
-        commonjs: "jquery",
-        commonjs2: "jquery",
-        amd: "jquery",
-        root: "jquery",
-    }
-},
-```
-    
-root配置就会存在问题，因为全局引入的jQuery.min.js文件，挂载到window下的变量是jQuery与$，就会导致删除导出的library.js中，最后的factory(root\["jquery"])为undefined，所以需要配置为jQuery或$，才能保证root下代码正常运行
-
-**示例:**
-
-我们使用如下配置去验证externals中的root选项
-    
-```js
-// webpack.lib.conf.js
-...
-output: {
-    path: path.resolve(__dirname, 'lib'),
-    filename: 'library.js',
-    libraryTarget: 'umd',
-    library: 'lib',
-},
-externals: {
-    "jquery": {
-        commonjs: "jquery",
-        commonjs2: "jquery",
-        amd: "jquery",
-        root: "KKK", // 配置为KKK
-    }
-},
-...
-
-// src/index.js
-import $ from 'jquery'
-
-const jQueryObj = (text) => {
-    return $(text)
-}
-
-
-export default {
-    jQueryObj,
-}
-
-执行npm run lib
-将打包后的library.js使用一个HTML引入
-```
-    
-![Alt text](./imgs/12-15.png)
-
-![Alt text](./imgs/12-16.png)
-
-![Alt text](./imgs/12-17.png)
-
-![Alt text](./imgs/12-18.png)
-
