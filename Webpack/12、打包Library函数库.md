@@ -2,7 +2,7 @@
 
 ### 生成 umd 的 library
 
-我们可以开发自己的函数库，发布到 npm 上，通过npm install的形式安装到自己的项目中使用，也可以供他人安装使用
+我们可以开发自己的函数库，发布到 npm 上，通过npm install 的形式安装到自己的项目中使用，也可以供他人安装使用
 
 打包 library 的流程其实前面都已经讲过，这里再过一下并举些常见问题
 
@@ -48,7 +48,6 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, '..', 'lib'),
         filename: 'library.js',
-        library: 'demo',
     },
     module: {
         rules: [
@@ -98,14 +97,13 @@ require(['library'], function() {})
 output: {
     path: path.resolve(__dirname, '..', 'lib'),
     filename: 'library.js',
-    library: 'demo',
     libraryTarget: 'umd', // 配置 umd，能够在所有的模块定义下都可运行的方式
 },
 ```
 
 在执行 npm run build:lib ，这时打出的 library 在上面几种引入方式下，都可以使用了
 
-### 本地引入Library得到undefined的常见问题
+### 本地引入 library 得到 undefined 的常见问题
 
 我们简单搭建一个开发环境，引入我们的 library
 
@@ -257,21 +255,11 @@ import library from '../lib/library'
 console.log(library);
 ```
 
-执行npm run dev，在localhost:8080下控制台查看输出
+执行 npm run dev，在 localhost:8080 下控制台查看输出
     
-![Alt text](./imgs/12-02.png)
+![Alt text](./imgs/12-01.png)
 
-非常奇怪的是，我们打出了umd格式的library，但是在本地引入时却引不进来
-
-![Alt text](./imgs/12-03.png)
-
-我们把这句 "object" == typeof exports 删除后，会发现控制台报了错
-
-![Alt text](./imgs/12-04.png)
-
-![Alt text](./imgs/12-05.png)
-
-也就是因为一些原因,**exports**缺失了
+奇怪的是，我们打出了 umd 格式的 library，但是在本地引入时却引不进来
 
 经过不断测试，把 .babelrc 的配置删除以下部分
 
@@ -298,7 +286,7 @@ console.log(library);
 }
 ```
     
-![Alt text](./imgs/12-06.png)
+![Alt text](./imgs/12-02.png)
 
 也就是说导致引入失败的原因，可能是 @babel/plugin-transform-runtime 在打补丁时导致
 
@@ -306,7 +294,7 @@ console.log(library);
 
 [官方文档 babel-plugin-transform-runtime](https://www.babeljs.cn/docs/babel-plugin-transform-runtime)
 
-![Alt text](./imgs/12-07.png)
+![Alt text](./imgs/12-03.png)
 
 了解后，我们发现可能是因为 commonjs 语义保留问题导致
 
@@ -329,23 +317,21 @@ npm i @babel/plugin-transform-modules-commonjs --save-dev
 // 配置.babelrc
 {
     "presets": [
-        [
-            "@babel/preset-env",
-            {
-            "useBuiltIns": "usage",
-            "corejs": 3
-            }
-        ]
+        "@babel/preset-env"
     ],
-    "plugins": ["@babel/plugin-transform-runtime", "@babel/plugin-transform-modules-commonjs"]
+    "plugins": [[
+        "@babel/plugin-transform-runtime",{
+            "corejs": 3
+        }
+    ], "@babel/plugin-transform-modules-commonjs"]
 }
+```
 
 重新npm run dev，会发现引入成功，不再是undefined了
-```
     
-### 生成可以script引入的Library
+### script 引入的 library
 
-用户可能还会使用script标签的形式引入，需要在webpack.lib.conf.js中再配置一个**library**属性
+umd 格式的 library，用户还可以使用 script 标签的形式引入，那么还需要在 webpack.lib.conf.js 中再配置一个 **library** 属性
 
 ```js
 output: {
@@ -354,12 +340,8 @@ output: {
     libraryTarget: 'umd',
     library: 'root', // root 可以随便更换，代表script标签引入后全局的名称
 },
-
-执行npm run lib，在一个html中引入打包有的library.js，就可以在window下看到root变量了
 ```
+
+执行 npm run build:lib，在任意 index.html 中引入打包后的 library.js，就可以在 window 下看到 root 变量了
     
-![Alt text](./imgs/12-08.png)
-
-```text
-libraryTarget也可以是this、window，node环境下也可以用global，不过一般都是使用umd
-```
+![Alt text](./imgs/12-04.png)
