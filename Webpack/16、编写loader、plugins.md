@@ -58,7 +58,7 @@ module.exports = {
 执行npm run build
 ```
     
-![Alt text](./imgs/14-01.png)
+![Alt text](./imgs/16-01.png)
 
 ### resolveLoader
 
@@ -145,7 +145,7 @@ module.exports = function(source) {
 执行npm run build
 ```
     
-![Alt text](./imgs/14-02.png)
+![Alt text](./imgs/16-02.png)
 
 如果**options不是一个对象**，而是按字符串的形式，可能会产生一些问题
 
@@ -263,7 +263,7 @@ module.exports = {
 执行npm run build
 ```
     
-![Alt text](./imgs/14-03.png)
+![Alt text](./imgs/16-03.png)
 
 ## 编写plugins
 
@@ -322,7 +322,7 @@ module.exports = {
 执行npm run build
 ```
     
-![Alt text](./imgs/14-04.png)
+![Alt text](./imgs/16-04.png)
 
 ### options配置
     
@@ -347,7 +347,7 @@ class KealmWebpackPlugin {
 执行npm run build
 ```
     
-![Alt text](./imgs/14-05.png)
+![Alt text](./imgs/16-05.png)
 
 ### compiler、compilation
 
@@ -380,7 +380,7 @@ class KealmWebpackPlugin {
 执行npm run build
 ```
     
-![Alt text](./imgs/14-06.png)
+![Alt text](./imgs/16-06.png)
 
 也可以用**hooks**形式书写:
     
@@ -427,7 +427,7 @@ class KealmWebpackPlugin {
 执行npm run build，可以看到生成了sync.txt，且内容是: sync.............
 ```
 
-![Alt text](./imgs/14-07.png)
+![Alt text](./imgs/16-07.png)
 
 **注:**
 
@@ -466,7 +466,7 @@ class KealmWebpackPlugin {
 执行npm run build
 ```
 
-![Alt text](./imgs/14-08.png)
+![Alt text](./imgs/16-08.png)
 
 
 **2、hooks的tapAsync写法:**
@@ -528,7 +528,7 @@ class KealmWebpackPlugin {
     
 ### 其他hooks
 
-![Alt text](./imgs/14-08-01.png)
+![Alt text](./imgs/16-08-01.png)
 
 [官方文档 - compiler 钩子](https://webpack.docschina.org/api/compiler-hooks/)
     
@@ -545,7 +545,7 @@ alert('.....')
 执行npm run build
 ```
     
-![Alt text](./imgs/14-09.png)
+![Alt text](./imgs/16-09.png)
 
 - 'compilation.chunks' 是entry的每个配置项，chunk.modules是每个配置项所包含的模块以及模块所依赖的模块，chunk.files是每个配置项最后输出的结果文件，值可以从compilation.assets获得
 
@@ -589,4 +589,4 @@ class KealmWebpackPlugin {
 执行npm run build
 ```
 
-![Alt text](./imgs/14-10.png)
+![Alt text](./imgs/16-10.png)

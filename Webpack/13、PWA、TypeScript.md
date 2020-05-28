@@ -20,13 +20,13 @@ npm i http-server --save-dev
 npm run start
 ```
     
-![Alt text](./imgs/11-01.png)
+![Alt text](./imgs/13-01.png)
 
-![Alt text](./imgs/11-02.png)
+![Alt text](./imgs/13-02.png)
 
 这时**Ctrl + C**关闭本地服务，模拟**服务器奔溃**，重新刷新页面
 
-![Alt text](./imgs/11-03.png)
+![Alt text](./imgs/13-03.png)
 
 页面访问失败
 
@@ -69,13 +69,13 @@ if ('serviceWorker' in navigator) {
 执行npm run build打包项目
 ```
 
-![Alt text](./imgs/11-04.png)
+![Alt text](./imgs/13-04.png)
 
 ```text
 执行npm run start启动本地服务
 ```
 
-![Alt text](./imgs/11-05.png)
+![Alt text](./imgs/13-05.png)
 
 ```text
 Ctrl + C 关闭本地服务后再刷新页面，就可以发现页面做了缓存，不会提示“无法访问此网站”
@@ -182,7 +182,7 @@ import { join } from 'lodash'
 console.log(join([1, 2, 3], 1));
 ```
     
-![Alt text](./imgs/11-06.png)
+![Alt text](./imgs/13-06.png)
 
 typescript类型校验的优势没有体现
 
@@ -196,7 +196,7 @@ npm install --save @types/lodash-es
 安装后会发现类型提示出现了
 ```
     
-![Alt text](./imgs/11-07.png)
+![Alt text](./imgs/13-07.png)
 
 **如何查询第三方库对应的TypeScript插件?**
 

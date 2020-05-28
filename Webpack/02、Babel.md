@@ -152,4 +152,6 @@ last 2 version # 每个浏览器的最后两个版本
 not ie <= 8 # 排除小于 ie8 以下的浏览器
 ```
 
-    
+### 番外
+
+因为该篇重在 webpack，babel 相关更完善的讲解，可以移步至：[demo-babel](https://gitee.com/karmiy/demo-babel/blob/master/README.md)

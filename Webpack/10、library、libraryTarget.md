@@ -261,7 +261,7 @@ output: {
 
 可以看到，打包后文件的输出被放在了一个 demo 变量，以 var 定义：
 
-![Alt text](./imgs/10-19.png)
+![Alt text](./imgs/10-01.png)
 
 将这个文件放置随意一个 index.html 旁引入：
 
@@ -270,7 +270,7 @@ output: {
 <script src="./lib/index.js"></script>
 ```
 
-![Alt text](./imgs/10-20.png)
+![Alt text](./imgs/10-02.png)
 
 - libraryTarget: 'assign'
 
@@ -287,7 +287,7 @@ output: {
 },
 ```
 
-![Alt text](./imgs/10-21.png)
+![Alt text](./imgs/10-03.png)
 
 同样，对于没有 var 声明的变量，直接在 html 中引入，也会作为全局变量来使用
 
@@ -306,7 +306,7 @@ output: {
 },
 ```
 
-![Alt text](./imgs/10-22.png)
+![Alt text](./imgs/10-04.png)
 
 如果在 html 中引入改文件，将会在全局作用域下执行 this['demo']，而由于全局环境下 this 是 window，所以同样会在 window 下有一个 demo 属性，结果同 'var' 与 'assign'
 
@@ -325,7 +325,7 @@ output: {
 },
 ```
 
-![Alt text](./imgs/10-23.png)
+![Alt text](./imgs/10-05.png)
 
 - libraryTarget: 'global'
 
@@ -348,7 +348,7 @@ module.exports = {
 }
 ```
 
-![Alt text](./imgs/10-24.png)
+![Alt text](./imgs/10-06.png)
 
 - libraryTarget: 'commonjs'
 
@@ -365,21 +365,20 @@ output: {
 },
 ```
 
-![Alt text](./imgs/10-25.png)
+![Alt text](./imgs/10-07.png)
 
-在入口文件 entry.js 引入打包后的 lib/index.js 测试：
+我们在 node 中进行测试
+
+根目录新建 test.js：
 
 ```js
-// src/entry.js
-const demo = require('../lib/index.js');
+const demo = require('./lib/index.js'); // 引入打包后的文件
 console.log(demo);
 ```
 
-启动开发环境 npm run dev
+执行 node ./test.js
 
-![Alt text](./imgs/10-26.png)
-
-> 注：在此例中的 dev 模式里，引入打包后的 lib/index.js 是会报错的，这里先不提及，解决方案后面再谈，先当成是可以引入的
+![Alt text](./imgs/10-08.png)
 
 - libraryTarget: 'commonjs2'
 
@@ -395,14 +394,137 @@ output: {
 },
 ```
 
-![Alt text](./imgs/10-27.png)
+![Alt text](./imgs/10-09.png)
 
 ```js
-// src/entry.js
-const demo = require('../lib/index.js');
+// test.js
+const demo = require('./lib/index.js'); // 引入打包后的文件
 console.log(demo);
 ```
 
 - libraryTarget: 'amd'
 
 将库作为 AMD 模块导出
+
+```js
+output: {
+    path: path.resolve(__dirname, '..', 'lib'),
+    filename: 'index.js',
+    library: 'demo',
+    libraryTarget: 'amd',
+},
+```
+
+![Alt text](./imgs/10-10.png)
+
+在 require.js 中使用：
+
+```html
+<!-- index.html -->
+<script data-main="require/main" src="https://cdn.bootcdn.net/ajax/libs/require.js/2.3.6/require.min.js"></script>
+```
+
+```js
+// require/main.js
+require.config({
+    paths:{
+        "demo": '../lib/index', // 指定为打包后的文件
+    }
+});
+
+require(['demo'], function(demo) {
+    console.log(demo);
+});
+```
+
+如果没有配置 library，打包结果为：
+
+![Alt text](./imgs/10-11.png)
+
+- libraryTarget: 'umd'
+
+将库的返回值分配给前面几种模块定义系统，使其和 commonjs、AMD 兼容或暴露为全局变量。**通常开发第三方库时会使用这个选项**
+
+在该选项中，library 是必须的
+
+```js
+output: {
+    path: path.resolve(__dirname, '..', 'lib'),
+    filename: 'index.js',
+    library: 'demo',
+    libraryTarget: 'umd',
+},
+```
+
+![Alt text](./imgs/10-12.png)
+
+可以看到，umd 配置打出来的包，会去判断当前环境的适用，从而此该包可以适用 commonjs、AMD、全局变量
+
+此外，当配置 umd 时，library 还可以用**对象的形式**分别配置各个环境指定的对象或属性
+
+```js
+output: {
+    path: path.resolve(__dirname, '..', 'lib'),
+    filename: 'index.js',
+    library: {
+        root: "demo",
+        amd: "demo",
+        commonjs: "demo",
+    },
+    libraryTarget: 'umd',
+},
+```
+
+相当于
+
+```js
+output: {
+    path: path.resolve(__dirname, '..', 'lib'),
+    filename: 'index.js',
+    library: 'demo',
+    libraryTarget: 'global',
+},
+
++
+
+output: {
+    path: path.resolve(__dirname, '..', 'lib'),
+    filename: 'index.js',
+    library: 'demo',
+    libraryTarget: 'amd',
+},
+
++
+
+output: {
+    path: path.resolve(__dirname, '..', 'lib'),
+    filename: 'index.js',
+    library: 'demo',
+    libraryTarget: 'commonjs',
+},
+
++
+
+output: {
+    path: path.resolve(__dirname, '..', 'lib'),
+    filename: 'index.js',
+    libraryTarget: 'commonjs2',
+},
+```
+
+- libraryTarget: 'jsonp'
+
+这个方法会使用 jsonp 方式把结果包裹起来
+
+此处不做过多描述
+
+```js
+output: {
+    path: path.resolve(__dirname, '..', 'lib'),
+    filename: 'index.js',
+    library: 'demo',
+    libraryTarget: 'jsonp',
+},
+```
+
+![Alt text](./imgs/10-13.png)

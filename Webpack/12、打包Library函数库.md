@@ -68,7 +68,7 @@ module.exports = {
 执行npm run lib
 ```
     
-![Alt text](./imgs/10-01.png)
+![Alt text](./imgs/12-01.png)
 
 这时打出的**library.js**就可以在项目中使用了
 
@@ -111,17 +111,17 @@ console.log(library);
 执行npm run dev，在localhost:8080下控制台查看输出
 ```
     
-![Alt text](./imgs/10-02.png)
+![Alt text](./imgs/12-02.png)
 
 非常奇怪的是，我们打出了umd格式的library，但是在本地引入时却引不进来
 
-![Alt text](./imgs/10-03.png)
+![Alt text](./imgs/12-03.png)
 
 我们把这句 "object" == typeof exports 删除后，会发现控制台报了错
 
-![Alt text](./imgs/10-04.png)
+![Alt text](./imgs/12-04.png)
 
-![Alt text](./imgs/10-05.png)
+![Alt text](./imgs/12-05.png)
 
 也就是因为一些原因,**exports**缺失了
 
@@ -152,7 +152,7 @@ console.log(library);
 }
 ```
     
-![Alt text](./imgs/10-06.png)
+![Alt text](./imgs/12-06.png)
 
 也就是说导致引入失败的原因，可能是@babel/plugin-transform-runtime在打补丁时导致
 
@@ -160,7 +160,7 @@ console.log(library);
 
 [官方文档babel-plugin-transform-runtime](https://www.babeljs.cn/docs/babel-plugin-transform-runtime)
 
-![Alt text](./imgs/10-07.png)
+![Alt text](./imgs/12-07.png)
 
 了解后，我们发现可能是因为commonjs语义保留问题导致
 
@@ -200,7 +200,7 @@ output: {
 执行npm run lib，在一个html中引入打包有的library.js，就可以在window下看到root变量了
 ```
     
-![Alt text](./imgs/10-08.png)
+![Alt text](./imgs/12-08.png)
 
 ```text
 libraryTarget也可以是this、window，node环境下也可以用global，不过一般都是使用umd
@@ -272,17 +272,17 @@ export default {
 执行npm run lib生成library.js
 ```
     
-![Alt text](./imgs/10-09.png)
+![Alt text](./imgs/12-09.png)
 (有externals)
 
-![Alt text](./imgs/10-10.png)
+![Alt text](./imgs/12-10.png)
 (没有externals)
 
 接着我们将这个library.js包放到本地项目中
 
-![Alt text](./imgs/10-11.png)
+![Alt text](./imgs/12-11.png)
 
-![Alt text](./imgs/10-12.png)
+![Alt text](./imgs/12-12.png)
 
 接着我们在本地项目中安装jquery，再重新启动项目
 
@@ -290,7 +290,7 @@ export default {
 npm i jquery --save
 ```
     
-![Alt text](./imgs/10-13.png)
+![Alt text](./imgs/12-13.png)
 
 这就是做到了让library.js在使用jQuery时，使用的是我们本地安装的jQuery，而不把jQuery打进包中，导致存在2份jQuery代码
 
@@ -317,7 +317,7 @@ externals: {
 执行npm run lib
 ```
     
-![Alt text](./imgs/10-14.png)
+![Alt text](./imgs/12-14.png)
 
 可以看到，**externals**排除jQuery后，jQuery的**相关代码没有被打包进**librarys，而是**根据用户本地环境，以引入的形式**存在于代码中
 
@@ -391,11 +391,11 @@ export default {
 将打包后的library.js使用一个HTML引入
 ```
     
-![Alt text](./imgs/10-15.png)
+![Alt text](./imgs/12-15.png)
 
-![Alt text](./imgs/10-16.png)
+![Alt text](./imgs/12-16.png)
 
-![Alt text](./imgs/10-17.png)
+![Alt text](./imgs/12-17.png)
 
-![Alt text](./imgs/10-18.png)
+![Alt text](./imgs/12-18.png)
 

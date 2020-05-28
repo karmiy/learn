@@ -14,7 +14,7 @@ npm i eslint eslint-loader --save-dev
 执行npx eslint --init
 ```
     
-![Alt text](./imgs/12-01.png)
+![Alt text](./imgs/14-01.png)
     
 ```js
 // 3、生成.eslintrc.js文件
@@ -90,7 +90,7 @@ console.log(1);
 执行npm run lint
 ```
     
-![Alt text](./imgs/12-02.png)
+![Alt text](./imgs/14-02.png)
 
 ### 编辑器开启eslint
 
@@ -98,9 +98,9 @@ console.log(1);
 
 以VSCode为例
 
-![Alt text](./imgs/12-03.png)
+![Alt text](./imgs/14-03.png)
 
-![Alt text](./imgs/12-04.png)
+![Alt text](./imgs/14-04.png)
 
 ## 打包dll库
 
@@ -148,9 +148,9 @@ module.exports = {
 执行pm run build:dll
 ```
 
-![Alt text](./imgs/12-05.png)
+![Alt text](./imgs/14-05.png)
 
-![Alt text](./imgs/12-06.png)
+![Alt text](./imgs/14-06.png)
 
 ### 如何让项目使用vendors.dll.js?
 
@@ -176,7 +176,7 @@ module.exports = {
 执行npm run build，打开生成的index.html
 ```
     
-![Alt text](./imgs/12-07.png)
+![Alt text](./imgs/14-07.png)
 
 ### 如何让项目使用dll文件中的库，而不是node_modules中的?
 
@@ -209,7 +209,7 @@ module.exports = {
 执行npm run build:dll重新生成vendors.dll.js，并且多生成了一份vendors.manifest.json存储映射关系
 ```
     
-![Alt text](./imgs/12-08.png)
+![Alt text](./imgs/14-08.png)
     
 ```js
 // 2、配置webpack.base.conf.js，添加webpack.DllReferencePlugin 插件
@@ -238,7 +238,7 @@ module.exports = {
 执行npm run build
 ```
     
-![Alt text](./imgs/12-09.png)
+![Alt text](./imgs/14-09.png)
 
 ```js
 注释掉webpack.base.conf.js中的webpack.DllReferencePlugin配置
@@ -263,7 +263,7 @@ module.exports = {
 执行npm run build打包进行打包对比
 ```
     
-![Alt text](./imgs/12-10.png)
+![Alt text](./imgs/14-10.png)
 
 虽然看起来差别只有400ms，但是当我们项目中引用的第三方库越来越多时，打包性能就会提升非常明显了
 
@@ -300,7 +300,7 @@ module.exports = {
 执行npm run build:dll
 ```
     
-![Alt text](./imgs/12-11.png)
+![Alt text](./imgs/14-11.png)
     
 ```js
 配置webpack.base.conf.js:
@@ -357,4 +357,4 @@ module.exports = {
 执行npm run build，打开生成的index.html
 ```
     
-![Alt text](./imgs/12-12.png)
+![Alt text](./imgs/14-12.png)
