@@ -602,6 +602,8 @@ getBoundingClientRect()
 
 - 执行结束，执行栈为空，重复第 2 步
 
+[事件循环与任务队列](https://github.com/karmiy/learn/blob/master/JavaScript/17%E3%80%81for%20in%E3%80%81%E5%AE%9A%E6%97%B6%E5%99%A8%E3%80%81requestAnimationFrame%E3%80%81%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF%E4%B8%8E%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97.md#%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF%E4%B8%8E%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97)
+
 ## 如何实现跨域：
 
 [九种 “姿势” 让你彻底解决跨域问题](https://segmentfault.com/a/1190000016653873)
