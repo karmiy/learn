@@ -139,8 +139,8 @@ console.log(o1.list === o2.list); // false
 ```js
 function clone(target) {
     if (typeof target === 'object') {
-        let cloneTarget = {};
-        for (const key in target) {
+        const cloneTarget = Array.isArray(target) ? [] : {};
+        for (let key in target) {
             cloneTarget[key] = clone(target[key]);
         }
         return cloneTarget;
@@ -242,10 +242,9 @@ console.log(obj); // {0: 10, 1: 20, length: 2}
 function debounce(fn, delay) {
     let timer = null;
     return function(...args) {
-        const context = this;
         clearTimeout(timer);
         timer = setTimeout(() => {
-            fn.call(context, ...args);
+            fn.call(this, ...args);
         }, delay);
     }
 }
