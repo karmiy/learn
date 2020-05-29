@@ -938,7 +938,7 @@ has 值校验文件是否已上传过的校验接口
 
 - 相同的参数输入，总是相同的输出结果，即只依赖参数
 
-- 不改变传入参数值，return 新值
+- 不去改变传入的参数值，return 新值
 
 - 没有副作用（http 请求、DOM 查询、DOM 修改、IO 文件操作、数据突变、console.log 打印、window.reload 刷新浏览器、Math.random()、获取 Date.now() 等）
 
