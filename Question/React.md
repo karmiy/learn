@@ -1176,7 +1176,7 @@ class App extends Component {
 
 > 注：开发模式下捕获了错误依旧页面会报错，生产模块可以正常显示
 
-## React Hook 有什么优势
+## React Hooks 有什么优势
 
 - 函数式组件中使用，函数组件相比类组件更轻量
 
@@ -1184,7 +1184,11 @@ class App extends Component {
 
 - 将逻辑也做到了解耦，类组件中我们可能在生命周期中实现一系列的逻辑操作，然而这些逻辑操作相互不关联却放在一个生命周期里强行耦合，而 hooks 让我们提取自定义 hook，更好的分离逻辑
 
-- class 组件初学者需要了解 this 指向问题，存在学习障碍，hook 中不存在这个问题
+- class 组件初学者需要了解 this 指向问题，存在学习障碍，hooks 中不存在这个问题
+
+## Reac Hooks 原理
+
+[React Hooks 原理](https://github.com/brickspert/blog/issues/26)
 
 ## redux 工作流程是什么
 
