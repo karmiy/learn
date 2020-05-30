@@ -396,3 +396,55 @@ npm run build:lib 打包后在 index.html 引入
 ```
 
 这时刷新页面，就会发现不报错了
+
+### externals 值大写形式疑问
+
+除了上面可能会有疑问的：为什么不能是：
+
+```js
+externals: {
+    "jquery": {
+        commonjs: "jquery",
+        commonjs2: "jquery",
+        amd: "jquery",
+        root: "jquery",
+    }
+},
+```
+
+我们可能还会有疑问，下方 commonjs、commjs2、amd 的 jQuery 不会有问题吗？
+
+```js
+externals: {
+    jquery: {
+        commonjs: "jQuery",
+        commonjs2: "jQuery",
+        amd: "jQuery",
+        root: "jQuery",
+    },
+},
+```
+
+就如前面所言: externals 的 value 是用户方提供的包或变量名
+
+也就是说，用户方需要提供的包名是：**jQuery**
+
+那这显然就不对了：
+
+- 即使在用户方，安装的 npm 包也是 npm i jquery -- save，即也是 jquery，并不是 jQuery 这样 Q 大写
+
+- 我们知道如 commonjs 环境打出的 library 包，排除依赖包后保留的内容根据如上配置会是 require('jQuery')，那这样不会导致用户的包是 jquery 而不匹配吗
+
+其实并不会有问题，**对于大写字母，webpack 在引入时会都转换为小写**，即下面这些都是等价的：
+
+```js
+import $ from 'jquery';
+
+import $ from 'jQuery';
+
+import $ from 'JQUERY';
+
+import $ from 'JqUeRy';
+```
+
+所以即使 library 包里保留内容是 require('jQuery')，也可以正确找到 jquery 包
