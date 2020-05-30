@@ -139,8 +139,8 @@ console.log(o1.list === o2.list); // false
 ```js
 function clone(target) {
     if (typeof target === 'object') {
-        let cloneTarget = {};
-        for (const key in target) {
+        const cloneTarget = Array.isArray(target) ? [] : {};
+        for (let key in target) {
             cloneTarget[key] = clone(target[key]);
         }
         return cloneTarget;
@@ -242,10 +242,9 @@ console.log(obj); // {0: 10, 1: 20, length: 2}
 function debounce(fn, delay) {
     let timer = null;
     return function(...args) {
-        const context = this;
         clearTimeout(timer);
         timer = setTimeout(() => {
-            fn.call(context, ...args);
+            fn.call(this, ...args);
         }, delay);
     }
 }
@@ -603,6 +602,8 @@ getBoundingClientRect()
 
 - 执行结束，执行栈为空，重复第 2 步
 
+[事件循环与任务队列](https://github.com/karmiy/learn/blob/master/JavaScript/17%E3%80%81for%20in%E3%80%81%E5%AE%9A%E6%97%B6%E5%99%A8%E3%80%81requestAnimationFrame%E3%80%81%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF%E4%B8%8E%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97.md#%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF%E4%B8%8E%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97)
+
 ## 如何实现跨域：
 
 [九种 “姿势” 让你彻底解决跨域问题](https://segmentfault.com/a/1190000016653873)
@@ -937,7 +938,7 @@ has 值校验文件是否已上传过的校验接口
 
 - 相同的参数输入，总是相同的输出结果，即只依赖参数
 
-- 不改变传入参数值，return 新值
+- 不去改变传入的参数值，return 新值
 
 - 没有副作用（http 请求、DOM 查询、DOM 修改、IO 文件操作、数据突变、console.log 打印、window.reload 刷新浏览器、Math.random()、获取 Date.now() 等）
 
@@ -1487,6 +1488,10 @@ PATCH 一般对已知资源进行局部更新
         author: 'karloy',
     }
 ```
+
+## HTTP 有哪些状态码
+
+[前端应该掌握的HTTP状态码](https://blog.csdn.net/qq_40717869/article/details/81454461)
 
 ## 什么是正向代理、反向代理
 
