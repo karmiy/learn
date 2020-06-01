@@ -345,3 +345,105 @@ output: {
 执行 npm run build:lib，在任意 index.html 中引入打包后的 library.js，就可以在 window 下看到 root 变量了
     
 ![Alt text](./imgs/12-04.png)
+
+## 模块互相依赖的思考
+
+我们都知道，webpack 根据我们模块之间的引入关系形成依赖树，最终根据这棵依赖树打包生成文件
+
+有没有思考过一个问题：**如果模块存在互相引用会发生什么**
+
+这确实是可能存在的问题：a 引入了 b，b 引入了 c，c 引入了 a
+
+那么这种情况 webpack 会如何处理呢？
+
+下面进行试验：
+
+```js
+// 入口文件 packages/index.js
+
+import a from './a';
+
+export default a;
+
+// packages/a.js
+import b from './b';
+
+const a = {
+    id: 10,
+    b,
+};
+
+export default a;
+
+// packages/b.js
+import c from './c';
+
+const b = {
+    id: 100,
+    c,
+};
+
+export default b;
+
+// packages/c.js
+import a from './a';
+
+const c = {
+    id: 1000,
+    a,
+};
+
+export default c;
+```
+
+```js
+// build/webpack.lib.conf.js
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const path = require('path');
+
+module.exports = {
+    mode: "production",
+    context: path.resolve(__dirname, '../'), // 配置上下文，当遇到相对路径时，会以context为根目录
+    entry: './packages/index.js',
+    output: {
+        path: path.resolve(__dirname, '..', 'lib'),
+        filename: 'library.js',
+        library: 'root',
+        libraryTarget: 'umd',
+    },
+    resolve: {
+        extensions: ['.js'],
+        alias: {
+            '@': path.join(__dirname, '..', 'src'),
+        },
+    },
+    module: {
+        rules: [
+            {
+                test: /\.js(x?)$/, // 使用正则来匹配 js 文件
+                exclude: /node_modules/, // 排除依赖包文件夹
+                use: {
+                    loader: 'babel-loader', // 使用 babel-loader
+                }
+            }
+        ]
+    },
+    plugins: [
+        new CleanWebpackPlugin(),
+    ],
+}
+```
+
+执行 npm run build:lib，在任意 index.html 引入：
+
+```html
+<!-- index.html -->
+<body>
+    <div id="app"></div>
+</body>
+<script src='./lib/library.js'></script>
+```
+
+![Alt text](./imgs/12-05.png)
+
+可以看到，对于这种互相依赖的模块，**webpack 是会以 undefined 处理的**
