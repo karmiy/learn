@@ -1186,7 +1186,7 @@ const addEvent = (function() {
 可以做如下处理重写，在第一次加载后就重置函数：
 
 ```js
-const addEvent = function(elem, type, handler) {
+let addEvent = function(elem, type, handler) {
     if (window.addEventListener) {
         addEvent = function(elem, type, handler) {
             elem.addEventListener(type, handler, false);
