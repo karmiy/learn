@@ -298,7 +298,7 @@ mounted() {
 }
 ```
 
-还可以使用 v-bind="$attrs" 继续让下传递给子子组件
+还可以使用 v-bind="$attrs" 继续向下传递给子子组件
 
 > 注：一般会将 inheritAttrs 设为 false，让未被 props 注册的属性不渲染为子组件根元素的属性
 
