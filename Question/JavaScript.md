@@ -980,7 +980,7 @@ function main() {
 
 以上可以直接替换为：
 
-function main() {s
+function main() {
     ...
     const a = 5;
     ...
