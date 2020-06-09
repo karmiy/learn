@@ -73,3 +73,25 @@ export function hasClass(el, cls) {
         return (' ' + el.className + ' ').indexOf(' ' + cls + ' ') > -1;
     }
 };
+
+/**
+ * 判断选择器是否可以匹配到元素
+ * @param {*} el 
+ * @param {*} selector 
+ */
+export function elementMatches(el, selector) {
+    const matches =
+            Element.prototype.matches ||
+            Element.prototype.matchesSelector ||
+            Element.prototype.mozMatchesSelector ||
+            Element.prototype.msMatchesSelector ||
+            Element.prototype.oMatchesSelector ||
+            Element.prototype.webkitMatchesSelector ||
+            function(selector) {
+                const items = (this.document || this.ownerDocument).querySelectorAll(selector),
+                    i = items.length;
+                return [...items].findIndex(item => item === this) > -1;
+            };
+    
+    return matches.call(el, selector);
+}
