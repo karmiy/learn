@@ -1664,3 +1664,13 @@ location /officialApp-ch {
     add_header  Set-Cookie 'service_language=zh-cn;path=/'; #设置 cookie
 }
 ```
+
+## CSR、SSR、同构渲染、预渲染
+
+- CSR：前端渲染，即当下用 Vue、React 的 SPA 项目，前端拿到空 index.html 和 js，利用 js 渲染出页面 DOM 结构，渲染过程只在前端完成
+
+- SSR：服务端渲染，渲染 html 的过程由服务端完成，如传统 JSP 渲染模板，服务端获取数据嵌入 JSP 模板生成 html 返回前端，渲染过程在后端完成，前端只负责出 UI 界面和 js 交互，SSR 返回的 html 是包含初始数据的，不单单的 DOM 节点，如页面上有 user 信息、list 信息，前端拿到 html 后不需要再去请求数据，SSR 返回的 html 是预先从数据库获取初始数据嵌入模板中在转换为 html 返回前端的，即返回的 html 上 user、list 部分已有数据
+
+- 同构渲染：加入 node 中间层负责渲染逻辑，首次渲染由 node.js 渲染出 html 返回给前端，后续交互和路由切换都在前端完成，同构在于前端和服务端(node)的渲染是同一套代码，前端和服务端都要参与渲染
+
+- 预渲染：在项目打包时预先渲染出 html，如 SPA 项目先把 /home、/about 打包出各自的 html，这样在访问 /home、/about 时获取到的就是完整的 html 模板，但是不像 SSR 那样有初始数据，还是需要请求初始数据的，预渲染的 html 只是完整的初始 DOM 结构。预渲染后的页面之后的交互和路由还是由前端控制，如对 home、about 做了预渲染，打出了 home、about 的 html 文件，打开 home 页面，原来 home.vue 的 mounted 还是在打开时执行，并且切换到 about 页面时，还是一样前端路由控制，并不是有了 about 的 html 文件，切换到 about 页面就会刷新，依旧是 SPA。也就是说用户打开 home 页面加载了 home 的 html，但是切换到 about 页面时依旧是 SPA 路由控制，about 的 html 在此时并没有作用，只是确保用户初始打开 about 页面时，拿到完整的 html，同样这种情况下，home 的 html 也就没有用了
