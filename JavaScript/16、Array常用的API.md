@@ -482,6 +482,7 @@ console.log(result);
     }
 */
 ```
+> 注：reduce 方法不能用于空数组，除非有 initialValue 参数
     
 ## Array的去重
 
