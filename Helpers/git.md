@@ -1,4 +1,4 @@
-### Git 帮助文档
+## Git 帮助文档
 
 - 更新分支列表：git remote update origin --prune
 
