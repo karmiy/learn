@@ -38,7 +38,7 @@ const itemReducer: Reducer<ItemState, ItemAction> = (state = defaultItemState, a
     }
 }
 
-// Item
+// Shop
 const defaultShopState: ShopState = {
     count: 0,
     name: 'k013'
