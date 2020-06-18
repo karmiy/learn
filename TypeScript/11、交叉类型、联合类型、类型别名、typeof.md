@@ -152,6 +152,8 @@ person = { name: 'karmiy', next: { name: 'karmiy', next: { name: 'kamriy' } } };
 
 - interface 可以 extends、implements，而 type 不行
 
+- interface 不能使用映射 [key in keys]，type 可以
+
 - interface 会创建新名字，可以在任何地方使用，而 type 并不创建新名字：
 
 ```ts
