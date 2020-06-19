@@ -38,7 +38,7 @@ export const getMyList: ActionCreator<GetMyListAction> = () => ({
 });
 
 // : ThunkActionCreator<void, ItemState, void, GetListAction>
-export const getTodoList: ThunkActionCreator<void, ItemState, void, GetListAction> = () => {
+export const getTodoList: ThunkActionCreator<Promise<void>, ItemState, void, GetListAction> = () => {
     return async (dispach, getState) => {
         const data = await new Promise<string[]>(r => {
             setTimeout(() => {

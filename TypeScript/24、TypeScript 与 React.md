@@ -1289,7 +1289,7 @@ import { ThunkAction } from 'redux-thunk';
 // R: return; S: State; E: extraArgument; A: Action
 type ThunkActionCreator<R, S, E, A extends Action> = (...args: any[]) => ThunkAction<R, S ,E ,A>;
 
-export const getTodoList: ThunkActionCreator<void, ItemState, void, GetListAction> = () => {
+export const getTodoList: ThunkActionCreator<Promise<void>, ItemState, void, GetListAction> = () => {
     return async (dispach, getState) => {
         const data = await new Promise<string[]>(r => {
             setTimeout(() => {
