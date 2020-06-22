@@ -238,7 +238,7 @@ input.user:focus {
 对于\<a>、\<area>、\<button>、\<input>、\<select>、\<textarea>等元素是默认可以获得焦点的，如果想让如div有焦点，需要给div设置一个属性
     
 ```html
-这样div就可以获得焦点了，数字越小优先级越高
+这样div就可以获得焦点了，除了 0 以外，数字越小优先级越高，0 最小，负数不能获得焦点
 
 <div tabindex='0'></div>
 ```
