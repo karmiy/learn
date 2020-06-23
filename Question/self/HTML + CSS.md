@@ -11,3 +11,5 @@
 - [CSS 高级选择器优先级](https://gitee.com/karmiy/learn/blob/master/HTML+CSS/08%E3%80%81%E9%AB%98%E7%BA%A7CSS%E9%80%89%E6%8B%A9%E5%99%A8.md#%E9%AB%98%E7%BA%A7%E9%80%89%E6%8B%A9%E5%99%A8%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7)
 
 - [background-size 有哪些配置，cover 和 contain 区别](https://gitee.com/karmiy/learn/blob/master/HTML+CSS/06%E3%80%81%E5%9F%BA%E6%9C%ACCSS%E9%80%89%E6%8B%A9%E5%99%A8%E3%80%81background%E8%83%8C%E6%99%AF%E5%9B%BE.md#background-sizecss3%E5%B1%9E%E6%80%A7)
+
+- [元素垂直居中方式](https://gitee.com/karmiy/learn/blob/master/HTML+CSS/12%E3%80%81vertical-align%E3%80%81%E5%B8%B8%E7%94%A8%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD.md#%E5%85%83%E7%B4%A0%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD%E6%96%B9%E5%BC%8F)
