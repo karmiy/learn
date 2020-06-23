@@ -277,7 +277,7 @@ img.k5 {
 
 ```css
 // W3C标准盒子模型：content-box （默认）
-    content + padding = 宽高
+    content = 宽高
     
 // 传统IE盒子模型：border-box
     content + padding + border = 宽高
