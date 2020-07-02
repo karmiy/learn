@@ -359,4 +359,14 @@ module.exports = {
     
 ![Alt text](./imgs/14-12.png)
 
-> 注：现在 webpack4 是否还使用 dll 有待讨论，webpack4 在打包的时候默认开启缓存，而 dll 说其实也是一种文件的缓存机制，webpack4 在打包方面的速度优化可能已经足够，并且本人发现现在打包 react 与 react-dom 时生成的 dll，启动项目加载会卡死，原因未知
+**注：现在 webpack4 是否还使用 dll 有待讨论**:
+
+- webpack4 在打包的时候默认开启缓存，而 dll 说其实也是一种文件的缓存机制
+
+- webpack4 在打包方面的速度优化可能已经足够，现在 react 与 vue 都移除了 dll 包
+
+- 本人发现现在打包 react 与 react-dom 时生成的 dll，启动项目加载会卡死，原因未知
+
+- dll 包毕竟是把整个 npm 包打成一个 .dll.js 文件 script 引入，意味着 dll.js 包含了全部代码，但是在可以按需引入即 es 模块的 npm 包中，这样做显然会让打出来的 js 文件体积更大，得不偿失
+
+- 如果公司有 cdn，把常用的第三方包如 react 放在 cdn 上，利用 externals 让项目引用 cdn 上的 react 会更好
