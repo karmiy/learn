@@ -346,6 +346,143 @@ output: {
     
 ![Alt text](./imgs/12-04.png)
 
+### 关于 library 是否删除 package.json 中的 dependencies 与 devDependencies
+
+假设 library 库为 Kealm-lib，是一个 vue 组件库，发布到了 npm
+
+我们都知道打包时会 externals 排除 vue 包，让用户组件库中的 vue 用的是用户环境的 vue
+
+用户安装了 Kealm-lib 后，项目结构如下：
+
+```js
+- node_modules
+
+    - vue
+
+    - kealm-lib
+
+        - node_modules
+
+        - package.json
+
+        - button.js
+
+        - index.js
+
+- src
+
+    - main.js
+```
+
+问题一：**发布 npm 包是否要删除 dependencies 里的 vue**
+
+要的，如果没有删除，项目结构会变成这种样子：
+
+```js
+- node_modules
+
+    - vue
+
+    - kealm-lib
+
+        - node_modules
+
+            - vue
+
+            - popper.js
+
+            ...
+
+        - package.json
+
+        - button.js
+
+        - index.js
+
+- src
+
+    - main.js
+```
+
+当用户环境和 npm 包里同时在 kealm-lib 的 node_modules 中有 vue 时，**kealm-lib 会用自己的，没有才用外面用户的**
+
+这意味着一旦组件库内部如 button.js 有：
+
+```js
+import Vue from 'vue'
+```
+
+它在上面结构中，会去引入自己 kealm-lib/node_modules/vue，而不是用户 node_modules/vue，这会导致存在 2 个 vue 模块
+
+所以发布前应该删除 dependencies 中的 vue 项，这样 kealm-lib/node_modules 下就不会有 vue 模块，结构如下：
+
+```js
+- node_modules
+
+    - vue
+
+    - kealm-lib
+
+        - node_modules
+
+            - popper.js
+
+            ...
+
+        - package.json
+
+        - button.js
+
+        - index.js
+
+- src
+
+    - main.js
+```
+
+问题二：**发布 npm 包是否要删除 devDependencies**
+
+可以比删除，用户安装 npm 包时，包中的 node_modules 只会安装 dependencies 中的项
+
+即假设 kealm-lib 的 package.json 如下结构：
+
+```json
+{
+    "dependencies": {
+        "popper.js": "16.13.1"
+    },
+    "devDependencies": {
+        "file-loader": "^1.1.11"
+    }
+}
+```
+
+则 kealm-lib 下的 node_modules 结构会是：
+
+```js
+- node_modules
+
+    - vue
+
+    - kealm-lib
+
+        - node_modules
+
+            - popper.js
+
+        - package.json
+
+        - button.js
+
+        - index.js
+
+- src
+
+    - main.js
+```
+
+不会安装 file-loader，因为只会去安装 dependencies 中的项
+
 ## 模块互相依赖的思考
 
 我们都知道，webpack 根据我们模块之间的引入关系形成依赖树，最终根据这棵依赖树打包生成文件
