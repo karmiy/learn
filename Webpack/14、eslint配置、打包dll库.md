@@ -358,3 +358,5 @@ module.exports = {
 ```
     
 ![Alt text](./imgs/14-12.png)
+
+> 注：现在 webpack4 是否还使用 dll 有待讨论，webpack4 在打包的时候默认开启缓存，而 dll 说其实也是一种文件的缓存机制，webpack4 在打包方面的速度优化可能已经足够，并且本人发现打包 react 与 react-dom 16.13.1 版本时，启动项目加载 dll 会卡死，原因未知
