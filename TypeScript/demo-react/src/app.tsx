@@ -10,6 +10,7 @@ const img = require('./assets/imgs/logo.png');
 import './assets/styles/app.scss';
 import { Provider } from 'react-redux';
 import store from './store';
+import useController from './hooks/useController';
 
 type ITitleProps = {
     name?: string;
@@ -26,6 +27,8 @@ const Title: React.SFC<ITitleProps> = (props) => {
 const TogglableWithTitle = Togglable.ofType<Omit<ITitleProps, keyof ToggleParams>>();
 
 function App() {
+    const [value, setValue] = useController('');
+
     // const ref:React.RefObject<HTMLDivElement> = React.createRef<HTMLDivElement>();
     return (
         <div className={'app'}>

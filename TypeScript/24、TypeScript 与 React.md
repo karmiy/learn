@@ -120,7 +120,7 @@ interface ILogoProps {
 }
 ```
 
-其实 React 的提供了更规范的用法, **type SFC\<P>**，这个工具类型里已经定义了 children 类型：
+其实 React 的提供了更规范的用法, **type FC\<P>**，这个工具类型里已经定义了 children 类型：
 
 ```tsx
 import * as React from 'react';
@@ -698,7 +698,7 @@ type ITitleProps = {
     name?: string;
 } & ToggleParams;
 
-const Title: React.SFC<ITitleProps> = (props) => {
+const Title: React.FC<ITitleProps> = (props) => {
     return (
         <div>
             {props.name}
@@ -829,6 +829,98 @@ const withTodoInput = <P extends InjectProps>(UnwrappedComponent: React.Componen
 render 函数中需要 **as P** 的原因，可以了解 26 节 **泛型与条件类型 extends 的保守推导问题**
 
 > 注意：如果在 export default 导出时报错，需要把 declaration: true 配置去掉
+
+### React Hooks
+
+react 提供的 hooks 使用在 typescript 中一般没什么大问题，只是有一些细节点要注意
+
+#### 自定义 Hook 返回数组
+
+比较常见的问题是自定义 hook 中返回数组：
+
+```ts
+// src/hooks/useController.ts
+import { useState } from 'react';
+
+function useController(val: string) {
+    const [value, setValue] = useState(val);
+    // ...
+    return [value, setValue];
+}
+
+export default useController;
+
+// src/app.tsx
+function App() {
+    const [value, setValue] = useController('');
+    // ...
+}
+```
+这时可以当我们在使用 value 时，会发现 value 并不是 string 类型：
+
+![Alt text](imgs/24-07.png)
+
+原因：我们返回的是数组，会被 typescript 解析成：
+
+```ts
+Array<string | React.Dispatch<React.SetStateAction<string>>>
+```
+
+所以正确的做法应该是返回**元组**：
+
+```ts
+// src/hooks/useController.ts
+import { useState } from 'react';
+
+function useController(val: string) {
+    const [value, setValue] = useState(val);
+
+    return [value, setValue] as [typeof value, typeof setValue];
+}
+
+export default useController;
+```
+#### useRef 使用 null 初始值
+
+我们经常会将 useRef 初始赋值为 null：
+
+```ts
+const ref = useRef<string>(null);
+```
+
+但是这在我们试图为 ref 赋值时将会报错：
+
+```ts
+ref.current = '1'; // 报错：Cannot assign to 'current' because it is a read-only property.ts
+```
+
+可以看到，ref.current 被当成了 **readonly**
+
+查看 useRef 的类型声明，可以看到 useRef 有 2 种声明，如下：
+
+![Alt text](imgs/24-08.png)
+
+而我们使用到的是上面那种，该声明的 current 是 readonly 的
+
+这是因为 react 中，我们一般会这样是使用初始为 null 的 ref：
+
+```ts
+const ref = useRef(null);
+
+<div ref={ref}></div>
+```
+
+所以当我们使用 null 作为 useRef 初始值时，current 作为一个 readonly 应该是更合理的
+
+那如果我们就希望初始赋为 null 要怎么解决呢？
+
+可以这样做：
+
+```ts
+const ref = useRef<string | null>(null);
+
+ref.current = '1';
+```
 
 ### Redux
 
