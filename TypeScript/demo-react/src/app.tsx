@@ -40,6 +40,10 @@ function App() {
                 component={Title}
                 props={{name: '1'}}
             /> */}
+            <Togglable 
+                component={Title}
+                props={{name: '1'}}
+            /> 
             <Provider store={store}>
                 <TodoItem />
             </Provider>

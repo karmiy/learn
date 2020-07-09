@@ -677,9 +677,32 @@ export default class Togglable<T extends object = {}> extends React.Component<Pr
 }
 ```
 
-但是我们可以在 JSX 上使用泛型类型吗？不幸的是，并不行
+```tsx
+type ITitleProps = {
+    name?: string;
+} & ToggleParams;
 
-但我们可以在泛型组件上引入一个静态方法，用于注入组件的类型：
+const Title: React.SFC<ITitleProps> = (props) => {
+    return (
+        <div>
+            {props.name}
+        </div>
+    )
+}
+
+function App() {
+    return (
+        <Togglable 
+            component={Title}
+            props={{name: '1'}}
+        /> 
+    )
+}
+```
+
+顺便提及一下，在曾经 typescript 还不支持泛型组件时，我们通常是这样处理的：
+
+在泛型组件上引入一个静态方法，用于注入组件的类型：
 
 ```tsx
 type Constructor<T = {}> = new (...args: any[]) => T;
@@ -785,6 +808,27 @@ export default class Togglable<T extends object = {}> extends React.Component<Pr
 ![Alt text](imgs/24-06.png)
 
 可以看到，注入组件后，传 props 时也会后非常友好的提示
+
+除此之外，还有函数式的泛型组件，但是目前函数式泛型组件还没有很好的一个方案，以下是一种使用函数式泛型组件的方案：
+
+```tsx
+export interface ICascaderProps<T extends string | number> {
+    value?: T[];
+    onChange?: (value: T[], index: number) => void;
+}
+
+type ICascader = <S extends string | number>(props: React.PropsWithChildren<ICascaderProps<S>>) => React.ReactElement<any, any> | null;
+
+const Cascader: ICascader = props => {
+    return <div>...</div>
+}
+
+// 使用
+function App() {
+    // 此时当我们输入的 value 是 number[]，onChange 的 value 参数也会自动识别为 number[]
+    return <Cascader value={[1, 2]} onChange={(value, index) => console.log(value, index)} />
+}
+```
 
 ### 高阶组件
 
