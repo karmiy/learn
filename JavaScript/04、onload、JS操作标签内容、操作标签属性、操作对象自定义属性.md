@@ -11,7 +11,7 @@ window.onload = function() {
 
 // onload与jQuery的$(document).ready()区别
 1、onload是文档全部加载完成（包括图片加载），jQuery的ready是DOM结构绘制完成（不包括图片加载）
-2、onload只能有一个，多个window.onload只会执行一共，jQuery的ready可以有多个
+2、onload只能有一个，多个window.onload只会执行一次，jQuery的ready可以有多个
 ```
     
 ## JS操作标签内容
