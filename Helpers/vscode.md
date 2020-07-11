@@ -33,3 +33,29 @@ setting => 搜索 tree => 找到 Workbench Tree: Indent   Controls tree indentat
     - vetur：识别 vue 模板
 
     - vue-helper：Ctrl template 上的变量可索引
+
+### 配置
+
+```json
+{
+    "workbench.tree.indent": 16,
+    "prettier.tabWidth": 4,
+    "editor.detectIndentation": false,
+    "vetur.format.defaultFormatter.html": "prettyhtml",
+    "vetur.format.defaultFormatterOptions": {
+        "prettyhtml": {
+            "tabWidth": 4,
+        }
+    },
+    "vetur.format.options.tabSize": 4,
+    "vetur.format.options.useTabs": false,
+    "vetur.format.defaultFormatter.css": "prettier",
+    "vetur.format.defaultFormatter.postcss": "prettier",
+    "vetur.format.defaultFormatter.scss": "prettier",
+    "vetur.format.defaultFormatter.sass": "sass-formatter",
+    "vetur.format.defaultFormatter.less": "prettier",
+    "vetur.format.defaultFormatter.stylus": "stylus-supremacy",
+    "vetur.format.defaultFormatter.js": "prettier",
+    "vetur.format.defaultFormatter.ts": "prettier",
+}
+```
