@@ -20,36 +20,48 @@
 ## 弹窗时固定页面不能滚动
 
 ```ts
-let prevPagePostion: string, 
-    prevPageTop: string,
-    prevPageLeft: string; 
 /**
- * @description 阻止页面滚动
+ * @description 是否为空值
+ * @param value 
  */
-export const preventPageScroll = () => {
-    const top = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop,
-        body = document.body;
-    prevPagePostion = body.style.position;
-    prevPageTop = body.style.top;
-    prevPageLeft = body.style.left;
-
-    body.style.position = 'fixed';
-    body.style.top = `${-top}px`;
-    body.style.left = '0';
+export const isEmpty = function(value: any): value is undefined | null {
+    return value === undefined || value === null;
 }
 
 /**
- * @description 恢复页面滚动
+ * @description 阻止页面滚动
+ * @param el 滚动元素
  */
-export const recoverPageScroll = () => {
-    const body = document.body,
-        top = Math.abs(parseFloat(body.style.top));
-    body.style.position = prevPagePostion;
-    body.style.top = prevPageTop;
-    body.style.left = prevPageLeft;
+export const preventPageScroll = (el?: HTMLElement | string) => {
+    const ele = typeof el === 'string' ? (document.querySelector(el) as HTMLElement) : el;
+
+    const top = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop,
+        body = document.body;
+
+    // 原本的 style
+    const prevPagePostion = body.style.position;
+    const prevPageTop = body.style.top;
+    const prevPageLeft = body.style.left;
+    const prevOverflow = ele?.style.overflow;
+
+    // 滚动元素非 body 也需要，防止 IOS 橡皮筋
+    body.style.position = 'fixed';
+    body.style.top = `${-top}px`;
+    body.style.left = '0';
+
+    // 普通元素只需超出 hidden
+    ele && (ele.style.overflow = 'hidden');
+
+    return () => {
+        const top = Math.abs(parseFloat(body.style.top));
+        !isEmpty(prevPagePostion) && (body.style.position = prevPagePostion);
+        !isEmpty(prevPageTop) && (body.style.top = prevPageTop);
+        !isEmpty(prevPageLeft) && (body.style.left = prevPageLeft);
+        !isEmpty(prevOverflow) && ele && (ele.style.overflow = prevOverflow);
     
-    document.documentElement.scrollTop = top;
-    window.scrollTo(0, top);
+        document.documentElement.scrollTop = top;
+        window.scrollTo(0, top);
+    }
 }
 ```
 
@@ -171,3 +183,15 @@ better-scroll 是让元素假滚动，即父元素设置了 overflow: hidden 超
 - 滚动过程中点击让其停住时会抖动一下
 
 - 默认点击事件等会失效，需要配置，对不熟悉者可能造成困扰
+
+问题分析：
+
+better-scroll 是在 touchend 时算法得出终点位置，设置后通过 CSS transition 过渡效果实现的惯性
+
+在重新触屏后瞬间获取当前的偏移量进行赋值并清除过渡
+
+但是移动端 transition 过渡撤消存在延迟反应，这意味着在 200 的位置瞬间触屏，元素可能还会运动到 210 的位置，接着将元素偏移设置回 200，会出现瞬间倒退的瞬移问题
+
+解决方案：
+
+不使用 CSS transition 完成惯性，使用 raf 按帧进行动画，每一帧通过计算前进相应的位置
