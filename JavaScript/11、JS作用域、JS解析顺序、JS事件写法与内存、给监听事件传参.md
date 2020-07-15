@@ -78,7 +78,7 @@ function fn() {
     a = 20; // 会被当做全局变量
 }
 fn();
-console.log(20); // 输出20
+console.log(a); // 输出20
 ```
     
 ```html
