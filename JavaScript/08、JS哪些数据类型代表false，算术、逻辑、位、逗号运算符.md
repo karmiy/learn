@@ -133,9 +133,9 @@ console.log( 1 < 3 < 2 ); // 输出true，JS会按顺序执行，1<3是true，tr
 非! ：取反
 
 console.log(true && false); // 输出false
-console.log(true }} false); // 输出true
+console.log(true || false); // 输出true
 console.log(!true); // 输出false
-console.log(!！true); // 输出true
+console.log(!!true); // 输出true
 ```
     
 > &#9733; 贴士 
