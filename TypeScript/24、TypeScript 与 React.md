@@ -966,6 +966,24 @@ const ref = useRef<string | null>(null);
 ref.current = '1';
 ```
 
+#### useRef 挂载 DOM
+
+上面说到，经常会使用 useRef(null) 来挂载 DOM 元素:
+
+```ts
+const ref = useRef(null);
+
+<div ref={ref}></div>
+```
+
+值得注意的是，在 typescript 中主要使用类型会出错，需要指定元素类型，并且**要正确的元素类型**
+
+```ts
+const ref = useRef<HTMLDivElement>(null); // 需要是 HTMLDivElement，即时是 HTMLElement, Element 都不行
+
+<div ref={ref}></div>
+```
+
 ### Redux
 
 在项目中仅仅组件之间传递属性是不够的，经常还会涉及到对状态的管理，React 中一般用 redux 来作为状态管理工具
