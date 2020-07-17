@@ -874,6 +874,31 @@ render 函数中需要 **as P** 的原因，可以了解 26 节 **泛型与条�
 
 > 注意：如果在 export default 导出时报错，需要把 declaration: true 配置去掉
 
+### 原生属性
+
+有时在封装一个组件时，可能会把剩余属性赋值给根元素，如下：
+
+```tsx
+const Icon: React.FC<IIconProps> = props = {
+    const {
+        type,
+        ...others
+    } = props;
+
+    return <i className={`iconfont icon-${type}`} {...others}></i>
+}
+```
+
+而剩余属性可能希望可以传递的原生属性如 onClick 等
+
+那么可以这样定义 IIconProps：
+
+```ts
+export interface IIconProps extends React.HTMLAttributes<HTMLElement> {
+    type: IconType;
+}
+```
+
 ### React Hooks
 
 react 提供的 hooks 使用在 typescript 中一般没什么大问题，只是有一些细节点要注意
