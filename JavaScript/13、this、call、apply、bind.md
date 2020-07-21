@@ -132,7 +132,7 @@ fn.apply(document, [5, 6]); //第二个参数传数组，call是(document, 5, 6)
 IE不兼容
 
 // 与call和apply差别
-call、apply调用立即执行，bind只是改变this执行，不会自执行
+call、apply调用立即执行，bind只是改变this指向，不会自执行
 
 // 用法
 var t = {id: 10};
