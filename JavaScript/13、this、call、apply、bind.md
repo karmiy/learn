@@ -55,7 +55,7 @@ a.func2(); // 输出this.func1 is not a function，因为定时器this指向wind
 // 示例一
 var wrap = document.getElementById('wrap');
 wrap.onclick = function() {
-    fn.call(document. 1); // 1、将fn的this指向改为document，形参num传1
+    fn.call(document, 1); // 1、将fn的this指向改为document，形参num传1
 }
 function fn(num) {
     console.log(num + this.id); // 2、this指向被修改，点击wrap触发时this是document
@@ -65,7 +65,7 @@ function fn(num) {
 (function(){
     var wrap = document.getElementById('wrap');
     wrap.onclick = function() {
-        fn.call(this. 1); 
+        fn.call(this, 1); 
         // 1、这里this是wrap，又将fn的this指向这个this(wrap)
         // 2、这里推荐写this，而不是fn.call(wrap, 1)，因为会导致闭包产生，
                 本来wrap变量在添加完onclick就回收了，这样反而产生闭包回收不了
@@ -79,7 +79,7 @@ function fn(num) {
 (function(){
     var wrap = document.getElementById('wrap');
     wrap.onclick = function() {
-        fn.call(5. 2); 
+        fn.call(5, 2); 
         // 1、将fn的this指向5这个数
     }
     function fn(num) {
