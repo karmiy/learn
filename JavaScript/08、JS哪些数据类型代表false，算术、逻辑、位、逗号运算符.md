@@ -67,11 +67,16 @@ var a = 9; var b = ++a; console.log(a, b); // 输出10,10（前置是先自增�
 ### 隐式类型转换
 
 ```js
-// +号两边任意一边是string，就会被当做字符串拼接，boolean计算会被当做1或0
+// +号两边任意一边是string，就会被当做字符串拼接
 var a = 10; var b = '10'; console.log(a + b); // 输出'1010'
 var a = null; var b = '10'; console.log(a + b); // 输出'null10'
 var a; var b = '10'; console.log(a + b); // 输出'undefined10'
-var a = true; var b = 10; cosnole.log(a + b); // 输出11
+
+// +号两边没有string时，会尽量把两边转换为数字去运算
+var a = true; var b = 10; console.log(a + b); // 输出11，boolean根据true或false可以被转为1或0
+var a = true; var b = true; console.log(a + b); // 输出2
+var a = true; var b = null; console.log(a + b); // 输出1，Number(null) 为 0
+var a = true; var b = undefined; console.log(a + b); // 输出NaN，Number(undefined) 为 NaN
 
 // -号运算会尽量把两边转换为数字去运算
 var a = 10; var b = '5'; console.log(a - b); // 输出5
@@ -128,9 +133,9 @@ console.log( 1 < 3 < 2 ); // 输出true，JS会按顺序执行，1<3是true，tr
 非! ：取反
 
 console.log(true && false); // 输出false
-console.log(true }} false); // 输出true
+console.log(true || false); // 输出true
 console.log(!true); // 输出false
-console.log(!！true); // 输出true
+console.log(!!true); // 输出true
 ```
     
 > &#9733; 贴士 

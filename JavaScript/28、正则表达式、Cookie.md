@@ -499,7 +499,7 @@ document.cookie = 'code=7';
 
 后者并不会覆盖前者
 不要当做普通对象一样: obj.a = 1; obj.a = 2; console.log(obj.a);  --- 输出2
-cosnole.log(document.cookie); // 'name=karmiy; code=7'
+console.log(document.cookie); // 'name=karmiy; code=7'
 
 // 删除
 document.cookie = 'name=;expires=Thu, 01 Jan 1970 00:00:01 GMT'; // 内容置空，过期时间设置在当前时间之前
