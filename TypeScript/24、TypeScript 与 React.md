@@ -944,7 +944,7 @@ import { useState } from 'react';
 function useController(val: string) {
     const [value, setValue] = useState(val);
 
-    return [value, setValue] as [typeof value, typeof setValue];
+    return [value, setValue] as const;
 }
 
 export default useController;

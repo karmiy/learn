@@ -31,6 +31,23 @@ namespace doc_18 {
         MercedesBenz: { age: 133 },
     }
 
+    // as const
+    let x = 'x' as const;
+
+    // const action = { type: 'INCREMENT' };
+
+    const setCount = (num: number) => (<const>{
+        type: 'SET_COUNT',
+        payload: num,
+    });
+
+    const action = setCount(1);
+
+    const hoursAction = {
+        type: 'SET_HOURS',
+        payload: [10, 12, '9'],
+    } as const;
+
     // LeetCode
     interface Action<T> {
         payload?: T

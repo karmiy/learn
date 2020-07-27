@@ -99,6 +99,91 @@ const toArray = <T>(element: T) => [element]; // Error in .tsx file.
 const toArray = <T extends {}>(element: T) => [element]; // No errors.
 ```
 
+### as const 断言
+
+const 断言是 TypeScript 3.4 引入的新构造
+
+它表示该表达式中的字面类型不应被扩展
+
+- 字面类型
+
+当我们使用 const 声明变量时，该类型会声明为字面量类型：
+
+```ts
+const x = 'x'; // const x: "x"
+```
+
+但如果是 let 定义，表示该变量会被重新分配，那么将被扩展为字符串类型：
+
+```ts
+let x = 'x'; // let x: string
+```
+
+而使用 as const，就可以将类型断言，表示不应该被扩展：
+
+```ts
+let x = 'x' as const; // let x: "x"
+```
+
+- 对象字面量获取只读属性
+
+在如下场景，即使声明为 const，属性值类型依旧存在类型扩展：
+
+```ts
+const action = { type: 'INCREMENT' };
+// const action: { type: string }
+```
+
+这在一些场景将造成困扰，例如在 redux 中，我们的 actionCreator 是这样的：
+
+```ts
+const setCount = (num: number) => ({
+    type: 'SET_COUNT',
+    payload: num,
+});
+
+const action = setCount(1);
+```
+
+然而我们得到的 action 中 type 却是 string 类型
+
+这时 as const 就可以解决这个问题：
+
+```ts
+const setCount = (num: number) => (<const>{
+    type: 'SET_COUNT',
+    payload: num,
+});
+
+const action = setCount(1);
+```
+
+值得注意的是现在 action 类型为：
+
+```ts
+const action: {
+    readonly type: "SET_COUNT";
+    readonly payload: number;
+}
+```
+
+- 数组字面量成为只读元组
+
+此外，当数组遇到 as const，将会成为元组类型：
+
+```ts
+const hoursAction = {
+    type: 'SET_HOURS',
+    payload: [10, 12, '9'],
+} as const;
+
+// =>
+const hoursAction: {
+    readonly type: "SET_HOURS";
+    readonly payload: readonly [10, 12, "9"];
+}
+```
+
 ## LeetCode 思考题
 
 有一个类 EffectModule，它上面的方法**只可能**有2种类型签名：
