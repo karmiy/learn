@@ -141,7 +141,7 @@ function fn() {
 }
 document.onclick = fn.call(t); // 错误，call会立即执行
 
-document,onclick = fn.bind(t); // 正确，bind不会立即执行，只会提前改变this指向
+document.onclick = fn.bind(t); // 正确，bind不会立即执行，只会提前改变this指向
 
 // 示例一
 var a ={
