@@ -173,7 +173,7 @@ top = Math.min(top, 100);
 ```js
 // 说明
 Math.floor 向下取整
-Math.ceil 向上取证
+Math.ceil 向上取整
 Math.round 四舍五入
 
 Math.floor(10.99); // 10
