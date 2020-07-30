@@ -195,3 +195,23 @@ better-scroll 是在 touchend 时算法得出终点位置，设置后通过 CSS 
 解决方案：
 
 不使用 CSS transition 完成惯性，使用 raf 按帧进行动画，每一帧通过计算前进相应的位置
+
+## Video
+
+### 层级问题
+
+在 Android 下，video 一旦播放，z-index 会变最高，无法靠遮罩层遮挡
+
+在一些浏览器下可能有一些配置可以处理
+
+也可以手动 display: none 在遮罩关闭前隐藏
+
+### onCanPlay
+
+- IOS: 在第一次播放时触发
+
+- Android: 视频可以加载完可以触发，拖动时放手也会触发
+
+### 切后台问题
+
+- Android: 如果本来这个 video 正在播放，切到后台会执行一次 pause，切回来后再执行一次 play(这个 play 执行的有点慢)。如果本来就是暂时的都不影响
