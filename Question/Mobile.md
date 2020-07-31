@@ -212,6 +212,62 @@ better-scroll 是在 touchend 时算法得出终点位置，设置后通过 CSS 
 
 - Android: 视频可以加载完可以触发，拖动时放手也会触发
 
-### 切后台问题
+### 切后台执行 play pause问题
 
-- Android: 如果本来这个 video 正在播放，切到后台会执行一次 pause，切回来后再执行一次 play(这个 play 执行的有点慢)。如果本来就是暂时的都不影响
+- 相同点:
+
+    - 对于正在播放的视频（本来就是暂停的不影响），Android 和 IOS 切到后台都会执行一次 pause，切回来的时候会执行一次 play
+
+- 不同点:
+
+    - Android: 在切回来之前 JS 执行 video.pause() 无意义（如切 4G 网络要暂停的需求），因为等等切回来后自动执行一次 play 又播放了
+
+    - IOS: 在切回来之前 JS 执行 video.pause() 有效，IOS 监听到执行了 pause，回来后不会执行那一次 play
+
+解决方案：
+
+- 监听客户端 pageShow 协议，切回来时再次检查网络判断是否要暂停
+
+### 埋点注意
+
+- 播放中拖动: 
+
+    - IOS: 播放过程中拖动瞬间会先触发 1次 pause，在 seeking 之前，放手后再次触发 play
+
+    - Android: 播放过程中拖动不会触发 pause，放手也不会触发 play
+
+    - 作用: 判断 pause 触发是否为 IOS 拖动触发，可在 seeking 中设置正在拖动的变量，pause 里延迟个 300ms 再判断是否正在拖拽中，是则表示是拖动触发的 pause
+
+- 拖动中:
+
+    - IOS: 拖动过程中 seeking seeked 也会一直触发
+
+    - Android: 在放手触发
+
+- 暂停时拖动:
+
+    - IOS: 在暂停时拖动放开不会 play
+
+    - Android: 在暂停时拖动放开会自己 play，并触发 2 次 seeking，顺序 seeking - play - seeking - seeked
+
+    - 作用: 设置变量判断安卓拖动前是否正在播放中
+
+- 播放结束的 pause:
+
+    - IOS Android 在播放结束都会触发 pause，在 ended 前
+
+    - 作用: 在 pause 事件中通过 video.currentTime !== video.duration 判断是否是结束时触发的 pause
+
+- 播放结束重新播放:
+
+    - IOS Android 在播放结束后点击重新播放，会触发 seeking, seeked，结合播放结束的顺序 pause - ended - seeking -play - seeked
+
+    - 作用: 在 seeking, seeked 中注意判断 video.currentTime 是否为 0，是则表示这次 seeking 是播放结束后重新播放触发的
+
+- timeupdate 事件:
+
+    - IOS: 拖动会带动 timeupdate 变化
+
+    - Android: 在拖动过程中依旧是之前拖动瞬间位置在计时，放手后 seeking 在下一次新 timeupdate 前
+
+    - 作用: 利用 Android timeupdate 事件在拖动时依旧是拖动瞬间的计时状态，记录 Android 拖动前的时间
