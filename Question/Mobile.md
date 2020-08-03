@@ -228,6 +228,8 @@ better-scroll 是在 touchend 时算法得出终点位置，设置后通过 CSS 
 
 - 监听客户端 pageShow 协议，切回来时再次检查网络判断是否要暂停
 
+> 注：document.addEventListener('visibilitychange') 也可以，执行顺序注意：visibilitychange => 后台切回来的 play => pageShow
+
 ### 埋点注意
 
 - 播放中拖动: 
