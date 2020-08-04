@@ -226,9 +226,21 @@ better-scroll 是在 touchend 时算法得出终点位置，设置后通过 CSS 
 
 解决方案：
 
-- 监听客户端 pageShow 协议，切回来时再次检查网络判断是否要暂停
+- 监听客户端 pageShow 协议 或 document.addEventListener('visibilitychange')，切回来时再次检查网络判断是否要暂停
 
-> 注：document.addEventListener('visibilitychange') 也可以，执行顺序注意：visibilitychange => 后台切回来的 play => pageShow
+### 切后台时 visible hiden 事件顺序
+
+- 切后台: 客户端 pageHide 协议 => pause => document.visibilitychange
+
+- 唤醒 APP: document.visibilitychange => play => 客户端 pageShow 协议
+
+存在问题: 
+
+- 假设需求是从后台切回来唤醒 APP 要暂停 video，若在 pageShow 里执行 pause 暂停 video，在 IOS 低版本会出现先播放一小会再暂停的问题
+
+解决方案:
+
+- 由于 document.visibilitychange 在 play 前，可以在 document.visibilitychange 设置变量，在 onplay 事件中发现变量为 true 立即执行 pause 暂停
 
 ### 埋点注意
 
