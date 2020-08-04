@@ -60,7 +60,7 @@ var x = setTimeout(fn, 2000);
 var y = setInterval(fn, 2000);
 
 clearTimeout(x); // 清除setTimeout定时器，一般用于阻止fn执行
-clearInterval(y); // 定出setInterval定时器，项目开发中都需要记得在离开时清除定时器
+clearInterval(y); // 清除setInterval定时器，项目开发中都需要记得在离开时清除定时器
 
 // 清除定时器后，本次执行的代码会继续执行完而不会中断
 var time = setInterval(function() {
