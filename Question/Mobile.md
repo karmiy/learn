@@ -242,6 +242,12 @@ better-scroll 是在 touchend 时算法得出终点位置，设置后通过 CSS 
 
 - 由于 document.visibilitychange 在 play 前，可以在 document.visibilitychange 设置变量，在 onplay 事件中发现变量为 true 立即执行 pause 暂停
 
+### duration 视频时长
+
+- IOS: 在 onLoadedMetadata 事件中获取
+
+- Android: 需要在第一次播放后才能获取，之前不管是 onLoadedMetadata 还是 onCanPlay 获取到的都是 0，可以在 play 里 setTimeout 一会获取
+
 ### 埋点注意
 
 - 播放中拖动: 
