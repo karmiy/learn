@@ -11,7 +11,7 @@
 
 经常出现在我们创建了模态框遮罩层，拖动模态框时，整个页面会跟着滚动
 
-解决方案：
+解决方案: 
 
 - 弹框时，固定页面不能滚动，实现略，下个案例提及
 
@@ -91,7 +91,7 @@ setTimeout(() => {
 
 橡皮筋是在元素已经置顶或置底时，再次拖动会出现的现象
 
-那么可以在开始拖动时判断是否滚动元素已经置顶或置底，如果是则阻止页面 touchmove 的默认事件，让页面无法滑动，如果滚动元素未置顶或置底，则不阻止页面 touchmove 默认事件，也就不会触发整个页面的橡皮筋：
+那么可以在开始拖动时判断是否滚动元素已经置顶或置底，如果是则阻止页面 touchmove 的默认事件，让页面无法滑动，如果滚动元素未置顶或置底，则不阻止页面 touchmove 默认事件，也就不会触发整个页面的橡皮筋: 
 
 ```ts
 function noBounce(scrollBox: Element) {
@@ -124,21 +124,21 @@ function noBounce(scrollBox: Element) {
 noBounce(document.querySelector('.list')); // 绑定滚动元素
 ```
 
-优点：
+优点: 
 
 - 当滚动元素置顶或置顶时，再次拖动不会导致页面弹性拉伸
 
-缺点：
+缺点: 
 
 - 由于在非置顶/底的 touchmove 中，拉到顶部或底部在 IOS 依旧会触发自身的橡皮筋，这是无法取消的，所以如果现在置顶/底时拖动页面固定死了(如开头所述，元素置顶/底时再拖动 IOS 不会触发自身橡皮筋，会触发页面的橡皮筋，机制如此)，可能比较僵有点奇怪
 
-### 方案二：
+### 方案二: 
 
 使用 inobounce.js
 
 inobounce.js 的源码只有 100+ 行，主要在于对 -webkit-overflow-scrolling: touch 的判断
 
-inobounce 会在 window 下监听 touchmove 事件，并且只让具有如下条件的元素可以被拖动：
+inobounce 会在 window 下监听 touchmove 事件，并且只让具有如下条件的元素可以被拖动: 
 
 1. 元素配置了 -webkit-overflow-scrolling: touch
 
@@ -148,7 +148,7 @@ inobounce 会在 window 下监听 touchmove 事件，并且只让具有如下条
 
 4. 元素未置顶/置底
 
-同样，会阻止以下情况的默认事件，即页面会无法被拖动：
+同样，会阻止以下情况的默认事件，即页面会无法被拖动: 
 
 1. 当前滑动的是页面(document, document.body)
 
@@ -170,7 +170,7 @@ inobounce 提供了 enable, disable, isEnabled 方法，用于开启，关闭，
 
 better-scroll 是让元素假滚动，即父元素设置了 overflow: hidden 超出隐藏，配置 touchmove 事件监听滑动，使用 translateY 控制子元素偏移
 
-优点：
+优点: 
 
 - 使用简单，可配置项多样
 
@@ -178,13 +178,13 @@ better-scroll 是让元素假滚动，即父元素设置了 overflow: hidden 超
 
 - 元素置顶/底后拖动完美解决触发页面橡皮筋的问题，因为它设置的是超出隐藏，页面橡皮筋是在有真实滚动条的元素置顶/底时再拖动触发的
 
-缺点：
+缺点: 
 
 - 滚动过程中点击让其停住时会抖动一下
 
 - 默认点击事件等会失效，需要配置，对不熟悉者可能造成困扰
 
-问题分析：
+问题分析: 
 
 better-scroll 是在 touchend 时算法得出终点位置，设置后通过 CSS transition 过渡效果实现的惯性
 
@@ -192,9 +192,53 @@ better-scroll 是在 touchend 时算法得出终点位置，设置后通过 CSS 
 
 但是移动端 transition 过渡撤消存在延迟反应，这意味着在 200 的位置瞬间触屏，元素可能还会运动到 210 的位置，接着将元素偏移设置回 200，会出现瞬间倒退的瞬移问题
 
-解决方案：
+解决方案: 
 
 不使用 CSS transition 完成惯性，使用 raf 按帧进行动画，每一帧通过计算前进相应的位置
+
+## IOS 橡皮筋与 position: fixed
+
+当我们页面的滚动元素不是文档本身时，即假设其他元素来实现页面进滚动的:
+
+```html
+<html>
+    <body>
+        <!-- 假设 html body 等都是 100% 高度 -->
+        <!-- 页面由 #app 来做滚动，#app { overflow: auto } -->
+        <div id='app'>
+        </div>
+    </body>
+</html>
+```
+
+如果 #app 内有 fixed 的元素，固定在底部:
+
+```html
+<html>
+    <body>
+        <div id='app'>
+            <!-- 该元素 position: fixed; bottom: 0 -->
+            <div class='fixed'>...</div>
+        </div>
+    </body>
+</html>
+```
+
+当 #app 滚到底部再次拖动触发 IOS 橡皮筋时，将会出现 .fixed 元素被遮挡的问题
+
+解决方案:
+
+将 .fixed 元素放到滚动元素外: 
+
+```html
+<html>
+    <body>
+        <div id='app'></div>
+        <!-- 该元素 position: fixed; bottom: 0 -->
+        <div class='fixed'>...</div>
+    </body>
+</html>
+```
 
 ## Video
 
@@ -224,7 +268,7 @@ better-scroll 是在 touchend 时算法得出终点位置，设置后通过 CSS 
 
     - IOS: 在切回来之前 JS 执行 video.pause() 有效，IOS 监听到执行了 pause，回来后不会执行那一次 play
 
-解决方案：
+解决方案: 
 
 - 监听客户端 pageShow 协议 或 document.addEventListener('visibilitychange')，切回来时再次检查网络判断是否要暂停
 
