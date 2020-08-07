@@ -339,16 +339,22 @@ console.log(wrap.clientHeight, wrap.scrollHeight);
     
 ```js
 /**
-    * des：是否有滚动条（这里我们只判断垂直滚动条）
-    * params: target: DOMElement 
-    */
-function isScrollTarget(target) {
+ * 是否是滚动元素（这里我们只判断垂直滚动条）
+ * @param target
+ * @param isStrict 是否严格判断，严格模式下 display: none 隐藏的元素不包括
+ */
+function isScrollTarget(target, isStrict) {
     if(!target)
         return false;
     
     // 只取overflowY，不管样式是设置overflow: auto/scroll，还是overflowY: auto/scroll，取overflowY都可以得到结果
     var overflowY = DOMComputedStyle(target).overflowY;
-    return (overflowY === 'auto' || overflowY === 'scroll') && (target.scrollHeight > target.clientHeight);
+
+    var isOverflowScroll = (overflowY === 'auto' || overflowY === 'scroll');
+    var isContentScroll = (target.scrollHeight > target.clientHeight);
+
+    if(!isStrict) return isOverflowScroll;
+    return isOverflowScroll && isContentScroll;
 }
 
 function DOMComputedStyle(dom) {
