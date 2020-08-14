@@ -157,7 +157,7 @@ document.onkeyup = function(e) {
 
 // 注
 1、执行顺序：onkeydown -> onkeypress ->onkeyup
-2、onkeypress不能响应系统键（ctrl、shift、alt、insert、delete、page^等），不能想要中文输入法
+2、onkeypress不能响应系统键（ctrl、shift、alt、insert、delete、page^等），不能响应中文输入法
 ```
 
 ### 事件对象
