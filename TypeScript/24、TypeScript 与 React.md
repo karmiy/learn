@@ -899,6 +899,46 @@ export interface IIconProps extends React.HTMLAttributes<HTMLElement> {
 }
 ```
 
+### React Router
+
+对于路由配置的类型，一般使用 react-router-config 这个库的类型
+
+```
+npm i @types/react-router-config -D
+```
+
+路由配置：
+
+```ts
+import { RouteConfig } from 'react-router-config';
+
+const route: RouteConfig[] = [
+    {
+        key: 'A',
+        path: '/a/:id(\\d+)?',
+        component: lazy(() => import(/* webpackChunkName:'views-a' */'../views/a')),
+        routes: [
+            {
+                key: 'B',
+                path: '/a/:id(\\d+)?/b',
+                component: lazy(() => import(/* webpackChunkName:'views-b' */'../views/b')),
+            }
+        ]
+    },
+];
+```
+
+路由页面接收 route, history 等参数：
+
+```ts
+import { RouteConfigComponentProps } from 'react-router-config';
+
+export interface AProps extends RouteConfigComponentProps {
+    name?: string;
+    // ...
+}
+```
+
 ### React Hooks
 
 react 提供的 hooks 使用在 typescript 中一般没什么大问题，只是有一些细节点要注意
