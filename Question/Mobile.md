@@ -77,6 +77,14 @@ setTimeout(() => {
 }, 100);
 ```
 
+IOS 13 需要赋值给 documentElement
+
+```ts
+setTimeout(() => {
+    document.documentElement.scrollTop = document.documentElement.scrollTop || document.body.scrollTop || 0;
+}, 100);
+```
+
 ## IOS 橡皮筋
 
 在 IOS 中，我们拖动页面, 某个滚动元素到边缘时会触发橡皮筋效果（Android 没有）
