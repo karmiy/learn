@@ -118,7 +118,7 @@ for(let i = 0; i < 10; i++) { // for()这个小括号里也是一个独立的作
 示例三：
 for(let i = 0; i < 10; i++) {
     console.log(i);
-        for(let i = 0; i < 10; i++) {
+    for(let i = 0; i < 10; i++) {
         console.log(i);
     }
 }
