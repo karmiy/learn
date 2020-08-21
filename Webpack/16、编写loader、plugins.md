@@ -337,7 +337,7 @@ plugins: [
 
 // plugins/kealm-webpack-plugin.js
 class KealmWebpackPlugin {
-    constructor() {
+    constructor(options) {
         console.log('options = ', options);
     }
     apply(compiler) {
