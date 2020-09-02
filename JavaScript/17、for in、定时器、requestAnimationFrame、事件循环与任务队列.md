@@ -265,6 +265,18 @@ var wrap = document.getElementById('wrap'),
     time = requestAnimationFrame(move);
 }();
 ```
+
+### 接收参数
+
+requestAnimationFrame 接收一个参数：timestamp
+
+```js
+requestAnimationFrame(function(timestamp) {
+    console.log(timestamp);
+});
+```
+
+该参数表示时间戳，与 Date.now() / new Date().getTime() 不同在于，这个 timestamp 等同于 performance.now()，**相对于页面加载 page load 到现在经历的时间**，且有小数点，更为精确，而 Date 的时间戳是 1970/01/01 00:00:00 UTC 开始计数的
     
 ### 基本的兼容性写法
 
