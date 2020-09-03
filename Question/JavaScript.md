@@ -372,6 +372,7 @@ function B(id) {
 function F() {}
 F.prototype = A.prototype;
 B.prototype = new F();
+B.prototype.constructor = B;
 B.prototype.code = '902';
 ```
 
