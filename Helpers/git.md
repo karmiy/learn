@@ -2,6 +2,8 @@
 
 - 更新分支列表：git remote update origin --prune
 
+- 更新远程分支到本地: git pull origin xxxxx
+
 - 查看当前分支：git branch
 
 - 查看当前分支及远程分支：git branch -a
