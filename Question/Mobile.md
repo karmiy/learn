@@ -353,3 +353,9 @@ better-scroll 是在 touchend 时算法得出终点位置，设置后通过 CSS 
 - fixed 元素跟随滚动条滚动。解决方案：fixed 元素放到滚动元素外
 
 - 用 fixed 做的 Nav 导致不再定位在屏幕定位，而是位移或跑到窗口外。目前没有什么解决方案
+
+## translateZ 与 z-index
+
+在 PC 端，translateZ 并不会影响元素层级高低
+
+但是在移动端中，translateZ 比任何 z-index 都高，即一个 translateZ(1px) 的元素都在 z-index: 1000 的元素上面
