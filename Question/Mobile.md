@@ -343,3 +343,13 @@ better-scroll 是在 touchend 时算法得出终点位置，设置后通过 CSS 
     - Android: 在拖动过程中依旧是之前拖动瞬间位置在计时，放手后 seeking 在下一次新 timeupdate 前
 
     - 作用: 利用 Android timeupdate 事件在拖动时依旧是拖动瞬间的计时状态，记录 Android 拖动前的时间
+
+## fixed 失效
+
+在手机中点击 input 类输入框时弹出键盘，会导致页面中的 fixed 元素失效变为 absolute
+
+这会导致很多问题：
+
+- fixed 元素跟随滚动条滚动。解决方案：fixed 元素放到滚动元素外
+
+- 用 fixed 做的 Nav 导致不再定位在屏幕定位，而是位移或跑到窗口外。目前没有什么解决方案
