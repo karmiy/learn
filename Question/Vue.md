@@ -1338,7 +1338,7 @@ mounted() {
 
 此外，除了 $nextTick 的回调是遵循这样异步执行，根据上面说到的 watcher 的更新也是这样异步执行，可知在 computed、watch 中的回调也会是异步执行的
 
-## 如何监听子组件的声明周期钩子
+## 如何监听子组件的生命周期钩子
 
 可以通过 @hook:XXX 监听子组件的生命周期钩子：
 
@@ -1645,7 +1645,7 @@ Vue.directive('color', function (el, binding) {
 
 - 少直接在面板上做 JS 表达式操作，如 v-if="isShow && isWrap && (x || y)"，可以写到 computed、methods 中
 
-- v-if 循环节点时使用 key 表示
+- v-for 循环节点时使用 key 表示
 
 - 不用使用 v-for 又 v-if，v-for 优先级高，可以使用 computed 代替过滤
 
