@@ -359,3 +359,58 @@ better-scroll 是在 touchend 时算法得出终点位置，设置后通过 CSS 
 在 PC 端，translateZ 并不会影响元素层级高低
 
 但是在移动端中，translateZ 比任何 z-index 都高，即一个 translateZ(1px) 的元素都在 z-index: 1000 的元素上面
+
+## 键盘弹起时页面高度
+
+- IOS: 键盘弹起时页面高度不变
+
+- Android: 键盘弹起时页面高度会变小，即会被键盘挤上去
+
+    - 存在问题：如果有 fixed 在底部一段距离的元素，键盘弹起时会顶上去，bottom 如果设的比较大会顶到屏幕外
+
+## iPhoneX 底部横线遮挡问题
+
+iPhoneX 底部的有一个横线，导致底部的内容被遮挡，大约 34px
+
+- 场景一：
+
+fixed 在底部的按钮被横线遮挡
+
+![Alt text](./imgs/mobile-01.png)
+
+解决方案：
+
+控制按钮的 bottom 值 + 34
+
+- 场景二：
+
+点击按钮后从底部弹出 Popup 弹窗
+
+![Alt text](./imgs/mobile-02.png)
+
+解决方案：
+
+同上，popup 上移 34
+
+- 场景三：
+
+列表滚动底部时被遮挡
+
+![Alt text](./imgs/mobile-03.png)
+
+解决方案：
+
+给列表内部增加 padding-bottom: 34，使其滚动底部时最后一条不会被遮挡
+
+```html
+<div style='height: 200px; overflow: auto;'>
+    <ul style='padding-bottom: 34px;'>
+        <li>...</li>
+        
+        ...
+
+        <li>...</li>
+    </ul>
+</div>
+```
+
