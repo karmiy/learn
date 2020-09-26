@@ -414,3 +414,13 @@ fixed 在底部的按钮被横线遮挡
 </div>
 ```
 
+## 图片高度不能自适应
+
+移动端中给 img 设置了 width，并不能像 PC 那样高度自适应
+
+解决方案：
+
+在 img 父级设置 flex 布局 + align-item: center
+
+
+
