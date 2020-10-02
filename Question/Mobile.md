@@ -423,4 +423,88 @@ fixed 在底部的按钮被横线遮挡
 在 img 父级设置 flex 布局 + align-item: center
 
 
+## 移动端设计稿 1px
+
+移动端开发中，UI 给的图上的 1px，通常是物理像素的 1px，而我们 CSS 的 1px 是逻辑像素
+
+根据设备像素比 dpr（有的设备是 2，有的设备是 3 等等），映射到设备上就是 2px 或 3px
+
+这意味着我们 CSS 1px 在设备上的效果，对 UI 而言是不够纤细的
+
+而我们并不能使用类似 0.5px 来处理这个问题，因为 0.5px 在不同浏览器效果是不同的，甚至会被当做 0
+
+解决方案:
+
+使用 transform: scale
+
+```scss
+@mixin thinBorder($directionMaps: bottom, $color: $border-color-base, $radius:(0, 0, 0, 0), $position: after) {
+    &:#{$position} {
+        content: '';
+        box-sizing: border-box;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200%;
+        height: 200%;
+        transform: scale(0.5);
+        transform-origin: 0 0;
+        border: 0 solid $color;
+        pointer-events: none;
+
+        @if(list == type-of($radius)) {
+            border-radius: 
+                nth($radius, 1) * 2 
+                nth($radius, 2) * 2 
+                nth($radius, 3) * 2 
+                nth($radius, 4) * 2;
+        }
+
+        @else {
+            border-radius: $radius * 2;
+        }
+
+        @each $directionMap in $directionMaps {
+            border-#{$directionMap}-width: 0.1rem;
+        }
+    }
+}
+```
+
+```scss
+@include thinBorder((left, top, bottom, right), #999, 0.4rem);
+```
+
+## 如何判断 iPhoneX 系列
+
+iPhoneX 系列手机众所周知会在 home 健位置出现一条黑线，这也导致了前面的底部横线遮挡问题
+
+可以使用 CSS 判断是否在 iPhoneX 系列机型:
+
+```scss
+@mixin iphoneXMedia {
+    /*iphoneX, iphonex xs*/
+    @media only screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) {
+        @content;
+    }
+
+    /*iphonexs max*/
+    @media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) {
+        @content;
+    }
+
+    /*iphone xr*/
+    @media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) {
+        @content;
+    }
+}
+```
+
+```scss
+@include iphoneXMedia {
+    .button {
+        bottom: 34px;
+    }
+}
+```
 
