@@ -512,9 +512,19 @@ iPhoneX 系列手机众所周知会在 home 健位置出现一条黑线，这也
 
 定时器在 Android 与 IOS 下有不同的表现
 
+切后台:
+
 - IOS: 切到后台，定时器会暂停，切回来恢复
 
-- Android: 切到后台定时器继续运行(同样开新的 webview 后,原本 webview 的定时器不会停止)
+- Android: 切到后台定时器继续运行
+
+新开 webview:
+
+IOS 和 Android 都会有问题,可能跟系统有关,新开 webview,原 webview 的定时器可能还是会继续执行(目前发现 IOS14 会继续执行, IOS13 不会, Android 比较多会)
+
+解决方案:
+
+- 利用 document.visibilityState === 'hidden' 判断,这种情况下停止定时器内逻辑 return
 
 ## 关于移动端文字居中
 
