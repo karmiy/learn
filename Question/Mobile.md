@@ -514,4 +514,18 @@ iPhoneX 系列手机众所周知会在 home 健位置出现一条黑线，这也
 
 - IOS: 切到后台，定时器会暂停，切回来恢复
 
-- Android: 切到后台定时器继续运行
+- Android: 切到后台定时器继续运行(同样开新的 webview 后,原本 webview 的定时器不会停止)
+
+## 关于移动端文字居中
+
+移动端中文字在不同机型通常会出现不统一,垂直不居中的情况
+
+如开发 Button 组件,设定 height 与 line-height 后在某些机型居中,某些不居中
+
+解决方案:
+
+不使用 line-height
+
+- 使用 flex + align-items: center
+
+- 使用上下 padding
