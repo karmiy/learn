@@ -635,7 +635,7 @@ teleport 是新增的一个重要组件，它解决了 vue2.x 开发弹窗类组
 
 通常在 vue2.x 中开发弹框组件，往往需要用到 new Vue.extend 配合 $mount 将组件挂载到指定 DOM 上
 
-如果是希望单纯的将某块 template 移到其他位置，可能就不得不手动操作 DOM 节点
+如果是希望单纯的将某块 template 移到其他位置，可能就不得不手动操作 DOM 节点，而这些操作在 react 中是有 createPortal 可以实现的
 
 vue 的使命即是尽量不让开发者直接操作 DOM，可见 teleport 的存在是非常必要的
 
