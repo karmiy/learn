@@ -1,6 +1,11 @@
 <template>
     <div class='header'>
-        <h1>{{title}}</h1>
+        <h1 @click='fn'>{{title}}</h1>
+        <teleport to='body'>
+            <div id='content'>
+                <p>this will be moved to #app2.</p>
+            </div>
+        </teleport>
     </div>
 </template>
 
@@ -12,9 +17,15 @@ export default defineComponent({
     props: {
         title: String,
     },
-    setup(props) {
-        console.log(props)
+    setup() {
+
+        return 1;
     },
+    methods: {
+        fn() {
+            console.log(this);
+        }
+    }
 });
 </script>
 

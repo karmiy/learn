@@ -1,26 +1,41 @@
 <template>
     <div id='app'>
-        <Header title='Title'></Header>
-        {{name}}
+        <teleport to='body'>
+            <p>body1.</p>
+        </teleport>
+        <teleport to='body'>
+            <p>body2.</p>
+        </teleport>
     </div>
 </template>
-<script lang="ts">
-import { defineComponent, reactive } from 'vue';
-import Header from '@/components/header.vue';
+
+<script lang='ts'>
+import { defineComponent, reactive, toRefs, onMounted } from 'vue';
+// import Header from '@/components/header.vue';
 
 export default defineComponent({
     name: 'Home',
-    components: {
+    /* components: {
         Header,
-    },
+    }, */
     setup() {
+        const user = reactive({
+            id: 1,
+            code: 100,
+        });
+
+        onMounted(() => {
+            console.log('mounted');
+        });
+
         return {
-            name: 'k',
+            ...toRefs(user),
         }
     }
 });
 </script>
-<style lang="scss">
+
+<style lang='scss'>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
