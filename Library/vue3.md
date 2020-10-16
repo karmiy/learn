@@ -36,6 +36,21 @@ vue create xxx
 选择 vue3 配置
 ```
 
+## template 根元素
+
+在 vue2.x 中，每个组件都只能有唯一的根元素
+
+这往往在某些场景会让开发者不得不在最外层添加一个无用的 div
+
+vue3 中解决了这个问题，如同 react Fragment 一般，现在 template 中可以有多个根元素了：
+
+```html
+<template>
+    <div>1</div>
+    <div>2</div>
+</template>
+```
+
 ## defineComponent
 
 在 vue2.x 中，组件的结构是这样的：
@@ -691,3 +706,307 @@ teleport 会有如下行为：
     <p>body2.</p>
 </body>
 ```
+
+## Suspense 与 defineAsyncComponent 异步组件
+
+类似与 react16 的 Suspense，它会在内部的异步组件加载并渲染完成之前先显示 fallback 插槽的内容
+
+顺便需要注意的是，vue3 中异步组件单纯的 () => import('xxx') 的不可行的，vue3 提供了新的 **defineAsyncComponent** API
+
+```html
+<template>
+    <div id='app'>
+        <Suspense>
+            <template #default>
+                <Header title='Title' />
+            </template>
+            <!-- 在 Header 组件加载完成前会渲染下方模板 -->
+            <template #fallback>
+                Loading...
+            </template>
+        </Suspense>
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent, defineAsyncComponent } from 'vue';
+
+export default defineComponent({
+    name: 'Home',
+    components: {
+        Header: defineAsyncComponent(() => import('./components/header.vue')),
+    },
+});
+</script>
+```
+
+> 注：Suspense 当前还是实验性特性，它的 API 之后可能会改变
+
+## 全局 API
+
+vue2.x 中的全局 API 在 vue3 也发生了改变
+
+vue2.x：
+
+```ts
+import Vue from 'vue';
+import App from './App.vue';
+
+Vue.config.ignoredElements = [/^app-/];
+Vue.use(/* ... */);
+Vue.mixin(/* ... */);
+Vue.component(/* ... */);
+Vue.directive(/* ... */);
+
+Vue.prototype.customProperty = 100;
+
+new Vue({
+    render: h => h(App)
+}).$mount('#app');
+```
+
+vue3：
+
+```ts
+import { createApp } from 'vue';
+import App from './App.vue';
+
+const app = createApp(App);
+
+app.config.isCustomElement = tag => tag.startsWith('app-');
+app.use(/* ... */);
+app.mixin(/* ... */);
+app.component(/* ... */);
+app.directive(/* ... */);
+
+app.config.globalProperties.customProperty = 100;
+
+app.mount(App, '#app');
+```
+
+更多调整可以查看 [https://github.com/vuejs/rfcs/blob/master/active-rfcs/0009-global-api-change.md](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0009-global-api-change.md)
+
+## v-model 与 .sync
+
+vue3 中的 v-model 在自定义组件使用时与 vue2.x 略有不同，被 v-model 绑定的属性，在组件中不再是 model: { prop: xxx, event: xxx }，而是直接使用 **modelValue** 作为 prop 配合 **update:modelValue** 来实现：
+
+```html
+<!-- 父组件 -->
+<template>
+    <div id='app'>
+        {{name}}
+        <UserInfo v-model='name' />
+    </div>
+</template>
+```
+
+```html
+<!-- 子组件 -->
+<template>
+    <div class='user-info'>
+        <input type='text' :value='modelValue' @input='onNameChange' />
+    </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+    name: 'UserInfo',
+    props: {
+        modelValue: String, // modelValue 接收 v-model 绑定的值
+    },
+    setup(props, { emit }) {
+        const onNameChange = (e: { target: HTMLInputElement }) => {
+            emit('update:modelValue', e.target.value);
+        };
+
+        return {
+            onNameChange,
+        }
+    },
+});
+</script>
+```
+
+此外在 vue2.x 中，只能有 1 个 v-model，如果希望多个双向绑定，则需要使用 .sync 来实现
+
+vue3 中 v-model 不再局限唯一的限制，可以用 v-model:xxx 的形式多次绑定，不需要使用 .sync：
+
+```html
+<!-- 父组件 -->
+<template>
+    <div id='app'>
+        {{name}}
+        {{age}}
+        <UserInfo v-model:name='name' v-model:age='age' />
+    </div>
+</template>
+```
+
+```html
+<!-- 子组件 -->
+<template>
+    <div class='user-info'>
+        <input type='text' :value='name' @input='onNameChange' />
+        <br>
+        <input type='text' :value='age' @input='onAgeChange' />
+    </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+    name: 'UserInfo',
+    props: {
+        name: String,
+        age: Number,
+    },
+    setup(props, { emit }) {
+        // emit('update:xxx') 向上抛出
+        const onNameChange = (e: { target: HTMLInputElement }) => {
+            emit('update:name', e.target.value);
+        };
+
+        const onAgeChange = (e: { target: HTMLInputElement }) => {
+            emit('update:age', +e.target.value);
+        };
+
+        return {
+            onNameChange,
+            onAgeChange,
+        }
+    },
+});
+</script>
+```
+## directive 指令
+
+vue3 的指令主要对钩子函数重新进行了命名并做了微小的调整
+
+vue2.x 中指令：
+
+```ts
+const directive = {
+    bind(el, binding, vnode, prevVnode) {},
+    inserted() {},
+    update() {},
+    componentUpdated() {},
+    unbind() {}
+}
+```
+
+vue3 中的指令：
+
+```ts
+const MyDirective = {
+    beforeMount(el, binding, vnode, prevVnode) {},
+    mounted() {},
+    beforeUpdate() {},
+    updated() {},
+    beforeUnmount() {}, // 新增
+    unmounted() {}
+}
+```
+
+示例：
+
+```ts
+const app = createApp(App);
+
+app.directive('style', {
+    beforeMount(el, binding) {
+        const { arg, value } = binding;
+        arg && (el.style[arg] = value);
+    }
+});
+```
+
+```html
+<template>
+    <div id='app'>
+        <span v-style:color='"yellowgreen"'>my color is yellowgreen</span>
+    </div>
+</template>
+```
+
+## scoped 样式
+
+vue2.x 中，如果在使用了 scoped 样式的组件里，使用第三方组件，并希望修改它的样式，直接修复是不可行的：
+
+```html
+<style lang='scss' scoped>
+#app .el-input {
+    color: pink;
+}
+</style>
+```
+
+vue2.x 提供了如 >>>， /deep/ 之类的样式来解决这个问题：
+
+```html
+<style lang='scss' scoped>
+#app >>> .el-input {
+    color: pink;
+}
+
+#app /deep/ .el-input {
+    color: pink;
+}
+
+#app ::v-deep .el-input {
+    color: pink;
+}
+</style>
+```
+
+在 vue3 中提供了 ::v-deep(xxx) 的方式来处理这种问题：
+
+```html
+<style lang='scss' scoped>
+#app ::v-deep(.el-input) {
+    color: pink;
+}
+</style>
+```
+
+此外，还有一个直接将 scoped 内的样式作为全局的方式 ::v-global(xxx)：
+
+```html
+<style lang='scss' scoped>
+#app ::v-global(.el-input) {
+    color: pink;
+}
+
+编译后：
+.el-input {
+    color: pink;
+}
+</style>
+```
+
+## vue-router
+
+> 此处有些是 vue2.x 后续新增的，放一起过一下
+
+vue3 的路由与 vue2.x 没有很大的变化，主要功能了一些新的 API 或功能
+
+- 创建路由
+
+```ts
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+
+const routes: Array<RouteRecordRaw> = [{
+    path: '/home',
+    component: () => import('@/views/home.vue'),
+}];
+
+const router = createRouter({
+    history: createWebHistory(process.env.BASE_URL),
+    routes
+});
+
+export default router;
+```
+
