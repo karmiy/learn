@@ -1,6 +1,8 @@
 <template>
     <div id='app'>
         <Header title='Title' />
+        {{code}}
+        <UserInfo :code='code' @codeChange='code = $event' />
         <button @click='open = !open'>Toggle Modal</button>
         <ul>
             <li>
@@ -20,8 +22,6 @@ import Header from '@/components/header.vue';
 import UserInfo from '@/components/user-info.vue';
 import router from './router';
 
-console.log(router);
-
 export default defineComponent({
     name: 'App',
     components: {
@@ -35,6 +35,9 @@ export default defineComponent({
             age: 13,
             code: 100,
         });
+        
+        // 获取当前路由信息
+        console.log(router.currentRoute);
 
         return {
             ...toRefs(user),

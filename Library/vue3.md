@@ -67,7 +67,7 @@ export default {
 而在 vue3 中，将使用 defineComponent 包裹该组件结构对对象：
 
 ```ts
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -103,7 +103,7 @@ setup 返回的是对象，相当于 vue2.x 的 data，可以显示在 template 
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -127,7 +127,7 @@ setup 的第一个参数接收 props
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -155,7 +155,7 @@ context 包含了一些 **vue2.x 中 this 才能访问到的属性**
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -189,7 +189,7 @@ ref 函数用于**给单个给定的值创建一个响应式对象**，返回的
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
@@ -220,7 +220,7 @@ reactive 函数会**将对象经过 proxy 加工变成一个响应式对象**，
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, reactive } from 'vue';
 
 export default defineComponent({
@@ -263,7 +263,7 @@ export default defineComponent({
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, reactive } from 'vue';
 
 export default defineComponent({
@@ -296,7 +296,7 @@ export default defineComponent({
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, reactive } from 'vue';
 
 export default defineComponent({
@@ -358,7 +358,7 @@ const _user = {
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, reactive, toRefs } from 'vue';
 
 export default defineComponent({
@@ -391,7 +391,7 @@ export default defineComponent({
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, reactive, toRefs } from 'vue';
 
 export default defineComponent({
@@ -424,7 +424,7 @@ export default defineComponent({
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, reactive, toRefs, computed } from 'vue';
 
 export default defineComponent({
@@ -457,7 +457,7 @@ export default defineComponent({
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, reactive, toRefs, computed } from 'vue';;
 
 export default defineComponent({
@@ -504,7 +504,7 @@ export default defineComponent({
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, reactive, toRefs, watchEffect } from 'vue';
 
 export default defineComponent({
@@ -538,7 +538,7 @@ export default defineComponent({
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, reactive, toRefs, watchEffect } from 'vue';
 
 export default defineComponent({
@@ -576,7 +576,7 @@ vue3.x 中的 methods 很简单，只需要在 setup 中写一个函数并 retur
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, reactive, toRefs } from 'vue';
 
 export default defineComponent({
@@ -630,7 +630,7 @@ vue3 的生命周期与 vue2.x 差别不大，主要在于部分由 setup 函数
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent, onMounted } from 'vue';
 
 export default defineComponent({
@@ -808,7 +808,7 @@ vue3 中的 v-model 在自定义组件使用时与 vue2.x 略有不同，被 v-m
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -854,7 +854,7 @@ vue3 中 v-model 不再局限唯一的限制，可以用 v-model:xxx 的形式�
     </div>
 </template>
 
-<script lang="ts">
+<script lang='ts'>
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -988,9 +988,9 @@ vue2.x 提供了如 >>>， /deep/ 之类的样式来解决这个问题：
 
 ## vue-router
 
-> 此处有些是 vue2.x 后续新增的，放一起过一下
+> 此处有些是 vue-router3.x 后续新增的，放一起过一下
 
-vue3 的路由与 vue2.x 没有很大的变化，主要功能了一些新的 API 或功能
+vue-router4.x 的路由与之前没有很大的变化，主要功能了一些新的 API 或功能
 
 - 创建路由
 
@@ -999,6 +999,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 const routes: Array<RouteRecordRaw> = [{
     path: '/home',
+    name: 'Home',
     component: () => import('@/views/home.vue'),
 }];
 
@@ -1010,3 +1011,190 @@ const router = createRouter({
 export default router;
 ```
 
+- 动态添加路由 router.addRoute(route: RouteRecord)
+
+```ts
+router.addRoute({
+    path: '/about',
+    name: 'About',
+    component: () => import('@/views/about.vue'),
+});
+
+router.addRoute({
+    path: '/:catchAll(.*)', // 匹配所有，前面都没匹配到的通用情况
+    component: () => import('@/views/error.vue'),
+});
+```
+
+- 动态删除路由 router.removeRoute(name: string | symbol)
+
+```ts
+router.removeRoute('About');
+```
+
+- 判断路由是否存在 router.hasRoute(name: string | symbol): boolean
+
+```ts
+console.log(router.hasRoute('About'));
+```
+
+- 获取路由列表 router.getRoutes(): RouteRecord[]
+
+```ts
+console.log(router.getRoutes());
+```
+
+- 获取当前路由 router.currentRoute
+
+```html
+<template>
+    <div id='app'>
+        <ul>
+            <li>
+                <!-- custom 作用在于：没有 custom 时 router-link 会自动解析成一个 a 标签，而配置 custom 后相当于一个抽象组件，不会自动加这层 a 标签 -->
+                <router-link to='/home' custom v-slot='{ href, navigate, isActive }'>
+                    <a :class='{ isActive }' :href='href' @click='navigate'>to home</a>
+                </router-link>
+            </li>
+            <li><router-link to='/about'>to about</router-link></li>
+        </ul>
+        <router-view />
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent } from 'vue';
+import router from './router';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        // 获取当前路由信息
+        console.log(router.currentRoute);
+    }
+});
+</script>
+```
+
+## emits-option
+
+vue3 的 emit 与 vue2.x 的 emit 不同的是，新增了一个 emits 选项
+
+```ts
+{
+    props: ...
+    emits: ...
+}
+```
+
+新增这个 emits 的好处在于：
+
+- 让开发者更清晰的了解组件应该派发什么事件
+
+- 提供类型推断
+
+- 作为一个验证器，调用时验证，需要返回 boolean 类型，当返回 false 时控制台会打印警告
+
+
+需要注意的是，**一旦有 emits 配置，必须把所有 emits 项都在配置中列出来，不可有遗漏，否则 typescript 会报错**
+
+emits 的用法同 props，可以是个数组：
+
+```html
+<template>
+    <div class='user-info'>
+        <input type='text' :value='name' @input='onNameChange' />
+        <br>
+        <input type='text' :value='age' @input='onAgeChange' />
+        <br>
+        <input type='text' :value='code' @input='onCodeChange' />
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+    name: 'UserInfo',
+    props: {
+        name: String,
+        age: Number,
+        code: Number,
+    },
+    emits: ['codeChange', 'update:name', 'update:age'], // 数组
+    setup(props, { emit }) {
+        const onNameChange = (e: { target: HTMLInputElement }) => {
+            emit('update:name', e.target.value);
+        };
+
+        const onAgeChange = (e: { target: HTMLInputElement }) => {
+            emit('update:age', +e.target.value);
+        };
+
+        const onCodeChange = (e: { target: HTMLInputElement }) => {
+            emit('codeChange', +e.target.value);
+        };
+
+        return {
+            onNameChange,
+            onAgeChange,
+            onCodeChange,
+        }
+    },
+});
+</script>
+```
+
+也可以是函数，需要返回 boolean，表示校验是否通过：
+
+```html
+<template>
+    <div class='user-info'>
+        <input type='text' :value='name' @input='onNameChange' />
+        <br>
+        <input type='text' :value='age' @input='onAgeChange' />
+        <br>
+        <input type='text' :value='code' @input='onCodeChange' />
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+    name: 'UserInfo',
+    props: {
+        name: String,
+        age: Number,
+        code: Number,
+    },
+    // 需要返回 boolean，返回 false 控制台会报警告
+    emits: {
+        codeChange: (value: number) => true,
+        'update:name': (value: string) => true,
+        'update:age': (value: number) => true,
+    },
+    setup(props, { emit }) {
+        const onNameChange = (e: { target: HTMLInputElement }) => {
+            emit('update:name', e.target.value);
+        };
+
+        const onAgeChange = (e: { target: HTMLInputElement }) => {
+            emit('update:age', +e.target.value);
+        };
+
+        const onCodeChange = (e: { target: HTMLInputElement }) => {
+            emit('codeChange', +e.target.value);
+        };
+
+        return {
+            onNameChange,
+            onAgeChange,
+            onCodeChange,
+        }
+    },
+});
+</script>
+```
+
+> 注：emits 配置中返回 false 并不会终止事件派发，只是控制台报警告
