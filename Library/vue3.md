@@ -412,6 +412,56 @@ export default defineComponent({
 </script>
 ```
 
+## isRef
+
+判断是否是 ref 的引用对象：
+
+```html
+<script lang='ts'>
+import { defineComponent, ref, isRef } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const lockRef = ref('open');
+        console.log(isRef(lockRef)); // true
+    }
+});
+</script>
+```
+
+## template ref
+
+vue2.x 中为了获取 template 中的某个 DOM 或子组件实例，通常需要给节点挂上 ref 属性，并使用 this.$refs.xxx 获取
+
+在 vue3 中则是通过创建 ref 变量并在 setup 抛出的形式来实现的：
+
+```html
+<template>
+    <div ref='appRef' id='app'>
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent, onMounted, ref } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const appRef = ref<HTMLDivElement>();
+
+        onMounted(() => {
+            console.log(appRef.value);
+        });
+
+        return {
+            appRef,
+        }
+    }
+});
+</script>
+```
+
 ## computed
 
 - 只读计算属性

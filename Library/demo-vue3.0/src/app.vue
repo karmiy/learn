@@ -1,5 +1,5 @@
 <template>
-    <div id='app'>
+    <div ref='appRef' id='app'>
         <Header title='Title' />
         {{code}}
         <UserInfo :code='code' @codeChange='code = $event' />
@@ -17,10 +17,9 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, reactive, toRefs, onMounted, ref } from 'vue';
+import { defineComponent, reactive, toRefs, onMounted, ref, isRef } from 'vue';
 import Header from '@/components/header.vue';
 import UserInfo from '@/components/user-info.vue';
-import router from './router';
 
 export default defineComponent({
     name: 'App',
@@ -35,12 +34,17 @@ export default defineComponent({
             age: 13,
             code: 100,
         });
-        
-        // 获取当前路由信息
-        console.log(router.currentRoute);
+
+        const lockRef = ref('open');
+        const appRef = ref<HTMLDivElement>();
+
+        onMounted(() => {
+            console.log(appRef.value);
+        });
 
         return {
             ...toRefs(user),
+            appRef,
         }
     }
 });

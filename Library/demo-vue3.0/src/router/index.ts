@@ -24,8 +24,4 @@ router.addRoute({
 
 // router.removeRoute('About');
 
-console.log(router.hasRoute('About'));
-
-console.log(router.getRoutes());
-
 export default router;
