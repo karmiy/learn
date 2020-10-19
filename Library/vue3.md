@@ -52,7 +52,7 @@ Error: Cannot find module 'vue-loader-v16/package.json'
 
 3. Git Bash 环境下 npm install
 
-## template 根元素
+## template Fragments
 
 在 vue2.x 中，每个组件都只能有唯一的根元素
 
@@ -1171,7 +1171,7 @@ vue2.x 提供了如 >>>， /deep/ 之类的样式来解决这个问题：
 </style>
 ```
 
-在 vue3 中提供了 ::v-deep(xxx) 的方式来处理这种问题：
+在 vue3 中提供了 **::v-deep(xxx)** 的方式来处理这种问题：
 
 ```html
 <style lang='scss' scoped>
@@ -1181,7 +1181,7 @@ vue2.x 提供了如 >>>， /deep/ 之类的样式来解决这个问题：
 </style>
 ```
 
-此外，还有一个直接将 scoped 内的样式作为全局的方式 ::v-global(xxx)：
+此外，还有一个直接将 scoped 内的样式作为全局的方式 **::v-global(xxx)**：
 
 ```html
 <style lang='scss' scoped>
@@ -1192,6 +1192,55 @@ vue2.x 提供了如 >>>， /deep/ 之类的样式来解决这个问题：
 编译后：
 .el-input {
     color: pink;
+}
+</style>
+```
+
+除了上述 2 个新功能，vue3 还提供了 **::v-slotted**
+
+在 vue2.x 中，如果希望子组件的 scoped 样式中，为其 slot 插槽的元素添加样式是做不到的，因为 slot 的元素是归属父组件的：
+
+```html
+<!-- 父组件 -->
+<template>
+    <div id='app'>
+        <Header>
+            <span class='title'>{{title}}</span>
+        </Header>
+    </div>
+</template>
+```
+
+```html
+<!-- 子组件 -->
+<template>
+    <div class='header'>
+        <h1>
+            <slot></slot>
+        </h1>
+    </div>
+</template>
+<style lang='scss' scoped>
+.title {
+    color: yellowgreen; // 无效，因为 .title 是属于父组件的 
+}
+</style>
+```
+
+::v-slotted 允许我们在子组件的 scoped style 内为 slot 元素设置样式：
+
+```html
+<!-- 子组件 -->
+<template>
+    <div class='header'>
+        <h1>
+            <slot></slot>
+        </h1>
+    </div>
+</template>
+<style lang='scss' scoped>
+::v-slotted(.title) {
+    color: yellowgreen; // ok
 }
 </style>
 ```

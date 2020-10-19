@@ -1,6 +1,8 @@
 <template>
     <div class='header'>
-        <h1 @click='fn'>{{title}}</h1>
+        <h1 @click='fn'>
+            <slot></slot>
+        </h1>
         <input type='text' v-model='id' />
         <!-- <teleport to='body'>
             <div id='content'>
@@ -42,12 +44,16 @@ export default defineComponent({
 </script>
 
 <!-- Add 'scoped' attribute to limit CSS to this component only -->
-<style lang='scss'>
+<style lang='scss' scoped>
 h3 {
   margin: 40px 0 0;
 }
 
 .header {
     font-size: 40px;
+}
+
+::v-slotted(.title) {
+    color: yellowgreen;
 }
 </style>

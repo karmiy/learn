@@ -1,6 +1,8 @@
 <template>
     <div id='app'>
-        <Header :title='title' />
+        <Header>
+            <span class='title'>{{title}}</span>
+        </Header>
         <input type='text' v-model='id' />
         <input type='text' v-model='title' />
     </div>
@@ -24,20 +26,6 @@ export default defineComponent({
             title: 't',
         });
 
-        onRenderTracked(() => {
-            console.log('onRenderTracked');
-        });
-
-        onRenderTriggered(() => {
-            console.log('onRenderTriggered');
-        });
-
-        provide('theme', 'yellowgreen');
-
-        setTimeout(() => {
-            user.id = 2;
-        }, 1000);
-
         return {
             ...toRefs(user),
         }
@@ -58,6 +46,10 @@ export default defineComponent({
 }
 
 #app ::v-global(.header h1) {
-    color: pink;
+    // color: pink;
 }
+
+/* .title {
+    color: pink;
+} */
 </style>
