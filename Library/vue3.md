@@ -1166,7 +1166,7 @@ export default defineComponent({
 
 > 注：Suspense 当前还是实验性特性，它的 API 之后可能会改变
 
-## 全局 API
+## createApp
 
 vue2.x 中的全局 API 在 vue3 也发生了改变
 
@@ -1207,6 +1207,24 @@ app.config.globalProperties.customProperty = 100;
 
 app.mount(App, '#app');
 ```
+
+app 上的方法：
+
+- config
+
+- use 
+
+- mixin
+
+- component
+
+- directive
+
+- mount
+
+- unmount
+
+- provide/inject
 
 更多调整可以查看 [https://github.com/vuejs/rfcs/blob/master/active-rfcs/0009-global-api-change.md](https://github.com/vuejs/rfcs/blob/master/active-rfcs/0009-global-api-change.md)
 
