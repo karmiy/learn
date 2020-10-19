@@ -123,7 +123,7 @@ setup 返回的是对象，相当于 vue2.x 的 data，可以显示在 template 
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         return {
             name: 'k',
@@ -227,7 +227,7 @@ ref 函数用于**给单个给定的值创建一个响应式对象**，返回的
 import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         const lockRef = ref('open');
 
@@ -243,9 +243,37 @@ export default defineComponent({
 
 > 注：ref 变量作为 setup 返回用于 template 时，不需要 .value，template 会自动根据是否是 ref 值来显示
 
+此外，如果 ref 包裹的是**响应式变量**：
+
+- 返回的值与原数据将数据相互绑定（即修改一个，另一个跟着变）
+
+- 如果 ref 包裹的也是 ref，返回的值不需要 .value.value，直接 .value 即可
+
+```html
+<script lang='ts'>
+import { defineComponent, ref } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const count = ref(100);
+        const _count = ref(count); // ref 包裹 ref
+        console.log(count.value, _count.value);
+        // 返回的值 .value 即可
+        // 输出 100，100
+
+        _count.value = 110;
+        console.log(count.value, _count.value);
+        // 数据相互绑定，一个修改，另一个一起变
+        // 输出 110, 110
+    }
+});
+</script>
+```
+
 ## reactive
 
-reactive 函数会**将对象经过 proxy 加工变成一个响应式对象**，返回的响应式对象就类似 vue2.x 的 data，**加工后返回的还是一个深克隆对象**
+reactive 函数会**将对象经过 proxy 加工变成一个响应式对象**，返回的响应式对象就类似 vue2.x 的 observable，**加工后返回的还是一个深克隆对象**
 
 ```html
 <template>
@@ -258,7 +286,7 @@ reactive 函数会**将对象经过 proxy 加工变成一个响应式对象**，
 import { defineComponent, reactive } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         const user = reactive({
             id: 1,
@@ -321,7 +349,7 @@ export default defineComponent({
 import { defineComponent, reactive } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         const user = reactive({
             id: 1,
@@ -354,7 +382,7 @@ export default defineComponent({
 import { defineComponent, reactive } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         const user = reactive({
             info: {
@@ -376,7 +404,7 @@ export default defineComponent({
 
 为了解决上述 reactive 解构后基础数据类型无法有响应式功能，官方推出了 **toRefs**
 
-toRefs **接收一个对象，并将对象的每一个属性值经过 ref 包装一层**
+toRefs **把一个响应式对象转换成普通对象，该普通对象的每个 property 都是一个 ref ，和响应式对象 property 一一对应**
 
 即：
 
@@ -391,7 +419,7 @@ const user = reactive({
 const _user = toRefs(user);
 ```
 
-形式等价于：
+可以理解为（不完全是这样）：
 
 ```ts
 const _user = {
@@ -416,7 +444,7 @@ const _user = {
 import { defineComponent, reactive, toRefs } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         const user = reactive({
             id: 1,
@@ -449,7 +477,7 @@ export default defineComponent({
 import { defineComponent, reactive, toRefs } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         const user = reactive({
             id: 1,
@@ -461,6 +489,31 @@ export default defineComponent({
         return {
             ...toRefs(user),
         }
+    }
+});
+</script>
+```
+
+此外，**toRefs 包裹 reactive 变量，属性值与原数据将数据相互绑定**：
+
+```html
+<script lang='ts'>
+import { defineComponent, reactive, ref, toRefs, getCurrentInstance } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const user = reactive({
+            id: 1,
+        });
+
+        const _user = toRefs(user);
+
+        user.id = 2;
+        console.log(user.id, _user.id.value); // 2 2
+
+        _user.id.value = 3;
+        console.log(user.id, _user.id.value); // 3 3
     }
 });
 </script>
@@ -532,7 +585,7 @@ export default defineComponent({
 import { defineComponent, reactive, toRefs, computed } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         const user = reactive({
             id: 1,
@@ -565,7 +618,7 @@ export default defineComponent({
 import { defineComponent, reactive, toRefs, computed } from 'vue';;
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         const user = reactive({
             id: 1,
@@ -594,11 +647,11 @@ export default defineComponent({
 
 ## watch
 
-类似 vue2.x 的 watch
+等价于 vue2.x 的 watch
 
 - 接收需要监听的响应式变量，回调中可获取新值与旧值
 
-- 组件初始不立即执行
+- 组件初始不立即执行（可配 immediate）
 
 - 返回一个解绑函数，执行后取消监听
 
@@ -631,9 +684,121 @@ export default defineComponent({
 </script>
 ```
 
+### 函数的第一个参数
+
+函数的第一个参数可以是：
+
+- ref 变量，即上例，值得注意的是**如果是 ref，在回调监听到值的时候，不需要再 .value 了，会自动解析转换，即已经是 ref 的值**
+
+- reactive 变量
+
+- 拥有返回值的 getter 函数，注意这里必须是**确切的返回值**，如返回 ref 并不能自动解析转换
+
+```ts
+// id.value，不能是 id，否则 nextId 与 prevId 都会是 ref
+const stop = watch(() => id.value, (nextId, prevId) => {
+    console.log(nextId.value); // 需要 .value
+});
+```
+
+### 回调第三个参数 onInvalidate
+
+watch 的回调有第三个参数 onInvalidate，作用在于**清除副作用**
+
+实际开发中，可能经常会在 watch 中进行某个副作用操作，如请求数据，这时如果快速更新数据，会导致请求不断被触发，显然不是我们想要的
+
+通用的做法是：**下一次 watch 触发前取消上一次未完成的请求，这便是清除副作用**
+
+```html
+<script lang='ts'>
+import { defineComponent, reactive, ref, toRefs, watch } from 'vue';
+
+const request = (id: number) => {
+    const timer = setTimeout(() => {
+        console.log('请求数据, id: ' + id);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+}
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const id = ref(1);
+
+        const stop = watch(id, (nextId, prevId, onInvalidate) => {
+            const cancel = request(nextId);
+
+            // onInvalidate 会在下一次 watch 触发前调用，相当于 react userEffect 的返回值
+            onInvalidate(() => {
+                cancel();
+            });
+        });
+
+        return {
+            id,
+            stop,
+        }
+    }
+});
+</script>
+```
+
+### 函数的第三个参数 options
+
+watch 的第三个参数 options，等价于 vue2.x watch 的配置项：
+
+- immediate: 是否立即执行
+
+- deep: 是否深度监听
+
+此外还有其他 3 个配置项，具体看 watchEffect
+
+### 监听多个项
+
+watch 与 vue2.x 不同的时，可以监听多个变量：
+
+```html
+<template>
+    <div id='app'>
+        {{id}}
+        {{code}}
+        <input type='text' v-model='id' />
+        <input type='text' v-model='code' />
+        <button @click='stop'>stop watch</button>
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent, reactive, toRefs, watch } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const user = reactive({
+            id: 1,
+            code: 100,
+            title: 't',
+        });
+
+        // 数组，监听多个变量
+        const stop = watch([() => user.id, () => user.code], ([id, code], [prevId, prevCode]) => {
+            console.log(id, code);
+            console.log(prevId, prevCode);
+        });
+
+        return {
+            ...toRefs(user),
+            stop,
+        }
+    }
+});
+</script>
+```
+
 ## watchEffect
 
-类似 vue2.x 的 watch
+与 watch 略有不同
 
 - 可以自动识别回调内部的**响应式变量**，在响应式变量变化时触发回调
 
@@ -654,7 +819,7 @@ export default defineComponent({
 import { defineComponent, reactive, toRefs, watchEffect } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         const user = reactive({
             id: 1,
@@ -689,7 +854,7 @@ export default defineComponent({
 import { defineComponent, reactive, toRefs, watchEffect } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         const user = reactive({
             id: 1,
@@ -710,6 +875,37 @@ export default defineComponent({
 });
 </script>
 ```
+
+### options
+
+与 watch 不同的 options 在于，watchEffect 只有如下 3 个配置项（watch 都有）
+
+- onTrack: 当一个 reactive 对象属性或一个 ref 作为依赖被追踪时，将调用 onTrack
+
+- onTrigger: 依赖项变更导致副作用被触发时，将调用 onTrigger
+
+- flush: 回调执行时机，有 'pre' | 'post' | 'sync' 可选项，默认 post
+
+其中 onTrack 与 onTrigger 同新的生命周期钩子，接收一个 DebuggerEvent 对象用于调试
+
+而 flush 表示 watchEffect 副作用回调在什么时候执行
+
+默认清空下，**会将副作用回调放入队列中，并异步的执行它，即会在组件更新后执行**
+
+如果希望副作用是**同步**或在**组件更新之前**重新运行，可以传递 flush 为 **sync 或 pre**
+
+### 初始在 mounted 后执行
+
+watchEffect 在组件初始时是会立即执行的，如果希望第一次执行在 mounted 之后，可以放在 onMounted 内：
+
+```ts
+onMounted(() => {
+    watchEffect(() => {
+        // 在这里可以访问到 DOM 或者 template refs
+    })
+})
+```
+
 ## methods
 
 vue3.x 中的 methods 很简单，只需要在 setup 中写一个函数并 return 即可
@@ -727,7 +923,7 @@ vue3.x 中的 methods 很简单，只需要在 setup 中写一个函数并 retur
 import { defineComponent, reactive, toRefs } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         const user = reactive({
             id: 1,
@@ -781,7 +977,7 @@ vue3 的生命周期与 vue2.x 差别不大，主要在于部分由 setup 函数
 import { defineComponent, onMounted } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     setup() {
         onMounted(() => {
             console.log('mounted');
@@ -960,7 +1156,7 @@ teleport 会有如下行为：
 import { defineComponent, defineAsyncComponent } from 'vue';
 
 export default defineComponent({
-    name: 'Home',
+    name: 'App',
     components: {
         Header: defineAsyncComponent(() => import('./components/header.vue')),
     },
