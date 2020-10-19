@@ -1,23 +1,13 @@
 <template>
-    <div ref='appRef' id='app'>
-        <Header title='Title' />
-        {{code}}
-        <UserInfo :code='code' @codeChange='code = $event' />
-        <button @click='open = !open'>Toggle Modal</button>
-        <ul>
-            <li>
-                <router-link to='/home' custom v-slot='{ href, navigate, isActive }'>
-                    <a :class='{ isActive }' :href='href' @click='navigate'>to home</a>
-                </router-link>
-            </li>
-            <li><router-link to='/about'>to about</router-link></li>
-        </ul>
-        <router-view />
+    <div id='app'>
+        <Header :title='title' />
+        <input type='text' v-model='id' />
+        <input type='text' v-model='title' />
     </div>
 </template>
 
 <script lang='ts'>
-import { defineComponent, reactive, toRefs, onMounted, ref, isRef } from 'vue';
+import { defineComponent, reactive, ref, toRefs, provide, onRenderTracked, onRenderTriggered } from 'vue';
 import Header from '@/components/header.vue';
 import UserInfo from '@/components/user-info.vue';
 
@@ -30,21 +20,26 @@ export default defineComponent({
     setup() {
         const user = reactive({
             id: 1,
-            name: 'k',
-            age: 13,
             code: 100,
+            title: 't',
         });
 
-        const lockRef = ref('open');
-        const appRef = ref<HTMLDivElement>();
-
-        onMounted(() => {
-            console.log(appRef.value);
+        onRenderTracked(() => {
+            console.log('onRenderTracked');
         });
+
+        onRenderTriggered(() => {
+            console.log('onRenderTriggered');
+        });
+
+        provide('theme', 'yellowgreen');
+
+        setTimeout(() => {
+            user.id = 2;
+        }, 1000);
 
         return {
             ...toRefs(user),
-            appRef,
         }
     }
 });

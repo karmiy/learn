@@ -1,6 +1,6 @@
 ## Vue3
 
-vue3 的升级，除了 Proxy 的变动侦测、更好的性能提升，最主要的变动是新的 **Composition API**
+vue3 的升级，除了 Proxy 的变动侦测、更好的性能提升，最主要的变动是新的 [Composition API](https://composition-api.vuejs.org/zh/api.html)
 
 Composition API 的作用同 react hook，**实现更灵活且无副作用的复用代码**
 
@@ -35,6 +35,22 @@ vue create xxx
 
 选择 vue3 配置
 ```
+
+## 运行常见问题
+
+vue-cli 搭建后运行，经常会在 npm run serve 启动时遇到错误：
+
+```
+Error: Cannot find module 'vue-loader-v16/package.json'
+```
+
+解决方案：
+
+1. 更新 npm 版本 npm install npm@latest -g
+
+2. 清缓存 npm cache clean --force
+
+3. Git Bash 环境下 npm install
 
 ## template 根元素
 
@@ -237,6 +253,26 @@ export default defineComponent({
         return {
             user,
         }
+    }
+});
+</script>
+```
+
+## isReactive
+
+判断是否是 reactive 的引用对象：
+
+```html
+<script lang='ts'>
+import { defineComponent, reactive, isReactive } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const user = reactive({
+            id: 1,
+        });
+        console.log(isReactive(user)); // true
     }
 });
 </script>
@@ -538,6 +574,45 @@ export default defineComponent({
 </script>
 ```
 
+## watch
+
+类似 vue2.x 的 watch
+
+- 接收需要监听的响应式变量，回调中可获取新值与旧值
+
+- 组件初始不立即执行
+
+- 返回一个解绑函数，执行后取消监听
+
+```html
+<template>
+    <div id='app'>
+        <input type='text' v-model='id' />
+        <button @click='stop'>stop watch</button>
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent, ref, watch } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const id = ref(1);
+
+        const stop = watch(id, (nextId, prevId) => {
+            console.log(nextId, prevId);
+        });
+
+        return {
+            id,
+            stop,
+        }
+    }
+});
+</script>
+```
+
 ## watchEffect
 
 类似 vue2.x 的 watch
@@ -546,11 +621,14 @@ export default defineComponent({
 
 - 组件初始时也会立即执行
 
+- 返回一个解绑函数，执行后取消监听
+
 ```html
 <template>
     <div id='app'>
         {{code}}
         <input type='text' v-model='id' />
+        <button @click='stop'>stop watch</button>
     </div>
 </template>
 
@@ -565,13 +643,14 @@ export default defineComponent({
             code: 100
         });
 
-        watchEffect(() => {
+        const stop = watchEffect(() => {
             // user 的 id 变化后自动触发回调
             user.code = user.id * 100;
         });
 
         return {
             ...toRefs(user),
+            stop,
         }
     }
 });
@@ -693,6 +772,87 @@ export default defineComponent({
 });
 </script>
 ```
+
+此外，还新增了 2 个钩子：
+
+- onRenderTracked: 组件**视图**重新渲染时触发，包括父组件更新 props、组件自身数据变化更新等都会触发，组件初始也会触发
+
+- onRenderTriggered: 组件**自身视图**重新渲染时触发，父组件更新不会触发该钩子
+
+这 2 个钩子都接收一个 DebuggerEvent 参数，**主要作用在于让开发者调试是什么引起了视图更新**
+
+```html
+<template>
+    <div id='app'>
+        <input type='text' v-model='id' />
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent, reactive, onRenderTracked, onRenderTriggered } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const user = reactive({
+            id: 1,
+        });
+
+        onRenderTracked((e) => {
+            console.log('onRenderTracked', e); // 初始触发 + id 更新触发
+        });
+
+        onRenderTriggered((e) => {
+            console.log('onRenderTriggered', e); // id 更新触发
+        });
+
+        return {
+            ...toRefs(user),
+        }
+    }
+});
+</script>
+```
+
+**template 更新才会触发这 2 个 hook**，这意味着下面这种方式是不会触发的：
+
+```html
+<template>
+    <div id='app'>
+        <!-- 没有把 id 作用在视图上 -->
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent, reactive, onRenderTracked, onRenderTriggered } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const user = reactive({
+            id: 1,
+        });
+
+        onRenderTracked((e) => {
+            console.log('onRenderTracked', e); // 不会触发
+        });
+
+        onRenderTriggered((e) => {
+            console.log('onRenderTriggered', e); // 不会触发
+        });
+
+        setTimeout(() => {
+            user.id = 2;
+        }, 1000);
+
+        return {
+            ...toRefs(user),
+        }
+    }
+});
+</script>
+```
+
 
 ## teleport 组件
 
@@ -1248,3 +1408,81 @@ export default defineComponent({
 ```
 
 > 注：emits 配置中返回 false 并不会终止事件派发，只是控制台报警告
+
+## readonly
+
+vue3 提供了 readonly 函数，接收 object 对象、reactive 对象、ref 对象，返回一个只读对象
+
+在对只读对象修改时，**控制台会报警告，但不会影响代码运行**
+
+```html
+<template>
+    <div id='app'>
+        <input type='text' v-model='id' />
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent, ref, readonly } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const id = readonly(ref(1));
+
+        return {
+            id,
+        }
+    }
+});
+</script>
+```
+
+## provide 与 inject
+
+vue3 中的 provide 与 inject 与 vue2.x 略有不同，单独提供了 provide 与 inject 函数：
+
+```html
+<!-- 父组件 -->
+<template>
+    <div id='app'>
+        <Header />
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent, provide } from 'vue';
+import Header from '@/components/header.vue';
+
+export default defineComponent({
+    name: 'App',
+    components: {
+        Header,
+    },
+    setup() {
+        provide('theme', 'yellowgreen');
+    }
+});
+</script>
+```
+
+```html
+<!-- 子组件 -->
+<template>
+    <div class='header'>
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent, inject } from 'vue';
+
+export default defineComponent({
+    name: 'Header',
+    setup() {
+        // 第二个参数是默认值
+        const theme = inject('theme', 'transparent');
+        console.log(theme);
+    },
+});
+</script>
+```
