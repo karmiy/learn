@@ -191,6 +191,24 @@ export default defineComponent({
 
 vue3 的 setup 同 react 函数组件，内部不再有 this，**这意味着我们不能在 setup 里调用 this.xxx，this 在 setup 中是 undefined**（其他地方如之前的 methods 等里还是有 this 的）
 
+## getCurrentInstance
+
+现在 setup 中没有了 this，如果希望获取组件实例，可以使用 getCurrentInstance：
+
+```html
+<script lang='ts'>
+import { defineComponent, ref, getCurrentInstance } from 'vue';
+
+export default defineComponent({
+    name: 'Header',
+    setup() {
+        const instance = getCurrentInstance();
+        console.log(instance); // 不过这个实例里的属性和 this 不同，如 this.$parent 是 instance.parent
+    },
+});
+</script>
+```
+
 ## ref
 
 ref 函数用于**给单个给定的值创建一个响应式对象**，返回的响应式对象只包含 value 属性，value 值即给定的值
@@ -1535,3 +1553,5 @@ export default defineComponent({
 });
 </script>
 ```
+
+> 注：如果希望提供的值与注入的数据是响应式的，可以传递 ref，而不是单纯的字符串

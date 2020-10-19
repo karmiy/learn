@@ -13,7 +13,7 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, onRenderTriggered, onRenderTracked, ref } from 'vue';
+import { defineComponent, ref, getCurrentInstance } from 'vue';
 
 export default defineComponent({
     name: 'Header',
@@ -23,13 +23,8 @@ export default defineComponent({
     setup() {
         const id = ref(1);
 
-        onRenderTracked((e) => {
-            console.log('onRenderTracked', e);
-        });
-
-        onRenderTriggered((e) => {
-            console.log('onRenderTriggered', e);
-        });
+        const instance = getCurrentInstance();
+        console.log(instance);
 
         return {
             id,

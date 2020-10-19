@@ -9,7 +9,7 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, reactive, ref, toRefs, provide, onRenderTracked, onRenderTriggered } from 'vue';
+import { defineComponent, reactive, ref, toRefs, getCurrentInstance } from 'vue';
 import Header from '@/components/header.vue';
 import UserInfo from '@/components/user-info.vue';
 
