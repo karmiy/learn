@@ -1,26 +1,29 @@
-## readonly
+## template ref
 
-vue3 提供了 readonly 函数，接收 object 对象、reactive 对象、ref 对象，返回一个只读对象
+vue2.x 中为了获取 template 中的某个 DOM 或子组件实例，通常需要给节点挂上 ref 属性，并使用 this.$refs.xxx 获取
 
-在对只读对象修改时，**控制台会报警告，但不会影响代码运行**
+在 vue3 中则是通过创建 ref 变量并在 setup 抛出的形式来实现的：
 
 ```html
 <template>
-    <div id='app'>
-        <input type='text' v-model='id' />
+    <div ref='appRef' id='app'>
     </div>
 </template>
 
 <script lang='ts'>
-import { defineComponent, ref, readonly } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 
 export default defineComponent({
     name: 'App',
     setup() {
-        const id = readonly(ref(1));
+        const appRef = ref<HTMLDivElement>();
+
+        onMounted(() => {
+            console.log(appRef.value);
+        });
 
         return {
-            id,
+            appRef,
         }
     }
 });

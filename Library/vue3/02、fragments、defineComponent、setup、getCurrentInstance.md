@@ -52,7 +52,7 @@ defineComponent 让对象中的属性类型**在 typescript 中都有了良好�
 
 ### 执行契机
 
-这个入口函数的执行契机在于 vue2.x **beforeCreate 与 created 之间**，这也意味着**只执行一次**
+这个入口函数的执行契机在于 vue2.x **beforeCreate 之前**，这也意味着**只执行一次**
 
 ### 返回值取代了 data
 
@@ -150,6 +150,7 @@ export default defineComponent({
     setup() {
         const instance = getCurrentInstance();
         console.log(instance); // 不过这个实例里的属性和 this 不同，如 this.$parent 是 instance.parent
+        const { ctx } = instance; // this 似乎是这个 ctx，但是似乎 typescript 没有加入这个类型？
     },
 });
 </script>

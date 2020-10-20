@@ -7,23 +7,15 @@
         {{code}}
         <input type='text' v-model='id' />
         <input type='text' v-model='code' />
-        <button @click='stop'>stop watch</button>
+        <!-- <button-counter></button-counter> -->
         <!-- <input type='text' v-model='title' /> -->
     </div>
 </template>
 
 <script lang='ts'>
-import { defineComponent, reactive, ref, toRefs, watch, watchEffect } from 'vue';
+import { defineComponent, reactive, toRefs, ref, toRef, isProxy } from 'vue';
 import Header from '@/components/header.vue';
 import UserInfo from '@/components/user-info.vue';
-
-const request = (id: number) => {
-    const timer = setTimeout(() => {
-        console.log('请求数据, id: ' + id);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-}
 
 export default defineComponent({
     name: 'App',
@@ -32,26 +24,23 @@ export default defineComponent({
         UserInfo,
     },
     setup() {
-        const user = reactive({
+        const u = {
             id: 1,
             code: 100,
             title: 't',
-        });
+        };
+        const user = reactive(u);
 
-        const stop = watch(() => user.id, async (id) => {
-            console.log(id);
-        }, {
-            onTrack() {
-                console.log('onTrack');
-            },
-            onTrigger() {
-                console.log('onTrigger');
-            },
-        });
+        console.log(toRef(user, 'id'));
+        console.log(ref(1));
+
+        setTimeout(() => {
+            u.id = 2;
+            console.log(user.id);
+        }, 2000);
 
         return {
             ...toRefs(user),
-            stop,
         }
     }
 });

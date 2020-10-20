@@ -1,9 +1,12 @@
-import { createApp } from 'vue';
+import { createApp, App as AppType } from 'vue';
 import App from './app.vue';
 import router from './router';
 import store from './store';
+import Button from './components/button.vue';
 
 const app = createApp(App);
+
+app.config.globalProperties.baseUrl = '/client';
 
 app.directive('style', {
     beforeMount(el, binding) {
@@ -12,6 +15,27 @@ app.directive('style', {
     }
 });
 
+app.config.optionMergeStrategies.hello = (parent, child, vm) => {
+    console.log(1);
+    return `Hello, ${child}`
+};
+
+app.mixin({
+    hello: 'Vue',
+})
+
+app.provide('theme', 'dark');
+
+app.component(Button.name, Button);
+
+const log = {
+    install(app: AppType) {
+        console.log(app, 'log');
+    }
+}
+
 app.use(store)
     .use(router)
+    .use(log)
     .mount('#app');
+    
