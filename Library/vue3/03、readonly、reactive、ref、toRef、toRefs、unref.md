@@ -1,6 +1,10 @@
 ## reactive
 
-reactive 函数会**将对象经过 proxy 加工变成一个响应式对象**，返回的响应式对象就类似 vue2.x 的 observable，**加工后返回的还是一个深克隆对象**
+reactive 函数会将对象经过 proxy 加工变成一个响应式对象，类似 vue2.x 的 observable，需要注意：
+
+- 返回的是 **Proxy** 对象
+
+- 对属性的监听是**深度**监听的（即 const user = { id: 1, nested: { name: 'k' } } 修改 user.nested.name，也是可以响应式更新视图的）
 
 ```html
 <template>
@@ -30,6 +34,38 @@ export default defineComponent({
 });
 </script>
 ```
+
+### reactive 与原对象相互引用
+
+reactive 与原对象之间是会忽然影响的：
+
+```html
+<script lang='ts'>
+import { defineComponent, reactive } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+         const rawUser = {
+            id: 1,
+        };
+        const user = reactive(rawUser);
+
+        rawUser.id = 2;
+        console.log(rawUser.id, user.id); // 2 2
+
+        user.id = 3;
+        console.log(rawUser.id, user.id); // 3 3
+    }
+});
+</script>
+```
+
+原因在于 reactive 创建的是 Proxy 对象，[Proxy 对象与原对象是会相互影响的](./99、spec-proxy.md)
+
+更多关于 reactive 的响应式可以参考：
+
+- [Vue 3.x 响应式原理——reactive源码分析](https://zhuanlan.zhihu.com/p/89940326)
 
 ## ref
 
@@ -62,31 +98,45 @@ export default defineComponent({
 
 ### ref 的原理
 
-[Vue3响应式系统源码解析 - Ref篇](https://zhuanlan.zhihu.com/p/85978064)
+参考：
 
-[Vue 3.x 响应式原理 —— ref源码分析](https://zhuanlan.zhihu.com/p/95010735)
+- [Vue3 源码浅析之 Ref](https://juejin.im/post/6844904003579412493)
 
-- 如果 ref 接收是个对象，会用 reactive 包装
+- [Vue3 响应式系统源码解析 - Ref篇](https://zhuanlan.zhihu.com/p/85978064)
+
+- [Vue3.x 响应式原理 —— ref源码分析](https://zhuanlan.zhihu.com/p/95010735)
+
+核心部分：
+
+- 如果 ref 接收是个**对象**，会用 **reactive** 包装
 
 - 如果基础数据类型，ref 内部会创建一个对象，用 .value 保存数据源，接着对该对象的 value 创建 setter 与 getter 来达到数据拦截的效果，即可实现响应式
 
 ```ts
 const convert = (val: any): any => (isObject(val) ? reactive(val) : val)
 
+export function isRef(r: any): r is Ref {
+  return r ? r._isRef === true : false
+}
+
 export function ref<T>(raw: T): Ref<T> {
+    // 如果是 ref 直接返回
+    if (isRef(raw)) {
+        return raw
+    }
     // 转化数据
     raw = convert(raw)
     const v = {
         [refSymbol]: true,
         get value() {
             // 监听函数收集依赖
-            track(v, OperationTypes.GET, '')
+            track(v, OperationTypes.GET, 'value')
             return raw
         },
         set value(newVal) {
             raw = convert(newVal)
             // 触发监听函数执行
-            trigger(v, OperationTypes.SET, '')
+            trigger(v, OperationTypes.SET, 'value', __DEV__ ? { newValue: newVal } : void 0)
         }
     }
     return v as Ref<T>
@@ -122,13 +172,9 @@ export default defineComponent({
 });
 </script>
 ```
-### ref 作用于响应式变量
+### ref 接收 ref
 
-如果 ref 包裹的是**响应式变量**：
-
-- 返回的值与原数据将数据相互绑定（即修改一个，另一个跟着变）
-
-- 如果 ref 包裹的也是 ref，返回的值不需要 .value.value，直接 .value 即可
+如果 ref 包裹的也是 ref，返回的值不需要 .value.value，直接 .value 即可（原因即 ref 原理：ref 接收的是 ref 则直接返回）
 
 ```html
 <script lang='ts'>
@@ -140,13 +186,13 @@ export default defineComponent({
         const count = ref(100);
         const _count = ref(count); // ref 包裹 ref
         console.log(count.value, _count.value);
-        // 返回的值 .value 即可
         // 输出 100，100
 
         _count.value = 110;
         console.log(count.value, _count.value);
-        // 数据相互绑定，一个修改，另一个一起变
         // 输出 110, 110
+
+        console.log(count === _count); // true，是同一个 ref
     }
 });
 </script>
@@ -171,6 +217,111 @@ export default defineComponent({
     }
 });
 </script>
+```
+
+而不需要 .value 的原因，在 reactive 的源码中可以看到，getter 函数中，如果获取的属性值是 ref，会自动返回它的 .value：
+
+```ts
+function createGetter(isReadonly: boolean) {
+    return function get(target: object, key: string | symbol, receiver: object) {
+        // 通过Reflect拿到原始的get行为
+        const res = Reflect.get(target, key, receiver)
+        // 如果是内置方法，不需要另外进行代理
+        if (isSymbol(key) && builtInSymbols.has(key)) {
+            return res
+        }
+        // 如果是ref对象，代理到ref.value
+        if (isRef(res)) {
+            return res.value
+        }
+        // track用于收集依赖
+        track(target, OperationTypes.GET, key)
+        // 判断是嵌套对象，如果是嵌套对象，需要另外处理
+        // 如果是基本类型，直接返回代理到的值
+        return isObject(res)
+        // 这里createGetter是创建响应式对象的，传入的isReadonly是false
+        // 如果是嵌套对象的情况，通过递归调用reactive拿到结果
+        ? isReadonly
+            ? // need to lazy access readonly and reactive here to avoid
+            // circular dependency
+            readonly(res)
+            : reactive(res)
+        : res
+    }
+}
+```
+
+注意：只是获取 ref 类型的属性值时不需要 .value，并不代表 reactive 该属性值被赋值为了 ref.value ，reactive 的该属性值依旧是那个 ref，只是获取时 **getter 直接返回 ref.value** 而已
+
+### 为属性值是 ref 的 reactive 赋值
+
+相反，如果 reactive 的属性值是 ref，在为这个属性赋值时，同样可以为原 ref 进行更新：
+
+```html
+<script lang='ts'>
+import { defineComponent, reactive, ref } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const idRef = ref(10);
+        const user = reactive({
+            id: idRef,
+        });
+
+        user.id = 100; // 赋值
+        console.log(idRef.value); // 100，ref 也一起被更新
+
+    }
+});
+</script>
+```
+
+原因还是从 reactive 的源码得知，在 setter 函数中如果原数据是 ref，会自动为其 .value 赋值：
+
+```ts
+function set(
+    target: object,
+    key: string | symbol,
+    value: unknown,
+    receiver: object
+): boolean {
+    // 首先拿到原始值oldValue
+    value = toRaw(value)
+    const oldValue = (target as any)[key]
+    // 如果原始值是ref对象，新赋值不是ref对象，直接修改ref包装对象的value属性
+    if (isRef(oldValue) && !isRef(value)) {
+        oldValue.value = value
+        return true
+    }
+    // 原始对象里是否有新赋值的这个key
+    const hadKey = hasOwn(target, key)
+    // 通过Reflect拿到原始的set行为
+    const result = Reflect.set(target, key, value, receiver)
+    // don't trigger if target is something up in the prototype chain of original
+    // 操作原型链的数据，不做任何触发监听函数的行为
+    if (target === toRaw(receiver)) {
+        /* istanbul ignore else */
+        if (__DEV__) {
+            const extraInfo = { oldValue, newValue: value }
+            // 没有这个key，则是添加属性
+            // 否则是给原始属性赋值
+            // trigger 用于通知deps，通知依赖这一状态的对象更新
+            if (!hadKey) {
+                trigger(target, OperationTypes.ADD, key, extraInfo)
+            } else if (hasChanged(value, oldValue)) {
+                trigger(target, OperationTypes.SET, key, extraInfo)
+            }
+        } else {
+            if (!hadKey) {
+                trigger(target, OperationTypes.ADD, key)
+            } else if (hasChanged(value, oldValue)) {
+                trigger(target, OperationTypes.SET, key)
+            }
+        }
+    }
+    return result
+}
 ```
 
 ## reactive 与 ref 差别
@@ -435,7 +586,7 @@ export default defineComponent({
 
 ## readonly
 
-vue3 提供了 readonly 函数，接收 **object 对象、reactive 对象、ref 对象**，返回一个只读对象（Proxy 对象）
+vue3 提供了 readonly 函数，接收 **object 对象、reactive 对象、ref 对象**，返回一个**只读的 Proxy 对象**
 
 在对只读对象修改时，**控制台会报警告，但不会影响代码运行**
 

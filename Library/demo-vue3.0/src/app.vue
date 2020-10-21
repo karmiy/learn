@@ -13,9 +13,12 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, reactive, toRefs, ref, toRef, isProxy } from 'vue';
+import { defineComponent, reactive, toRefs, ref, toRef, isProxy, shallowReactive, isReactive, isRef } from 'vue';
 import Header from '@/components/header.vue';
 import UserInfo from '@/components/user-info.vue';
+
+const isObject = (val: any): val is Record<any, any> =>
+  val !== null && typeof val === 'object'
 
 export default defineComponent({
     name: 'App',
@@ -24,20 +27,40 @@ export default defineComponent({
         UserInfo,
     },
     setup() {
-        const u = {
+        const rawUser = {
             id: 1,
             code: 100,
             title: 't',
         };
-        const user = reactive(u);
+        const user = reactive(rawUser);
 
-        console.log(toRef(user, 'id'));
-        console.log(ref(1));
+        // console.log(toRef(user, 'id'));
+        // console.log(ref(1));
+        // console.log(isObject(ref(1)));
 
-        setTimeout(() => {
-            u.id = 2;
-            console.log(user.id);
-        }, 2000);
+        /* const u = {
+            id: 1,
+            code: 100,
+            title: 't',
+        };
+
+        const _u = ref(u);
+        _u.value.id = 2;
+
+        console.log(u.id, _u.value.id);
+
+        u.id = 3;
+        console.log(u.id, _u.value.id);
+
+        console.log(_u.value); */
+
+        const idRef = ref(10);
+        const u = reactive({
+            id: idRef,
+        });
+
+        u.id = 100;
+        console.log(idRef.value);
 
         return {
             ...toRefs(user),
