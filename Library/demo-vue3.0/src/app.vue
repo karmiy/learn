@@ -5,7 +5,8 @@
         </Header> -->
         {{id}}
         {{code}}
-        <input type='text' v-model='id' />
+        {{valueRef}}
+        <input type='text' v-model='valueRef' />
         <input type='text' v-model='code' />
         <!-- <button-counter></button-counter> -->
         <!-- <input type='text' v-model='title' /> -->
@@ -13,12 +14,32 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, reactive, toRefs, ref, toRef, isProxy, shallowReactive, isReactive, isRef } from 'vue';
+import { defineComponent, reactive, toRefs, ref, toRef, isProxy, shallowReactive, isReactive, isRef, customRef } from 'vue';
 import Header from '@/components/header.vue';
 import UserInfo from '@/components/user-info.vue';
 
-const isObject = (val: any): val is Record<any, any> =>
-  val !== null && typeof val === 'object'
+function useDebouncedRef(value: string, delay = 200) {
+    let timeout: ReturnType<typeof setTimeout>;
+    
+    return customRef((track, trigger) => {
+        return {
+            get() {
+                // 初始化手动追踪依赖讲究什么时候去触发依赖收集
+                track();
+                return value;
+            },
+            set(newValue: string) {
+                console.log(newValue);
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    value = newValue;
+                    // 再有依赖追踪的前提下触发响应式
+                    trigger();
+                }, 500)
+            },
+        }
+    });
+}
 
 export default defineComponent({
     name: 'App',
@@ -34,36 +55,29 @@ export default defineComponent({
         };
         const user = reactive(rawUser);
 
-        // console.log(toRef(user, 'id'));
-        // console.log(ref(1));
-        // console.log(isObject(ref(1)));
+        let timeout: ReturnType<typeof setTimeout>;
 
-        /* const u = {
-            id: 1,
-            code: 100,
-            title: 't',
-        };
+        let value = 'k';
 
-        const _u = ref(u);
-        _u.value.id = 2;
-
-        console.log(u.id, _u.value.id);
-
-        u.id = 3;
-        console.log(u.id, _u.value.id);
-
-        console.log(_u.value); */
-
-        const idRef = ref(10);
-        const u = reactive({
-            id: idRef,
+        const valueRef = customRef((track, trigger) => {
+            return {
+                get() {
+                    // 初始化手动追踪依赖讲究什么时候去触发依赖收集
+                    track();
+                    return value;
+                },
+                set(newValue: string) {
+                    value = newValue;
+                    // 再有依赖追踪的前提下触发响应式
+                    trigger();
+                },
+            }
         });
-
-        u.id = 100;
-        console.log(idRef.value);
 
         return {
             ...toRefs(user),
+            valueRef,
+            // value: useDebouncedRef('k'),
         }
     }
 });
