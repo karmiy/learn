@@ -13,3 +13,5 @@
 - 合并分支：git merge XXX（把 XXX 合并到当前分支）
 
 - 删除本地分支：git branch -d XXX
+
+- 合并某次 commit 到某分支：git cherry-pick \<commit id>（先 git log 看 commit id，或 gitlab 找到那次合并的 commit id，本地切到需要合的分支执行这个命令）
