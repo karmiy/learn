@@ -155,3 +155,30 @@ export default defineComponent({
 });
 </script>
 ```
+
+## nextTick
+
+- vue2.x
+
+```ts
+this.$nextTick(() => {
+    // ...
+});
+```
+
+- vue3
+
+```html
+<script>
+import { defineComponent, nextTick } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        nextTick(() => {
+            console.log(1);
+        });
+    }
+});
+</script>
+```

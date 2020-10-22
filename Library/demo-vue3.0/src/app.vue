@@ -3,43 +3,21 @@
         <!-- <Header>
             <span class='title'>{{title}}</span>
         </Header> -->
+        {{uid}}
         {{id}}
         {{code}}
-        {{valueRef}}
-        <input type='text' v-model='valueRef' />
         <input type='text' v-model='code' />
+        <div v-is='"k"'>11</div>
+        <component :is='"k"' />
         <!-- <button-counter></button-counter> -->
         <!-- <input type='text' v-model='title' /> -->
     </div>
 </template>
 
 <script lang='ts'>
-import { defineComponent, reactive, toRefs, ref, toRef, isProxy, shallowReactive, isReactive, isRef, customRef } from 'vue';
+import { defineComponent, reactive, toRefs, nextTick } from 'vue';
 import Header from '@/components/header.vue';
 import UserInfo from '@/components/user-info.vue';
-
-function useDebouncedRef(value: string, delay = 200) {
-    let timeout: ReturnType<typeof setTimeout>;
-    
-    return customRef((track, trigger) => {
-        return {
-            get() {
-                // 初始化手动追踪依赖讲究什么时候去触发依赖收集
-                track();
-                return value;
-            },
-            set(newValue: string) {
-                console.log(newValue);
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    value = newValue;
-                    // 再有依赖追踪的前提下触发响应式
-                    trigger();
-                }, 500)
-            },
-        }
-    });
-}
 
 export default defineComponent({
     name: 'App',
@@ -47,37 +25,25 @@ export default defineComponent({
         Header,
         UserInfo,
     },
+    props: {
+        uid: Number,
+    },
+    mounted() {
+        console.log((this as any).$slots);
+    },
     setup() {
         const rawUser = {
             id: 1,
             code: 100,
-            title: 't',
         };
         const user = reactive(rawUser);
 
-        let timeout: ReturnType<typeof setTimeout>;
-
-        let value = 'k';
-
-        const valueRef = customRef((track, trigger) => {
-            return {
-                get() {
-                    // 初始化手动追踪依赖讲究什么时候去触发依赖收集
-                    track();
-                    return value;
-                },
-                set(newValue: string) {
-                    value = newValue;
-                    // 再有依赖追踪的前提下触发响应式
-                    trigger();
-                },
-            }
+        nextTick(() => {
+            console.log(1);
         });
 
         return {
             ...toRefs(user),
-            valueRef,
-            // value: useDebouncedRef('k'),
         }
     }
 });

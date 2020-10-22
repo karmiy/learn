@@ -1,3 +1,23 @@
+## v-is
+
+同 vue2.x 的 component 组件：
+
+```html
+<component :is='"Header"'></component>
+```
+
+即
+
+```html
+<div v-is='"Header"'></div>
+```
+
+都会解析为 Header 组件：
+
+```html
+<Header></Header>
+```
+
 ## v-model 与 .sync
 
 ### modelValue

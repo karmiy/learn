@@ -4,6 +4,7 @@
             <slot></slot>
         </h1>
         <input type='text' v-model='id' />
+        <Modal :open='true'>modal</Modal>
         <!-- <teleport to='body'>
             <div id='content'>
                 <p>this will be moved to #app2.</p>
@@ -14,17 +15,18 @@
 
 <script lang='ts'>
 import { defineComponent, ref, getCurrentInstance } from 'vue';
+import Modal from './modal.vue';
 
 export default defineComponent({
     name: 'Header',
     props: {
         title: String,
     },
+    components: {
+        Modal,
+    },
     setup() {
         const id = ref(1);
-
-        const instance = getCurrentInstance();
-        console.log(instance);
 
         return {
             id,

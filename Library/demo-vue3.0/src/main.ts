@@ -4,7 +4,9 @@ import router from './router';
 import store from './store';
 import Button from './components/button.vue';
 
-const app = createApp(App);
+const app = createApp(App, {
+    uid: 108,
+});
 
 app.config.globalProperties.baseUrl = '/client';
 
@@ -30,7 +32,7 @@ app.component(Button.name, Button);
 
 const log = {
     install(app: AppType) {
-        console.log(app, 'log');
+        // console.log(app, 'log');
     }
 }
 

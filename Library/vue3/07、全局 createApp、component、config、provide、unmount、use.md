@@ -26,6 +26,36 @@ const app = createApp(App);
 app.mount(App, '#app');
 ```
 
+## rootProps
+
+createApp 也可以传递 props 给根组件：
+
+```ts
+const app = createApp(App, {
+    uid: 108,
+});
+```
+
+```html
+<!-- app.vue -->
+<template>
+    <div id='app'>
+        {{uid}}
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    props: {
+        uid: Number,
+    },
+});
+</script>
+```
+
 ### 全局 API 的差异
 
 vue2.x 中的全局 API 在 vue3 也发生了改变

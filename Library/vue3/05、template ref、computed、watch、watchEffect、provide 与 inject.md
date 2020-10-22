@@ -32,7 +32,7 @@ export default defineComponent({
 
 ## computed
 
-- 只读计算属性
+### 只读计算属性
 
 ```html
 <template>
@@ -65,7 +65,7 @@ export default defineComponent({
 </script>
 ```
 
-- 可读写计算属性
+### 可读写计算属性
 
 ```html
 <template>
@@ -101,6 +101,38 @@ export default defineComponent({
         return {
             ...toRefs(user),
         }
+    }
+});
+</script>
+```
+
+### 计算属性的返回值
+
+需要注意的是，computed 的返回值是个 ref
+
+```ts
+export declare function computed<T>(getter: ComputedGetter<T>): ComputedRef<T>;
+
+export declare function computed<T>(options: WritableComputedOptions<T>): WritableComputedRef<T>;
+```
+
+```html
+<script lang='ts'>
+import { computed, defineComponent, isRef, reactive } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const user = reactive({
+            id: 1,
+            code: 100,
+        });
+
+        const codePlus = computed(() => user.code * 2);
+
+        console.log(codePlus.value); // 需要 .value，computed 返回是个 ref
+
+        console.log(isRef(codePlus)); // true
     }
 });
 </script>
@@ -335,6 +367,20 @@ export default defineComponent({
     }
 });
 </script>
+```
+
+### onInvalidate
+
+watch 的第三个参数 onInvalidate，在 watchEffect 是即回调接收的参数：
+
+```ts
+watchEffect(onInvalidate => {
+    user.code = id * 100;
+
+    onInvalidate(() => {
+        // 此处不示例，参考 watch 小节...
+    });
+});
 ```
 
 ### options

@@ -120,7 +120,7 @@ export default defineComponent({
 </script>
 ```
 
-**template 更新才会触发这 2 个 hook**，这意味着下面这种方式是不会触发的：
+**需要收集到依赖与响应更新才会触发这 2 个 hook**，这意味着下面这种方式是不会触发的，因为 user 没有相关的依赖需要收集，也没有需要响应更新的内容：
 
 ```html
 <template>
@@ -254,6 +254,30 @@ export default defineComponent({
     },
 });
 </script>
+```
+
+更多的配置：
+
+```ts
+const AsyncComp = defineAsyncComponent({
+    // 工厂函数
+    loader: () => import('./components/header.vue'),
+    // 加载异步组件时使用的组件
+    loadingComponent: LoadingComponent,
+    // 加载失败的时候使用的组件
+    errorComponent: ErrorComponent,
+    // 在显示加载组件之前延迟。默认 200 ms。
+    delay: 200,
+    // 如果超时，将显示错误组件
+    // 存在 timeout 并且超过这个时间
+    timeout: 3000,
+    // 返回布尔值的函数，指示当加载器 promise rejects 时异步组件是否应该重试
+    retryWhen: error => error.code !== 404,
+    // 允许的最大重试次数
+    maxRetries: 3,
+    // 定义组件是否可挂载
+    suspensible: false
+});
 ```
 
 > 注：Suspense 当前还是实验性特性，它的 API 之后可能会改变
