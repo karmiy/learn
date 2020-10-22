@@ -1,8 +1,8 @@
 <template>
     <div id='app'>
-        <!-- <Header>
+        <Header>
             <span class='title'>{{title}}</span>
-        </Header> -->
+        </Header>
         {{uid}}
         {{id}}
         {{code}}
@@ -16,6 +16,7 @@
 
 <script lang='ts'>
 import { defineComponent, reactive, toRefs, nextTick } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import Header from '@/components/header.vue';
 import UserInfo from '@/components/user-info.vue';
 
@@ -28,19 +29,18 @@ export default defineComponent({
     props: {
         uid: Number,
     },
-    mounted() {
-        console.log((this as any).$slots);
-    },
-    setup() {
+    setup({ uid }) {
         const rawUser = {
             id: 1,
             code: 100,
         };
         const user = reactive(rawUser);
 
-        nextTick(() => {
-            console.log(1);
-        });
+        const router = useRouter();
+
+        const route = useRoute();
+        
+        router.push;
 
         return {
             ...toRefs(user),

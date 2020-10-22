@@ -88,6 +88,31 @@ export default defineComponent({
 </script>
 ```
 
+- 获取 router 与 route
+
+vue2.x 的 this.$router，在 vue3 中可以用 **useRouter**
+
+上述的 route，除了使用 router.currentRoute，还可以使用 **useRoute**
+
+```html
+<script lang='ts'>
+import { defineComponent } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const router = useRouter();
+
+        const route = useRoute();
+
+        router.push('/home');
+        console.log(route);
+    }
+});
+</script>
+```
+
 ## emits-option
 
 vue3 的 emit 与 vue2.x 的 emit 不同的是，新增了一个 emits 选项

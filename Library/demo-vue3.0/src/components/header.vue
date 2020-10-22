@@ -21,6 +21,7 @@ export default defineComponent({
     name: 'Header',
     props: {
         title: String,
+        size: String,
     },
     components: {
         Modal,
