@@ -4,6 +4,8 @@
 
 vue-router4.x 的路由与之前没有很大的变化，主要功能了一些新的 API 或功能
 
+### 动态路由
+
 - 创建路由
 
 ```ts
@@ -88,7 +90,7 @@ export default defineComponent({
 </script>
 ```
 
-- 获取 router 与 route
+### router 与 route
 
 vue2.x 的 this.$router，在 vue3 中可以用 **useRouter**
 
@@ -113,125 +115,97 @@ export default defineComponent({
 </script>
 ```
 
-## emits-option
+### 组件级路由钩子
 
-vue3 的 emit 与 vue2.x 的 emit 不同的是，新增了一个 emits 选项
+在 vue2.x 中的组件级路由钩子有：
+
+- beforeRouteEnter
+
+- beforeRouteUpdate
+
+- beforeRouteLeave
+
+vue3 中提供了 update 与 leave 的钩子：
+
+- onBeforeRouteUpdate
+
+- onBeforeRouteLeave
+
+```html
+<script lang='ts'>
+import { defineComponent } from 'vue';
+import { onBeforeRouteUpdate, onBeforeRouteLeave } from 'vue-router';
+
+export default defineComponent({
+    name: 'Home',
+    setup() {
+        onBeforeRouteUpdate(() => {
+            // ...
+        });
+
+        onBeforeRouteLeave(() => {
+            // ...
+        });
+    }
+});
+</script>
+```
+
+## vuex
+
+vue3 中使用 vuex 与 vue2.x 的区别主要在于 store 的创建与获取
+
+- 创建 store
 
 ```ts
-{
-    props: ...
-    emits: ...
-}
+import { createStore } from 'vuex';
+
+export default createStore({
+    state: {
+        isLogin: true,
+    },
+    mutations: {
+        updateLogin(state, login: boolean) {
+            state.isLogin = login;
+        }
+    },
+    actions: {},
+    modules: {}
+});
 ```
 
-新增这个 emits 的好处在于：
+- 安装 store
 
-- 让开发者更清晰的了解组件应该派发什么事件
+```ts
+app.use(store);
+```
 
-- 提供类型推断
-
-- 作为一个验证器，调用时验证，需要返回 boolean 类型，当返回 false 时控制台会打印警告
-
-
-需要注意的是，**一旦有 emits 配置，必须把所有 emits 项都在配置中列出来，不可有遗漏，否则 typescript 会报错**
-
-emits 的用法同 props，可以是个数组：
+- 使用 store
 
 ```html
 <template>
-    <div class='user-info'>
-        <input type='text' :value='name' @input='onNameChange' />
-        <br>
-        <input type='text' :value='age' @input='onAgeChange' />
-        <br>
-        <input type='text' :value='code' @input='onCodeChange' />
+    <div id='app'>
+        {{isLogin ? 'login' : 'unlogin'}}
+        <button @click='toggleLogin'>toggle login</button>
     </div>
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default defineComponent({
-    name: 'UserInfo',
-    props: {
-        name: String,
-        age: Number,
-        code: Number,
-    },
-    emits: ['codeChange', 'update:name', 'update:age'], // 数组
-    setup(props, { emit }) {
-        const onNameChange = (e: { target: HTMLInputElement }) => {
-            emit('update:name', e.target.value);
-        };
+    name: 'App',
+    setup() {
+        const store = useStore<{ isLogin: boolean }>();
 
-        const onAgeChange = (e: { target: HTMLInputElement }) => {
-            emit('update:age', +e.target.value);
-        };
-
-        const onCodeChange = (e: { target: HTMLInputElement }) => {
-            emit('codeChange', +e.target.value);
-        };
+        const isLogin = computed(() => store.state.isLogin);
 
         return {
-            onNameChange,
-            onAgeChange,
-            onCodeChange,
+            isLogin,
+            toggleLogin: () => store.commit('updateLogin', !isLogin.value),
         }
-    },
+    }
 });
 </script>
 ```
-
-也可以是函数，需要返回 boolean，表示校验是否通过：
-
-```html
-<template>
-    <div class='user-info'>
-        <input type='text' :value='name' @input='onNameChange' />
-        <br>
-        <input type='text' :value='age' @input='onAgeChange' />
-        <br>
-        <input type='text' :value='code' @input='onCodeChange' />
-    </div>
-</template>
-
-<script lang='ts'>
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-    name: 'UserInfo',
-    props: {
-        name: String,
-        age: Number,
-        code: Number,
-    },
-    // 需要返回 boolean，返回 false 控制台会报警告
-    emits: {
-        codeChange: (value: number) => true,
-        'update:name': (value: string) => true,
-        'update:age': (value: number) => true,
-    },
-    setup(props, { emit }) {
-        const onNameChange = (e: { target: HTMLInputElement }) => {
-            emit('update:name', e.target.value);
-        };
-
-        const onAgeChange = (e: { target: HTMLInputElement }) => {
-            emit('update:age', +e.target.value);
-        };
-
-        const onCodeChange = (e: { target: HTMLInputElement }) => {
-            emit('codeChange', +e.target.value);
-        };
-
-        return {
-            onNameChange,
-            onAgeChange,
-            onCodeChange,
-        }
-    },
-});
-</script>
-```
-
-> 注：emits 配置中返回 false 并不会终止事件派发，只是控制台报警告

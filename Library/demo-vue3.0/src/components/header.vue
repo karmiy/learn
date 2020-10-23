@@ -3,7 +3,9 @@
         <h1 @click='fn'>
             <slot></slot>
         </h1>
-        <input type='text' v-model='id' />
+        {{messages}}
+        {{userId}}
+        <input type='text' v-model='userId' />
         <Modal :open='true'>modal</Modal>
         <!-- <teleport to='body'>
             <div id='content'>
@@ -16,21 +18,25 @@
 <script lang='ts'>
 import { defineComponent, ref, getCurrentInstance } from 'vue';
 import Modal from './modal.vue';
+import { messages, userId } from '../observable';
 
 export default defineComponent({
     name: 'Header',
-    props: {
-        title: String,
-        size: String,
-    },
     components: {
         Modal,
     },
     setup() {
         const id = ref(1);
 
+        setTimeout(() => {
+            messages.length = 12;
+            userId.value = '39214';
+        }, 2000);
+
         return {
             id,
+            messages,
+            userId,
         }
     },
     methods: {

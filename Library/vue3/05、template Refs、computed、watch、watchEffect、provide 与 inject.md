@@ -1,4 +1,4 @@
-## template ref
+## template Refs
 
 vue2.x 中为了获取 template 中的某个 DOM 或子组件实例，通常需要给节点挂上 ref 属性，并使用 this.$refs.xxx 获取
 
@@ -24,6 +24,35 @@ export default defineComponent({
 
         return {
             appRef,
+        }
+    }
+});
+</script>
+```
+
+如果 template ref 是 v-for 循环多个的，则需要以函数的形式赋值：
+
+```html
+<template>
+    <div id='app'>
+        <div v-for='(item, i) in list' :key='item' :ref='el => divs[i] = el'>
+            {{ item }}
+        </div>
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent, reactive, ref } from 'vue';
+
+export default defineComponent({
+    name: 'App',
+    setup() {
+        const list = reactive([1, 2, 3])
+        const divs = ref([]);
+
+        return {
+            list,
+            divs,
         }
     }
 });
@@ -393,7 +422,7 @@ watchEffect(onInvalidate => {
 
 - flush: 回调执行时机，有 'pre' | 'post' | 'sync' 可选项，默认 post
 
-其中 onTrack 与 onTrigger 同新的生命周期钩子，接收一个 DebuggerEvent 对象用于调试
+其中 onTrack 与 onTrigger 同新的生命周期钩子，接收一个 DebuggerEvent 对象用于调试，仅在开发模式生效
 
 而 flush 表示 watchEffect 副作用回调在什么时候执行
 

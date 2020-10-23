@@ -1,3 +1,126 @@
+## emits-option
+
+vue3 的 emit 与 vue2.x 的 emit 不同的是，新增了一个 emits 选项
+
+```ts
+{
+    props: ...
+    emits: ...
+}
+```
+
+新增这个 emits 的好处在于：
+
+- 让开发者更清晰的了解组件应该派发什么事件
+
+- 提供类型推断
+
+- 作为一个验证器，调用时验证，需要返回 boolean 类型，当返回 false 时控制台会打印警告
+
+
+需要注意的是，**一旦有 emits 配置，必须把所有 emits 项都在配置中列出来，不可有遗漏，否则 typescript 会报错**
+
+emits 的用法同 props，可以是个数组：
+
+```html
+<template>
+    <div class='user-info'>
+        <input type='text' :value='name' @input='onNameChange' />
+        <br>
+        <input type='text' :value='age' @input='onAgeChange' />
+        <br>
+        <input type='text' :value='code' @input='onCodeChange' />
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+    name: 'UserInfo',
+    props: {
+        name: String,
+        age: Number,
+        code: Number,
+    },
+    emits: ['codeChange', 'update:name', 'update:age'], // 数组
+    setup(props, { emit }) {
+        const onNameChange = (e: { target: HTMLInputElement }) => {
+            emit('update:name', e.target.value);
+        };
+
+        const onAgeChange = (e: { target: HTMLInputElement }) => {
+            emit('update:age', +e.target.value);
+        };
+
+        const onCodeChange = (e: { target: HTMLInputElement }) => {
+            emit('codeChange', +e.target.value);
+        };
+
+        return {
+            onNameChange,
+            onAgeChange,
+            onCodeChange,
+        }
+    },
+});
+</script>
+```
+
+也可以是函数，需要返回 boolean，表示校验是否通过：
+
+```html
+<template>
+    <div class='user-info'>
+        <input type='text' :value='name' @input='onNameChange' />
+        <br>
+        <input type='text' :value='age' @input='onAgeChange' />
+        <br>
+        <input type='text' :value='code' @input='onCodeChange' />
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+    name: 'UserInfo',
+    props: {
+        name: String,
+        age: Number,
+        code: Number,
+    },
+    // 需要返回 boolean，返回 false 控制台会报警告
+    emits: {
+        codeChange: (value: number) => true,
+        'update:name': (value: string) => true,
+        'update:age': (value: number) => true,
+    },
+    setup(props, { emit }) {
+        const onNameChange = (e: { target: HTMLInputElement }) => {
+            emit('update:name', e.target.value);
+        };
+
+        const onAgeChange = (e: { target: HTMLInputElement }) => {
+            emit('update:age', +e.target.value);
+        };
+
+        const onCodeChange = (e: { target: HTMLInputElement }) => {
+            emit('codeChange', +e.target.value);
+        };
+
+        return {
+            onNameChange,
+            onAgeChange,
+            onCodeChange,
+        }
+    },
+});
+</script>
+```
+
+> 注：emits 配置中返回 false 并不会终止事件派发，只是控制台报警告
+
 ## v-is
 
 同 vue2.x 的 component 组件：

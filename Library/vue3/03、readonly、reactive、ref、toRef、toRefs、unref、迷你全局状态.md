@@ -145,7 +145,7 @@ export function ref<T>(raw: T): Ref<T> {
 
 ### ref 作用于 template
 
-ref 变量作为 setup 返回用于 template 时，**不需要 .value，template 会自动根据是否是 ref 值来显示**
+ref 变量作为 setup 返回用于 template 时，**不需要 .value，template 会自动解套，根据是否是 ref 值来显示**
 
 ```html
 <template>
@@ -252,6 +252,18 @@ function createGetter(isReadonly: boolean) {
 ```
 
 注意：只是获取 ref 类型的属性值时不需要 .value，并不代表 reactive 该属性值被赋值为了 ref.value ，reactive 的该属性值依旧是那个 ref，只是获取时 **getter 直接返回 ref.value** 而已
+
+此外，还需要注意的是：ref 作用于 reactive 自动解套，**只适用于普通对象的形式，其他如 Array、Map 都不会自动解套**：
+
+```ts
+const arr = reactive([ref(0)]);
+// 这里需要 .value
+console.log(arr[0].value);
+
+const map = reactive(new Map([['foo', ref(0)]]));
+// 这里需要 .value
+console.log(map.get('foo').value);
+```
 
 ### 为属性值是 ref 的 reactive 赋值
 
@@ -627,4 +639,73 @@ isRef(val) ? val.value : val
 function useCount(count: number | Ref<number>) {
     const value = unref(count); // 直接获取 number 值，很方便
 }
+```
+
+## 迷你全局状态
+
+reactive 与 ref 都可以作为一个迷你的全局状态：
+
+```ts
+// observable.ts
+import { reactive, ref } from 'vue';
+
+export const messages = reactive({
+    length: 10,
+});
+
+export const userId = ref('02834');
+```
+
+```html
+<template>
+    <div id='home'>
+        {{messages}}
+        {{userId}}
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent } from 'vue';
+import { messages, userId } from './observable';
+
+export default defineComponent({
+    name: 'Home',
+    setup() {
+
+        return {
+            messages,
+            userId,
+        }
+    }
+});
+</script>
+```
+
+```html
+<template>
+    <div id='Product'>
+        {{messages}}
+        {{userId}}
+        <input type='text' v-model='userId' />
+    </div>
+</template>
+
+<script lang='ts'>
+import { defineComponent } from 'vue';
+import { messages, userId } from '../observable';
+
+export default defineComponent({
+    name: 'Product',
+    setup() {
+        setTimeout(() => {
+            messages.length = 12;
+        }, 2000);
+
+        return {
+            messages,
+            userId,
+        }
+    },
+});
+</script>
 ```

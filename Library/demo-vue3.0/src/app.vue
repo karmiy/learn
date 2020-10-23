@@ -1,22 +1,23 @@
 <template>
     <div id='app'>
-        <Header>
-            <span class='title'>{{title}}</span>
-        </Header>
-        {{uid}}
+        <!-- <Header>
+            <span class='title'>Title</span>
+        </Header> -->
+        <!-- {{isLogin ? 'login' : 'unlogin'}}
+        <button @click='toggleLogin'>toggle login</button> -->
         {{id}}
         {{code}}
         <input type='text' v-model='code' />
-        <div v-is='"k"'>11</div>
-        <component :is='"k"' />
+        <div v-for='(item, i) in list' :key='item' :ref='el => divs[i] = el'>
+            {{ item }}
+        </div>
         <!-- <button-counter></button-counter> -->
         <!-- <input type='text' v-model='title' /> -->
     </div>
 </template>
 
 <script lang='ts'>
-import { defineComponent, reactive, toRefs, nextTick } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { defineComponent, reactive, toRefs, ref } from 'vue';
 import Header from '@/components/header.vue';
 import UserInfo from '@/components/user-info.vue';
 
@@ -26,24 +27,20 @@ export default defineComponent({
         Header,
         UserInfo,
     },
-    props: {
-        uid: Number,
-    },
-    setup({ uid }) {
+    setup() {
         const rawUser = {
             id: 1,
             code: 100,
         };
         const user = reactive(rawUser);
 
-        const router = useRouter();
-
-        const route = useRoute();
-        
-        router.push;
+        const list = reactive([1, 2, 3])
+        const divs = ref([]);
 
         return {
             ...toRefs(user),
+            list,
+            divs,
         }
     }
 });
