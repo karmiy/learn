@@ -1,17 +1,16 @@
 <template>
-    <button class='km-button'>
-        <slot></slot>
-    </button>
+    <div id='error'>
+        This is Error
+    </div>
 </template>
 
 <script lang='ts'>
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-    name: 'KmButton',
+    name: 'Error',
 });
 </script>
 
-<!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style lang='scss' scoped>
 </style>

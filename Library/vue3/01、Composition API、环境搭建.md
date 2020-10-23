@@ -22,7 +22,9 @@ vue2.x 中为了支持 typescript，经常都是使用 vue-class-component，然
 
 ## 项目搭建
 
-直接使用 vue-cli 即可
+### vue-cli
+
+- 安装 vue-cli：
 
 ```js
 npm install @vue/cli -g
@@ -36,7 +38,7 @@ vue create xxx
 选择 vue3 配置
 ```
 
-## 运行常见问题
+- 运行常见问题：
 
 vue-cli 搭建后运行，经常会在 npm run serve 启动时遇到错误：
 
@@ -51,3 +53,94 @@ Error: Cannot find module 'vue-loader-v16/package.json'
 2. 清缓存 npm cache clean --force
 
 3. Git Bash 环境下 npm install
+
+### vite
+
+除了 vue-cli，也可以使用 vite 构建项目，编译速度更快：
+
+- 安装 create-vite-app
+
+```js
+npm install create-vite-app -g
+
+create-vite-app xxx
+```
+
+- 安装 sass
+
+```js
+npm install --save-dev sass node-sass sass-loader
+```
+
+- 安装 typescript：
+
+```js
+cnpm install --save-dev typescript
+```
+
+根目录新建 tsconfig.json
+
+```json
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "strict": true,
+        "jsx": "preserve",
+        "importHelpers": true,
+        "moduleResolution": "node",
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "sourceMap": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ]
+        },
+        "lib": [
+            "esnext",
+            "dom",
+            "dom.iterable",
+            "scripthost"
+        ]
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.vue"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
+```
+
+修改 main.js 为 main.ts
+
+修改 index.html 中引入为 main.ts
+
+- 新增 shims-vue.d.ts
+
+```ts
+// src/shims-vue.d.ts
+declare module '*.vue' {
+    import type { DefineComponent } from 'vue'
+    const component: DefineComponent
+    export default component
+}
+```
+
+- 安装 vue-router、vuex
+
+```js
+npm install --save vue-router@^4.0.0
+
+npm install --save vuex@^4.0.0
+```
+
+- 启动项目
+
+```js
+npm run dev
+```
