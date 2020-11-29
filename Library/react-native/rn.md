@@ -184,4 +184,12 @@ Container.native.js // IOS / Android
 ```tsx
 import Container from './Container';
 ```
+## 强制刷新
 
+如果希望重置 state，可以在文件任何地方增加:
+
+```tsx
+// @refresh reset
+```
+
+指示在每次编辑时重新加载该文件中定义的组件
