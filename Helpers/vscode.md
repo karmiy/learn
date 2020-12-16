@@ -34,6 +34,16 @@ setting => 搜索 tree => 找到 Workbench Tree: Indent   Controls tree indentat
 
     - vue-helper：Ctrl template 上的变量可索引
 
+- Auto Rename Tag: 修改 HTML 开标签时，自动同步修改闭标签
+
+- Draw.io Integration: 画流程图
+
+- Git History: 文件中右键看历史提交
+
+- open in browser: HTML 文件中右键打开浏览器
+
+- GitLens —— Git supercharged: 点击某一行时显示之前是谁写的代码
+
 ### 配置
 
 ```json
