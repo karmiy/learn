@@ -47,7 +47,7 @@ const App: React.FC = () => {
     return (
         <View>
             <View style={styles.wrap}>
-                <ScrollView>
+                <View>
                     <FlatList
                         data={list}
                         renderItem={({item}) => {
@@ -58,7 +58,7 @@ const App: React.FC = () => {
                             );
                         }}
                     />
-                </ScrollView>
+                </View>
             </View>
         </View>
     );
@@ -119,7 +119,7 @@ const App: React.FC = () => {
     return (
         <View>
             <View style={styles.wrap}>
-                <ScrollView>
+                <View>
                     <FlatList
                         data={list}
                         renderItem={({item, index, separators}) => {
@@ -142,7 +142,7 @@ const App: React.FC = () => {
                         }}
                         ItemSeparatorComponent={Separator}
                     />
-                </ScrollView>
+                </View>
             </View>
         </View>
     );
