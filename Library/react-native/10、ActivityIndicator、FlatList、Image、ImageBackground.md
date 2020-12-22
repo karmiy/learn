@@ -389,3 +389,13 @@ onViewableItemsChanged={info => {
     <Text style={styles.text}>Inside</Text>
 </ImageBackground>
 ```
+
+该组件的原理就是个 absolute 定位在 children 旁的 Image，[源码](https://github.com/facebook/react-native/blob/master/Libraries/Image/ImageBackground.js)
+
+### Props
+
+- imageStyle: 传递给 Image 的样式
+
+- imageRef: 挂载中 Image 组件的 ref
+
+- style: 根元素的样式（ImageBackground 的根元素是个 View）
