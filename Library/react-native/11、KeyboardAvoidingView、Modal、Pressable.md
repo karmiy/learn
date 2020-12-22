@@ -68,3 +68,52 @@
     - formSheet: 竖直和水平都居中，四周都留出一定空白（仅用于大屏设备）
 
     - overFullScreen: 完全盖满屏幕，同时允许透明
+
+## Pressable
+
+检测任何子组件的 press 事件
+
+```tsx
+<Pressable
+    onPress={() => {
+        console.log('press');
+    }}
+    style={({pressed}) => [
+        {
+            backgroundColor: pressed
+                ? 'rgb(210, 230, 255)'
+                : 'white',
+        },
+    ]}
+>
+    {({pressed}) => (
+        <Text>{pressed ? 'Pressed!' : 'Press Me'}</Text>
+    )}
+</Pressable>
+```
+
+### props
+
+- android_disableSound(Android): 配置安卓按下时是否不要播放声音
+
+- android_rippleColor(Android): 配置安卓按下时涟漪效应的颜色
+
+- children: 常规 React 节点，或一个函数，接收 press 状态并返回 React 节点
+
+- delayLongPress: 默认 500，即长按事件 onLongPress 调用前长按时间
+
+- disabled: 是否禁用 press 事件
+
+- hitSlop: 设置元素外一个额外距离，让这个范围里也可以监听到 press 事件，防止用户胖手指
+
+- pressRetentionOffset: 设置视图外一个额外距离，使得在 onPressout 触发前，这个范围内也可以被视为 press 事件
+
+- onPressIn: 按键被激活时调用
+
+- onPress: 按键动作被触发时调用，在 onPressIn 130ms 后
+
+- onLongPress: 当按下手势在 onPressIn 500ms 或 delayLongPress 配置时间之后才调用
+
+- onPressOut: 按下手势失效时调用
+
+- style: 样式，同 children 也可以是接收 press 状态的函数
