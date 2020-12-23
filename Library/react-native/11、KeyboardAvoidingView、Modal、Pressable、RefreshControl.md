@@ -117,3 +117,79 @@
 - onPressOut: 按下手势失效时调用
 
 - style: 样式，同 children 也可以是接收 press 状态的函数
+
+## RefreshControl
+
+用在 ScrollView 或 FlatList 内部，为其添加下拉刷新的功能
+
+当 ScrollView 处于竖直方向的起点位置（scrollY: 0），此时下拉会触发一个 onRefresh 事件
+
+```tsx
+const wait = (timeout: number) => {
+    return new Promise(resolve => {
+        setTimeout(resolve, timeout);
+    });
+};
+const App: React.FC = () => {
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = React.useCallback(() => {
+        console.log('拉下来，放手时触发回调');
+        setRefreshing(true);
+
+        wait(2000).then(() => setRefreshing(false));
+    }, []);
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <ScrollView
+                contentContainerStyle={styles.scrollView}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
+            >
+                <Text>Pull down to see RefreshControl indicator</Text>
+            </ScrollView>
+        </SafeAreaView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        marginTop: 44,
+        backgroundColor: 'yellow',
+    },
+    scrollView: {
+        flex: 1,
+        backgroundColor: 'pink',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+});
+```
+
+### props
+
+- refreshing: 是否在刷新时显示指示器，即下拉刷新放手的回调要设为 true，否则指示器一下子就没了
+
+- onRefresh: 下拉刷新放手时回调
+
+- colors(Android): 指示器颜色，是个数组
+
+- tintColor(iOS): 指示器颜色，是个 color 类型如 #1394ff
+
+- progressBackgroundColor(Android): 指示器背景色
+
+- enabled(Android): 是否启用指示器
+
+- progressViewOffset(Android): 指示器的垂直起始位置
+
+- size(Android): 指示器的大小 enum(RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE)
+
+- title(iOS): 指示器下显示的文字
+
+- titleColor(iOS): 指示器下文字颜色
