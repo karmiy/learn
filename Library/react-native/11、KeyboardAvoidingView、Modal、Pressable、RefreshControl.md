@@ -43,7 +43,7 @@
 
 - onShow: 在 modal 显示时调用
 
-- onDismiss: 在 modal 关闭时调用
+- onDismiss(iOS): 在 modal 关闭时调用
 
 - transparent: 背景是否透明，默认白色
 
