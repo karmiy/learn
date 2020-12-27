@@ -205,6 +205,8 @@ getItemLayout={(data, index) => (
 
 - initialScrollIndex: 初始化时自动滚到指定 index 的位置，需要设置 getItemLayout 属性（不设的话好像初始上面元素会没掉，直接滚动条置顶了）
 
+- inverted: 翻转滚动方向。实质是将 scale 变换设置为 -1
+
 - keyExtractor(item: object, index: number) => string: 指定 Item 的 key，默认取 item.key，没有则取数组下标
 
 

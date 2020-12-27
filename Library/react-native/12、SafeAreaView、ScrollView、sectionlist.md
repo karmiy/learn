@@ -261,3 +261,240 @@ const styles = StyleSheet.create({
     - scrollToEnd({animated?: boolean, duration?: number}): duration 只有 Android 才支持
 
 - flashScrollIndicators: 短暂的显示滚动条
+
+##  sectionlist
+
+同 FlatList，多了个分组
+
+基于 VirtualizedList 的封装，继承其所有 props，也包括 ScrollView 的 props
+
+```tsx
+const App: React.FC = () => {
+    return (
+        <View style={styles.container}>
+            <SectionList
+                sections={[
+                    {
+                        header: 'A', // 不一定要叫 header
+                        data: [ // data 是必需的
+                            {id: 1, name: 'k1'},
+                            {id: 2, name: 'k2'},
+                        ],
+                    },
+                ]}
+                renderItem={({item}) => (
+                    <View style={styles.item}>
+                        <Text style={styles.title}>
+                            id: {item.id}; name: {item.name}
+                        </Text>
+                    </View>
+                )}
+                renderSectionHeader={({section}) => (
+                    <Text style={styles.header}>{section.header}</Text>
+                )}
+            />
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        marginTop: 44,
+    },
+    item: {
+        backgroundColor: '#f9c2ff',
+        padding: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: 'red',
+    },
+    header: {
+        fontSize: 32,
+        backgroundColor: '#1394ff',
+    },
+    title: {
+        fontSize: 24,
+    },
+});
+```
+
+### Props
+
+- sections: 类似 FlatList 的 data
+
+- initialNumToRender: 指定一开始渲染的元素数量，最好刚刚够填满一个屏幕，这样保证了用最短的时间给用户呈现可见的内容（性能优化的一种方案，如果指定少了，效果会是立即渲染出指定数量后再闪一下补空）。注意这第一批次渲染的元素不会在滑动过程中被卸载，这样是为了保证用户执行返回顶部的操作时，不需要重新渲染首批元素
+
+- keyExtractor(item: object, index: number) => string: 指定 Item 的 key，默认取 item.key，没有则取数组下标
+
+> 注意这只设置了每行（item）的 key，对于每个组（section）仍然需要另外设置 key
+
+- renderItem({ item, index, separators }): section 中的数据将会循环执行 renderItem，具体参数意义看 FlatList
+
+- renderSectionFooter(info: { section: Section }) => element: 每个组的尾部组件
+
+- renderSectionHeader(info: { section: Section }) => element: 在每个 section 的头部渲染。在 iOS 上，这些 headers 是默认粘接在ScrollView的顶部的
+
+- ItemSeparatorComponent: 同 FlatList
+
+- SectionSeparatorComponent: 不同于 ItemSeparatorComponent，是渲染在一个组的 header 下与 footer 上的，具体效果可看后面的图，参数是对象，有如下属性:
+
+    - highlighted: 是否高亮
+
+    - leadingItem: 前面的 item 项
+
+    - leadingSection: 前面 section
+
+    - section: 当前隶属的 section
+
+    - trailingItem: 跟随其后的 item
+
+    - trailingSection: 跟随其后的 section
+
+![Alt text](./imgs/12-01.png)
+
+- ListFooterComponent: 将渲染在组件底部
+
+- ListEmptyComponent: data 没有数据时将渲染该组件
+
+- ListHeaderComponent: 将渲染在组件头部
+
+以上各部位组件可以以如下示例看图理解:
+
+```tsx
+const App: React.FC = () => {
+    // const scrollRef = useRef<ScrollView>(null);
+    return (
+        <View style={styles.container}>
+            <SectionList
+                sections={[
+                    {
+                        header: 'A - header',
+                        footer: 'A - footer',
+                        data: [
+                            {id: 1, name: 'k1'},
+                            {id: 2, name: 'k2'},
+                        ],
+                    },
+                    {
+                        header: 'B - header',
+                        footer: 'B - footer',
+                        data: [
+                            {id: 3, name: 'k3'},
+                            {id: 4, name: 'k4'},
+                        ],
+                    },
+                ]}
+                renderItem={({item}) => {
+                    return (
+                        <View style={styles.item}>
+                            <Text style={styles.title}>
+                                id: {item.id}; name: {item.name}
+                            </Text>
+                        </View>
+                    );
+                }}
+                ItemSeparatorComponent={() => {
+                    return (
+                        <Text style={styles.separator}>item - separator</Text>
+                    );
+                }}
+                renderSectionHeader={({section}) => (
+                    <Text style={styles.header}>{section.header}</Text>
+                )}
+                renderSectionFooter={({section}) => (
+                    <Text style={styles.footer}>{section.footer}</Text>
+                )}
+                SectionSeparatorComponent={() => {
+                    return (
+                        <View>
+                            <Text style={styles.sectionSeparator}>
+                                section - separator
+                            </Text>
+                        </View>
+                    );
+                }}
+                ListHeaderComponent={
+                    <Text style={styles.list}>list - header</Text>
+                }
+                ListFooterComponent={
+                    <Text style={styles.list}>list - footer</Text>
+                }
+            />
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    list: {
+        backgroundColor: 'yellowgreen',
+        fontSize: 40,
+    },
+    item: {
+        backgroundColor: '#f9c2ff',
+        padding: 20,
+    },
+    header: {
+        backgroundColor: '#1394ff',
+        fontSize: 32,
+    },
+    footer: {
+        backgroundColor: 'pink',
+        fontSize: 32,
+    },
+    title: {
+        fontSize: 24,
+    },
+    separator: {
+        backgroundColor: 'red',
+    },
+    sectionSeparator: {
+        backgroundColor: '#666',
+        color: '#fff',
+    },
+});
+```
+![Alt text](./imgs/12-02.png)
+
+- onEndReachedThreshold: 阈值，决定距离底部多远时触发 onEndReached 回调，该参数的值是 0 - 1，如 0.5 是距离底部距离一半
+
+- onEndReached(info: {distanceFromEnd: number}) => void: 滚到离底部 onEndReachedThreshold 时会触发该回调（滚上去又滚下来到阈值也会，不是只触发一次），distanceFromEnd 是触发时离底部的距离，此回调是异步调用的，即滚的越快，触发的会越晚，触发时 distanceFromEnd 的值会越小
+
+- extraData: 传递给 extraData 的数据改变会让组件刷新，否则在 renderItem，头部、底部等代码里用到其他状态，由于组件 PureComponent 的原因，可能会有不刷新视图的问题
+
+- inverted: 翻转滚动方向。实质是将 scale 变换设置为 -1
+
+- onRefresh: 会在列表头部添加一个 RefreshControl 控件，实现下拉刷新，即下拉后的回调（先滚到到顶，再下拉，并不是正常滚动滚到负值，一定要在 scrollTop 0 的时候再重新拉一下才算），需要配合 refreshing 属性
+
+- refreshing: 下拉刷新时，等待加载新数据则设为 true，加载后设为 false，同 FlatList
+
+- progressViewOffset: 设置 RefreshControl 下拉加载指示器的位置
+
+- onViewableItemsChanged: 可见行元素变化的回调（元素变为可见/不可见都会调用），同 FlatList
+
+> 回调返回的 changed 比 FlatList 多了个 section
+
+- stickySectionHeadersEnabled: boolean 类型，当下一个 section 把它的前一个 section 的可视区推离屏幕的时候，让这个 section 的 header 粘连在屏幕的顶端（如第一个 section 的 header A 置顶时，会变成 sticky 粘顶，继续滚动，第二个 section 的 header B 也要置顶时，A 则不再置顶，而是会往上滚到视图外，换 header B 粘顶，以此类推）
+
+### 方法
+
+- scrollToLocation: 滚到某个 item，参数 params 是个对象
+
+    - animated: 是否要动画，默认 true
+
+    - sectionIndex: 必需项，滚到哪个 section
+
+    - itemIndex: 必需项，滚到指定 sectionIndex 那个 section 的第几个 item
+
+    - viewOffset: 目标地的偏移量，如 20 就是到那个 item 再往下滚 20 的位置
+
+    - viewPosition: 0 - 1，0 表示滚动目标位置 item 位于顶部，1 是底部，0.5 中间
+
+> 注：如果没有设置 getItemLayout 或是 onScrollToIndexFailed，就不能滚动到位于外部渲染区的位置
+
+- recordInteraction: 主动通知列表发生了一个事件，以使列表重新计算可视区域
+
+- flashScrollIndicators: 短暂的显示一下滚动条
+
