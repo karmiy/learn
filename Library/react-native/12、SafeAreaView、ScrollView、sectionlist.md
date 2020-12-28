@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
 
 - flashScrollIndicators: 短暂的显示滚动条
 
-##  sectionlist
+##  Sectionlist
 
 同 FlatList，多了个分组
 
