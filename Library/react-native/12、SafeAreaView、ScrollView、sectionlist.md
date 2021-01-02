@@ -46,6 +46,8 @@ const styles = StyleSheet.create({
 
 ### Props
 
+继承至 View
+
 - contentContainerStyle: 这些样式会应用到一个内层的内容容器上（貌似 ScrollView 本身相当于一个 View，children 还会多被一个内容容器 View 包裹，即 children 上是有 2 层父节点的），所有的子视图都会包裹在内容容器内
 
 - disableScrollViewPanResponder: 默认情况下 ScrollView 会劫持 panResponders，防止滚动时触摸意外，但某些场景可能不希望 ScrollView 成为响应者，例如设置了 snapToInterval，这时可能要禁用这个行为，为了防止 ScrollView 阻塞触摸
@@ -266,8 +268,6 @@ const styles = StyleSheet.create({
 
 同 FlatList，多了个分组
 
-基于 VirtualizedList 的封装，继承其所有 props，也包括 ScrollView 的 props
-
 ```tsx
 const App: React.FC = () => {
     return (
@@ -319,6 +319,8 @@ const styles = StyleSheet.create({
 ```
 
 ### Props
+
+基于 VirtualizedList 的封装，继承其所有 props，也包括 ScrollView 的 props
 
 - sections: 类似 FlatList 的 data
 

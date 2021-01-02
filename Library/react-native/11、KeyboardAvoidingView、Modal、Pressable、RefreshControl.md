@@ -94,10 +94,6 @@
 
 ### props
 
-- android_disableSound(Android): 配置安卓按下时是否不要播放声音
-
-- android_rippleColor(Android): 配置安卓按下时涟漪效应的颜色
-
 - children: 常规 React 节点，或一个函数，接收 press 状态并返回 React 节点
 
 - delayLongPress: 默认 500，即长按事件 onLongPress 调用前长按时间
@@ -106,7 +102,7 @@
 
 - hitSlop: 设置元素外一个额外距离，让这个范围里也可以监听到 press 事件，防止用户胖手指
 
-- pressRetentionOffset: 设置视图外一个额外距离，使得在 onPressout 触发前，这个范围内也可以被视为 press 事件
+- pressRetentionOffset: 设置视图外一个额外距离，使得在 onPressout 触发前，这个范围内也可以被视为 press 事件，参数 { top: number, left: number, bottom: number, right: number }（如设置 80，则按下后不放手往上移动，移动到里按钮 80 的距离内放手还是会触发 press 事件，超出 80 则在到达 80 时触发 onPressOut，然后超出 80 后放手不会触发 onPress）
 
 - onPressIn: 按键被激活时调用
 
@@ -117,6 +113,10 @@
 - onPressOut: 按下手势失效时调用
 
 - style: 样式，同 children 也可以是接收 press 状态的函数
+
+- android_disableSound(Android): 配置安卓按下时是否不要播放声音
+
+- android_rippleColor(Android): 配置安卓按下时涟漪效应的颜色
 
 ## RefreshControl
 

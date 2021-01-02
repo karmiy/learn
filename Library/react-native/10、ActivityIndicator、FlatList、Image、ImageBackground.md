@@ -26,8 +26,6 @@
 
 高性能的简单列表组件
 
-基于 VirtualizedList 的封装，继承其所有 props，也包括 ScrollView 的 props
-
 需要注意：
 
 - 当某行滑出渲染区域，状态是不会保留的，因为该组件只渲染视图内的
@@ -81,6 +79,8 @@ const styles = StyleSheet.create({
 ```
 
 ### 常用 Props
+
+基于 VirtualizedList 的封装，继承其所有 props，也包括 ScrollView 的 props
 
 - data: 数据列表
 
