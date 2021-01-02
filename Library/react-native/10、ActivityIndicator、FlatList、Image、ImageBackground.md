@@ -191,7 +191,7 @@ const [count, setCount] = useState(0);
 />
 ```
 
-- getItemLayout: 手动高度 RN 内容的尺寸，不仅可以节省测量内容尺寸的开销，还使得 RN 可以做到某些功能（初始滚到某个位置、滚到渲染区域外的位置等），通常在每一项高度一致的情况下都要使用它（如果指定分割线，记得一起算进来）
+- getItemLayout: 手动告诉 RN 内容的尺寸，不仅可以节省测量内容尺寸的开销，还使得 RN 可以做到某些功能（初始滚到某个位置、滚到渲染区域外的位置等），通常在每一项高度一致的情况下都要使用它（如果指定分割线，记得一起算进来）
 
 ```tsx
 getItemLayout={(data, index) => (
@@ -254,8 +254,6 @@ const App: FC<{}> = () => {
 };
 ```
 
-- progressViewOffset: 设置 RefreshControl 下拉加载指示器的位置
-
 - viewabilityConfig: 可以用来做曝光，元素可见时会触发 onViewableItemsChanged 回调，有如下几个配置项:
 
     - minimumViewTime: 回调触发前，一个 item 必须的最小物理可见时间，没有达到这个时间，就不会触发回调了，所以滚的快的话可能或错过一些 item 的曝光
@@ -279,6 +277,8 @@ onViewableItemsChanged={info => {
     // viewableItems: 窗口内当前可见的项
 }}
 ```
+
+- progressViewOffset(Android): 设置 RefreshControl 下拉加载指示器的位置
 
 ### 方法
 
@@ -308,13 +308,13 @@ onViewableItemsChanged={info => {
 
     - viewPosition: 同 scrollToIndex
 
-- scrollToOffset(params: object): 滚动列表到指定的偏移，等同于ScrollView的scrollTo方法
+- scrollToOffset(params: object): 滚动列表到指定的偏移，等同于 ScrollView 的 scrollTo 方法
 
     - animated: 滚动画时是否动画，默认 true
 
     - offset: 偏移量
 
-- recordInteraction: 主动通知列表发生了一个事件，以使列表重新计算可视区域。比如说当waitForInteractions为 true 并且用户没有滚动列表时。一般在用户点击了列表项或发生了导航动作时调用
+- recordInteraction: 主动通知列表发生了一个事件，以使列表重新计算可视区域。比如说当 waitForInteractions 为 true 并且用户没有滚动列表时。一般在用户点击了列表项或发生了导航动作时调用
 
 - getNativeScrollRef、getScrollResponder、getScrollableNode: 获取底层滚动的引用、响应器、节点
 
