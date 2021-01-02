@@ -44,6 +44,8 @@
 
 - hitSlop: 定义按钮外延范围，即点按钮周围多远也算点到按钮，结构为 { top: number, left: number, bottom: number, right: number }（试了下好像没效果？）
 
+> 触摸范围不会扩展到父视图之外，另外如果触摸到两个重叠的视图，z-index 高的元素会优先
+
 - onBlur: 失去焦点时触发
 
 - onFocus: 聚焦时触发
