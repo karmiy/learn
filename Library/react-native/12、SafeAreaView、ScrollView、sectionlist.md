@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
 
 - onMomentumScrollBegin: 滚动动画开始时调用此函数
 
-- onMomentumScrollEnd: 滚动动画结束时调用此函数
+- onMomentumScrollEnd: 滚动动画结束时调用此函数（试了下 IOS 只有有惯性效果才能在停止时调用，而 Android 即使放手时已经静止也会在放手时调用）
 
 - onScroll: 滚动的过程中，每帧最多调用一次此回调函数，频率可以用scrollEventThrottle属性来控制，event 结构如下
 
