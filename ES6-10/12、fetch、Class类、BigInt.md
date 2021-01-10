@@ -516,11 +516,11 @@ ES10新增第7种基本数据类型BigInt
 String、Number、Boolean、Null、Undefined、Symbol、BigInt
     
 ```js
-// JavaScript的Number，超过16位会出现精读问题
+// JavaScript的Number，超过16位会出现精度问题
 const k = 12345678901234567;
-console.log(k); // 12345678901234568，出现进度问题 
+console.log(k); // 12345678901234568，出现精度问题 
 
-// BigInt表示任意精读整数
+// BigInt表示任意精度整数
 
 const num = 12345678901234567890n;
 console.log(typeof num); // 'bigint'
