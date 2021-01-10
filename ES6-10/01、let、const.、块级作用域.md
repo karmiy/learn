@@ -1,6 +1,6 @@
 ## let、const
 
-ES6中使用let、const来替代我ES5的var
+ES6中使用let、const来替代ES5的var
 
 ### let
 
