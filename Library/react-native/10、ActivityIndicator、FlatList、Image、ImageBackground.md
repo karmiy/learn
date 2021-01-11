@@ -214,6 +214,8 @@ getItemLayout={(data, index) => (
 
 - onEndReached(info: {distanceFromEnd: number}) => void: 滚到离底部 onEndReachedThreshold 时会触发该回调（滚上去又滚下来到阈值也会，不是只触发一次），distanceFromEnd 是触发时离底部的距离，此回调是异步调用的，即滚的越快，触发的会越晚，触发时 distanceFromEnd 的值会越小
 
+> 该回调有坑，会多次触发，解决方案是 onScroll 自己计算和判断
+
 - onRefresh: 会在列表头部添加一个 RefreshControl 控件，实现下拉刷新，即下拉后的回调（先滚到到顶，再下拉，并不是正常滚动滚到负值，一定要在 scrollTop 0 的时候再重新拉一下才算），需要配合 refreshing 属性
 
 - refreshing: 下拉刷新时，等待加载新数据则设为 true，加载后设为 false:

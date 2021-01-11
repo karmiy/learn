@@ -369,6 +369,8 @@ const App: React.FC = () => {
 
 - onEndReached(info: {distanceFromEnd: number}) => void: 滚到离底部 onEndReachedThreshold 时会触发该回调（滚上去又滚下来到阈值也会，不是只触发一次），distanceFromEnd 是触发时离底部的距离，此回调是异步调用的，即滚的越快，触发的会越晚，触发时 distanceFromEnd 的值会越小
 
+> 该回调有坑，会多次触发，解决方案是 onScroll 自己计算和判断
+
 - removeClippedSubviews: 为 true 时，父视图外的子视图会被移除，提升大列表的滚动性能，但是被裁剪的子视图依然在内存中，所以它们所占的储存空间没有被释放，内部状态也都保留了下来
 
 > 可能会有 bug

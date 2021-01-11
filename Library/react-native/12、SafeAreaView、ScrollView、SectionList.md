@@ -464,6 +464,8 @@ const styles = StyleSheet.create({
 
 - onEndReached(info: {distanceFromEnd: number}) => void: 滚到离底部 onEndReachedThreshold 时会触发该回调（滚上去又滚下来到阈值也会，不是只触发一次），distanceFromEnd 是触发时离底部的距离，此回调是异步调用的，即滚的越快，触发的会越晚，触发时 distanceFromEnd 的值会越小
 
+> 该回调有坑，会多次触发，解决方案是 onScroll 自己计算和判断
+
 - extraData: 传递给 extraData 的数据改变会让组件刷新，否则在 renderItem，头部、底部等代码里用到其他状态，由于组件 PureComponent 的原因，可能会有不刷新视图的问题
 
 - inverted: 翻转滚动方向。实质是将 scale 变换设置为 -1
