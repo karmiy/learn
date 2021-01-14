@@ -34,6 +34,24 @@
 
 在处理点击事件的同时不显示任何视觉反馈使用（这个组件貌似是抽象组件，不会像其他组件一样相当于一个 View）
 
+> 注意：TouchableWithoutFeedback 下只能是 RN 原生组件才能触发的了 onPress，自定义组件不能触发
+
+```tsx
+{/* 点击可以触发 onPress */}
+<TouchableWithoutFeedback onPress={() => console.warn('...')}>
+    <Text>点击<Text>
+</TouchableWithoutFeedback>
+```
+
+```tsx
+const Component = () => <Text>点击<Text>
+
+{/* 点击不能触发 onPress */}
+<TouchableWithoutFeedback onPress={() => console.warn('...')}>
+    <Component />
+</TouchableWithoutFeedback>
+```
+
 - delayLongPress: 从 onPressIn 开始，到 onLongPress 被调用的延迟。单位是毫秒
 
 - delayPressIn: 从触摸操作开始到 onPressIn 被调用的延迟。单位是毫秒
