@@ -45,3 +45,15 @@ StyleSheet.create({
     },
 })
 ```
+
+## TextInput 点击外围不能失去焦点
+
+需要将 TextInput 包装在 ScrollView 里并配合 keyboardShouldPersistTaps 配置
+
+- [onBlur doesn't work when clicking anywhere but another TextInput](https://github.com/facebook/react-native/issues/11071)
+
+```tsx
+<ScrollView keyboardShouldPersistTaps='handled'>
+    <TextInput onBlur={() => console.log('blur')} />
+</ScrollView>
+```
