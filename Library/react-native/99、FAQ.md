@@ -32,3 +32,16 @@ StyleSheet.create({
     },
 })
 ```
+
+## Text 的 borderRadius
+
+IOS 中，Text 使用圆角 borderRadius 需要配合 overflow hidden 才能生效:
+
+```tsx
+StyleSheet.create({
+    wrapper: {
+        borderRadius: 100,
+        overflow: 'hidden',
+    },
+})
+```
