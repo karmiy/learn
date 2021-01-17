@@ -57,3 +57,15 @@ StyleSheet.create({
     <TextInput onBlur={() => console.log('blur')} />
 </ScrollView>
 ```
+
+- 如果希望点击旁边其他的 TextInput，或点可以捕获点击事件的元素，可以不让键盘收起，可以设置 keyboardShouldPersistTaps 为 handled 或 always
+
+- 如果希望点击空白可以收起键盘，可以在 ScrollView 最外层包装一个 Touch 并在点击时利用 Keyboard 收起键盘
+
+```tsx
+<ScrollView keyboardShouldPersistTaps='always'>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        ...
+    </TouchableWithoutFeedback>
+</ScrollView>
+```
