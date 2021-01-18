@@ -69,3 +69,9 @@ StyleSheet.create({
     </TouchableWithoutFeedback>
 </ScrollView>
 ```
+
+## padding 与 backgroundColor rgba 颜色不匹配
+
+在给一个元素设置 rgba 的背景色，且该元素有 padding 时，padding 处的颜色会与背景色不匹配
+
+解决方案: padding 放到内部元素，不要与 backgroundColor 同时作用
