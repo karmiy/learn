@@ -75,3 +75,17 @@ StyleSheet.create({
 在给一个元素设置 rgba 的背景色，且该元素有 padding 时，padding 处的颜色会与背景色不匹配
 
 解决方案: padding 放到内部元素，不要与 backgroundColor 同时作用
+
+## 子元素 absolute width/height 100% 与父级宽高不匹配
+
+RN 里的定位与 H5 略有不同
+
+- H5 中即使父元素有 padding，子元素定位的 width/height 100% 也包含 padding 部分
+
+- RN 中不包含父元素 padding 部分，如果需要可以使用 top/right/bottom/left 0
+
+## Image 定位 top/right/bottom/left 0 宽高不压缩
+
+Image 使用 top/right/bottom/left 0 后依然会是图片自身大小，不能压缩
+
+解决方案: 多包裹一层 View top/right/bottom/left 0，Image 宽高设为 100%
