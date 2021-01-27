@@ -89,3 +89,9 @@ RN 里的定位与 H5 略有不同
 Image 使用 top/right/bottom/left 0 后依然会是图片自身大小，不能压缩
 
 解决方案: 多包裹一层 View top/right/bottom/left 0，Image 宽高设为 100%
+
+## TextInput 使用 lineHeight 在输入中文 + 数字时文本跳动
+
+在 IOS 中，如果 multiline 为 false 的 TextInput（单行）使用 lineHeight，在输入过程中输入了中文 + 数字，在打数字时会出现文本跳动
+
+解决方案: 不使用 lineHeight，仅使用 fontSize 控制文本大小
