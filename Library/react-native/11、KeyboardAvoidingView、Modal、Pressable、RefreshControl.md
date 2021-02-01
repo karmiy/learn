@@ -27,6 +27,20 @@
 
 - keyboardVerticalOffset: 有时候应用离屏幕顶部还有一些距离（比如状态栏等等），利用此属性来补偿修正这段距离
 
+经过测试，得出以下结论：
+
+- KeyboardAvoidingView 会生成一个 View
+
+- 设置 behavior: position 后会用一个 View 包裹内容，结合上一项提及的，会有 2 层 View
+
+- 键盘弹起后，键盘顶端达到了 KeyboardAvoidingView 的底部，才会触发其调节
+
+- 设置 behavior: position 时，在键盘弹起后会调整的是第 2 层 View 的位置，第 1 层是不会动的
+
+- 设置 behavior: position 时，不能给第 2 层的 View 设置 top，否则会导致键盘弹起后自动调节失效
+
+- 设置 behavior: position 时，键盘弹起后没有达到第 1 层 View，如果第 2 层 View 设置了如 margin-top 使自己达到键盘位置，也可以触发自动调节
+
 ## Modal
 
 可以实现一个模态框，会在页面上挂载一个全屏元素，用 children 部分填充自定义布局，不会受父级元素定位影响
