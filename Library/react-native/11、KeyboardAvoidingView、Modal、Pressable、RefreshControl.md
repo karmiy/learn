@@ -41,6 +41,8 @@
 
 - 设置 behavior: position 时，键盘弹起后没有达到第 1 层 View，如果第 2 层 View 设置了如 margin-top 使自己达到键盘位置，也可以触发自动调节
 
+- 如果 KeyboardAvoidingView 的父级存在定位，top 的位置同 bottom 有反向问题，如 top: 200，会被视为 bottom: 200，如果 bottom: 200 够不到键盘顶部，键盘弹起后就不会调节了，所以 top: -200，返回会调节的更高
+
 ## Modal
 
 可以实现一个模态框，会在页面上挂载一个全屏元素，用 children 部分填充自定义布局，不会受父级元素定位影响
