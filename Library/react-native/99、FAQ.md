@@ -102,4 +102,6 @@ Image 使用 top/right/bottom/left 0 后依然会是图片自身大小，不能�
 
 解决方案：
 
-- scale: 0 缩放为不可见大小
+- scale: 0 缩放为不可见大小（但是如果有 left, top, right, bottom: 0 会有问题）
+
+- witdh:0, height: 0, overflow: hidden
