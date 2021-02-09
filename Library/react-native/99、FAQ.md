@@ -95,9 +95,3 @@ Image 使用 top/right/bottom/left 0 后依然会是图片自身大小，不能�
 在 IOS 中，如果 multiline 为 false 的 TextInput（单行）使用 lineHeight，在输入过程中输入了中文 + 数字，在打数字时会出现文本跳动
 
 解决方案: 不使用 lineHeight，仅使用 fontSize 控制文本大小
-
-## display: none
-
-在 Android 下使用 display: none 无效
-
-解决方案：使用 opacity: 0 代替
