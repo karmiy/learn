@@ -131,6 +131,8 @@ a, p, span {
     
 ![Alt text](./imgs/6-01.png)
 
+> 注：只有存在元素使用了这个样式，才会去加载图片，如上例，如果没有一个元素有 id='k'，这个 ok.png 的背景图是不会去加载的
+
 ### background-repeat
 
 平铺
