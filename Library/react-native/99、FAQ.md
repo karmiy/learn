@@ -84,6 +84,10 @@ RN 里的定位与 H5 略有不同
 
 - RN 中不包含父元素 padding 部分，如果需要可以使用 top/right/bottom/left 0
 
+## 子元素 absolute top/left 100% 与父级宽高不匹配
+
+- RN 中使用 absolute，如果定位父级没有设置宽度，只是被子元素自动撑开的话，absolute 元素设置宽 100% 会识别不到定位父级宽，会随再上级（父级的父级），高度同理
+
 ## Image 定位 top/right/bottom/left 0 宽高不压缩
 
 Image 使用 top/right/bottom/left 0 后依然会是图片自身大小，不能压缩
