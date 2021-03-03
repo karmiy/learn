@@ -105,3 +105,22 @@ Image 使用 top/right/bottom/left 0 后依然会是图片自身大小，不能�
 - scale: 0 缩放为不可见大小（但是如果有 left, top, right, bottom: 0 会有问题）
 
 - witdh:0, height: 0, overflow: hidden
+
+## RN 里怎么实现三角箭头
+
+设置 borderWidth 为 width/height 的一半，使得内容大小刚好为 0:
+
+```tsx
+const arrowStyle = {
+    width: 18,
+    height: 18,
+    borderTopWidth: 9,
+    borderTopColor: 'pink',
+}
+```
+
+## ScrollView 不受 absolute 影响内容大小
+
+- H5: 一个滚动元素（如 overflow: auto）内有一个 absolute 元素，这个定位元素宽高，会影响滚动元素的滚动内容大小（如这个 absolute 元素高度是 1000vh，那么滚动元素是可以滚到 1000vh 这么多的位置的）
+
+- RN: 与 H5 不同，ScrollView 内部的 absolute 元素不影响 ScrollView 滚动内容，即使一个 absolute 元素高度有 10 个屏幕高，但是 ScrollView 里的其他只有 2 个屏幕高，滚动范围也只有 2个 屏幕高
