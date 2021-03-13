@@ -19,7 +19,7 @@
 
 ## 弹窗时固定页面不能滚动
 
-```ts
+```tsx
 /**
  * @description 是否为空值
  * @param value 
@@ -46,7 +46,7 @@ export const preventPageScroll = (el?: HTMLElement | string) => {
 
     // 滚动元素非 body 也需要，防止 IOS 橡皮筋
     body.style.position = 'fixed';
-    body.style.top = `${-top}px`;
+    body.style.top = -top + 'px';
     body.style.left = '0';
 
     // 普通元素只需超出 hidden
@@ -64,6 +64,8 @@ export const preventPageScroll = (el?: HTMLElement | string) => {
     }
 }
 ```
+
+
 
 这种方式可以在弹框时控制页面滚动，防止滚动穿透
 
@@ -565,3 +567,22 @@ IOS 和 Android 都会有问题,可能跟系统有关,新开 webview,原 webview
     - \<body> 控制滚动，设置 overflow: auto 
 
 - 在其他 DOM 元素（如 div）设置 overflow: auto 来控制页面滚动，软键盘弹起后输入框不会自动调整滚动位置
+
+## 判断系统版本
+
+```ts
+// 判断 Android 系统版本
+function getAndroidVersion() {
+    const ua = window.navigator.userAgent.toLowerCase();
+    let version = null;
+    if (ua.indexOf("android") > 0) {
+        const reg = /android [\d._]+/gi;
+        const v_info = ua.match(reg);
+        version = (v_info + "").replace(/[^0-9|_.]/ig, "").replace(/_/ig, "."); //得到版本号4.2.2
+        version = parseInt(version.split('.')[0]);// 得到版本号第一位
+    }
+
+    return version;
+}
+```
+
