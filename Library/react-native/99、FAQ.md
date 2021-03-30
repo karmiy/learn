@@ -128,3 +128,14 @@ const arrowStyle = {
 - H5: 一个滚动元素（如 overflow: auto）内有一个 absolute 元素，这个定位元素宽高，会影响滚动元素的滚动内容大小（如这个 absolute 元素高度是 1000vh，那么滚动元素是可以滚到 1000vh 这么多的位置的）
 
 - RN: 与 H5 不同，ScrollView 内部的 absolute 元素不影响 ScrollView 滚动内容，即使一个 absolute 元素高度有 10 个屏幕高，但是 ScrollView 里的其他只有 2 个屏幕高，滚动范围也只有 2个 屏幕高
+
+## 点击定位元素
+
+元素设置 absolute 后，Android 下如果定位后的位置在父级之外（如父级只有 100 * 100，定位了 left: 101），会导致 Touch 类组件点击无效
+
+解决方案：
+
+- 加长父级宽度，使其不超出
+
+- 定位后需要 zIndex，设 1 也行，完全不设置可能还是点不了
+
