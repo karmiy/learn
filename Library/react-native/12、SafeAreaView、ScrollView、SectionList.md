@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
 
 - progressViewOffset: 设置 RefreshControl 下拉加载指示器的位置
 
-- onViewableItemsChanged: 可见行元素变化的回调（元素变为可见/不可见都会调用），同 FlatList
+- onViewableItemsChanged: 可见行元素变化的回调（元素变为可见/不可见都会调用），同 FlatList（有点不一样的是，需要注意不管是 section 还是 item 暴露，都会触发回调，所以在 ts 类型那可以看到 viewableItems.forEach(viewToken => ...) 中 viewToken 的 item 是 any 类型，因为它是不定的，且 viewabilityConfig 只对 item 那块有效？）
 
 > 回调返回的 changed 比 FlatList 多了个 section
 
