@@ -260,6 +260,8 @@ const styles = StyleSheet.create({
 
     - scrollTo({x?: number, y?: number, animated?: boolean, duration?: boolean}): duration 只有 Android 才支持
 
+> ScrollView 即使是 display: none 也是可以调用 scrollTo 滚动的，但是如果在 display: none 时切换数据，如原本内容只有 100px 的高度，更新列表数据变为 1000px 内容高，这时即使调用 scrollTo 也最多只能滚到 100px 的位置，推测是隐藏时 ScrollView 不会立即对内容进行重绘，只有重新显示后才重绘
+
 - scrollToEnd: 滚到视图底部
 
     - scrollToEnd({animated?: boolean}) 
