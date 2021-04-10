@@ -74,6 +74,8 @@ const styles = StyleSheet.create({
 
 - onMomentumScrollEnd: 滚动动画结束时调用此函数（试了下 IOS 只有有惯性效果才能在停止时调用，而 Android 即使放手时已经静止也会在放手时调用）
 
+> Android 放手时即使无惯性效果，也触发，iOS 放手时若无惯性效果（放手时完全静止且与 snapToInterval 对齐），不会触发
+
 - onScroll: 滚动的过程中，每帧最多调用一次此回调函数，频率可以用scrollEventThrottle属性来控制，event 结构如下
 
 ```tsx
@@ -87,6 +89,8 @@ const styles = StyleSheet.create({
     }
 }
 ```
+
+> 注：iOS下可能无法实时获取滚动距离，需要加个参数 scrollEventThrottle，来改变每帧触发频率
 
 - onScrollBeginDrag: 当用户开始拖动此视图时调用此函数（差不多用户触屏开始 move 的那一刻），比 onMomentumScrollBegin 早
 
