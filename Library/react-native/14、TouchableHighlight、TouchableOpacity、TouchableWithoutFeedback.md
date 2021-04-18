@@ -60,7 +60,9 @@ const Component = () => <Text>点击<Text>
 
 - disabled: 是否禁用
 
-- hitSlop: 定义按钮外延范围，即点按钮周围多远也算点到按钮，结构为 { top: number, left: number, bottom: number, right: number }（试了下好像没效果？）
+- hitSlop: 定义按钮外延范围，即点按钮周围多远也算点到按钮，结构为 { top: number, left: number, bottom: number, right: number }
+
+> 注：经过测试加在 TouchableWithoutFeedback 本身无效，因为它不渲染出多余节点，而是给它包裹的 View 加 hitSlop 配置，其他如 TouchableOpacity 有效，因为它们回渲染出外壳节点
 
 > 触摸范围不会扩展到父视图之外，另外如果触摸到两个重叠的视图，z-index 高的元素会优先
 
