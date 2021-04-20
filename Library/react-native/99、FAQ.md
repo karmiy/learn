@@ -139,3 +139,6 @@ const arrowStyle = {
 
 - 定位后需要 zIndex，设 1 也行，完全不设置可能还是点不了
 
+## Android 嵌套 ScrollView，内部 ScrollView 无法滚动
+
+配置 nestedScrollEnabled（注：ScrollView 不能超出容器，如果定位在父级 View 外，否则也无法滚动）
