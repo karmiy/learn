@@ -142,3 +142,13 @@ const arrowStyle = {
 ## Android 嵌套 ScrollView，内部 ScrollView 无法滚动
 
 配置 nestedScrollEnabled（注：ScrollView 不能超出容器，如果定位在父级 View 外，否则也无法滚动）
+
+## 父级 height: 0，子节点高度根据内容自适应时无法获取高度
+
+RN 中当父级设置了 height: 0，且子节点非设置定值，而是根据内容自适应时
+
+使用 onLayout 或 measure 都无法获取高度，将会得到 0
+
+解决方案：
+
+- 设置父级高度为 0.00.....1
