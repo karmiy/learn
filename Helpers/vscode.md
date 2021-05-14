@@ -44,6 +44,8 @@ setting => 搜索 tree => 找到 Workbench Tree: Indent   Controls tree indentat
 
 - GitLens —— Git supercharged: 点击某一行时显示之前是谁写的代码
 
+- Code Spell Checker: 英文单词拼写错误
+
 ### 配置
 
 ```json
