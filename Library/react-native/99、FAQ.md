@@ -143,6 +143,12 @@ const arrowStyle = {
 
 配置 nestedScrollEnabled（注：ScrollView 不能超出容器，如果定位在父级 View 外，否则也无法滚动）
 
+## Android 下如果节点高度由内容区域自适应，调用 measure 无法获取到数据
+
+解决方案：
+
+- 同时给节点设置 onLayout，即使是个弄函数也行，否则 Android 下 measure 拿到的数据都是 undefined
+
 ## 父级 height: 0，子节点高度根据内容自适应时无法获取高度
 
 RN 中当父级设置了 height: 0，且子节点非设置定值，而是根据内容自适应时
