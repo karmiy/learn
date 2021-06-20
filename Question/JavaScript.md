@@ -1675,3 +1675,13 @@ location /officialApp-ch {
 - 同构渲染：加入 node 中间层负责渲染逻辑，首次渲染由 node.js 渲染出 html 返回给前端，后续交互和路由切换都在前端完成，同构在于前端和服务端(node)的渲染是同一套代码，前端和服务端都要参与渲染
 
 - 预渲染：在项目打包时预先渲染出 html，如 SPA 项目先把 /home、/about 打包出各自的 html，这样在访问 /home、/about 时获取到的就是完整的 html 模板，但是不像 SSR 那样有初始数据，还是需要请求初始数据的，预渲染的 html 只是完整的初始 DOM 结构。预渲染后的页面之后的交互和路由还是由前端控制，如对 home、about 做了预渲染，打出了 home、about 的 html 文件，打开 home 页面，原来 home.vue 的 mounted 还是在打开时执行，并且切换到 about 页面时，还是一样前端路由控制，并不是有了 about 的 html 文件，切换到 about 页面就会刷新，依旧是 SPA。也就是说用户打开 home 页面加载了 home 的 html，但是切换到 about 页面时依旧是 SPA 路由控制，about 的 html 在此时并没有作用，只是确保用户初始打开 about 页面时，拿到完整的 html，同样这种情况下，home 的 html 也就没有用了。SPA 预渲染可以利用 prerender-spa-plugin 插件实现
+
+## 如何 js 动态设置 transform
+
+getComputedStyle 拿到的是 matrix 矩阵，除了 translate 是 index 4、5 两位
+
+其他如 scale rotate 计算较为复杂
+
+推荐 [rematrix](https://www.npmjs.com/package/rematrix) 这个库
+
+> 注：它的赋值操作，是基于原 transform 变化，如原节点的 translate 是 30, 30，再调用 Rematrix.translate(10, 10) 叠加后，将变为 40, 40，而非重置位 30, 30
