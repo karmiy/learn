@@ -46,6 +46,8 @@ setting => 搜索 tree => 找到 Workbench Tree: Indent   Controls tree indentat
 
 - Code Spell Checker: 英文单词拼写错误
 
+- SCSS IntelliSense: 智能感知，可以 ctrl 点击 scss 变量，识别变量值等
+
 ### 配置
 
 ```json
