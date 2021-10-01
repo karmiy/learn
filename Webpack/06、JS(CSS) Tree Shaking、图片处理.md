@@ -70,6 +70,8 @@ console.log(chunk([1, 2, 3], 2));
     
 ![Alt text](./imgs/06-03.png)
 
+> 这意味着，如果我们引入的第三方包不是一个 ESModule（即它在 node_modules 下的文件不是 export / export default 导处的，而是如 commonjs 的 module.exports 方式导出），那么它并不能被 Tree Shaking 作用。可以看到一些第三方组件库如 antd，它打包出不同的文件，如它有 lib、es 文件夹，而其中的 es 就是 ESModule 的包，lib 中的包则不能做到按需加载，官方提供了 babel-plugin-import 来解决 lib 包的按需加载）
+
 > 尽量选择拥有ES模块系统的第三方库
 
 ## CSS Tree Shaking
