@@ -119,6 +119,16 @@ optimization: {
     
 ![Alt text](./imgs/03-06.png)
 
+### 拆分后包之间是怎么衔接在一起的？
+
+拆分后的 JS 文件最终都会被作为 index.html 的 script 引入
+
+webpack 会在 window 创建自定义的变量（如 webpackChunkdemo，一个数组）用来存储这些 chunks
+
+每个 JS 会将代码注入到这个变量中等待被使用
+
+当某一个 JS 模块引用时便从中提取
+
 ### splitChunks cacheGroups默认配置异步chunks
 
 cacheGroups 的默认配置会定义 vendors 和 default，下图是splitChunks的默认配置:
