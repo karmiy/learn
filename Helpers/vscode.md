@@ -48,6 +48,19 @@ setting => 搜索 tree => 找到 Workbench Tree: Indent   Controls tree indentat
 
 - SCSS IntelliSense: 智能感知，可以 ctrl 点击 scss 变量，识别变量值等
 
+- Color Highlight: 颜色高亮，会包装一层背景色来识别
+
+```json
+// setting.json
+{
+    "color-highlight.sass.includePaths": [
+        "src/styles", 
+        "scss",
+        "/scss/utils"
+    ],
+}
+```
+
 ### 配置
 
 ```json
