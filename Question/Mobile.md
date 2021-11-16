@@ -586,3 +586,9 @@ function getAndroidVersion() {
 }
 ```
 
+## 美元符号
+
+```html
+<span>&yen;</span>
+```
+
