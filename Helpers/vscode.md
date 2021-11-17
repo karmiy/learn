@@ -1,12 +1,12 @@
-## VSCode 帮助文档
+# VSCode 帮助文档
 
-### 设置文件树水平 tab 间距：
+## 设置文件树水平 tab 间距：
 
 ```text
 setting => 搜索 tree => 找到 Workbench Tree: Indent   Controls tree indentation in pixels. => 改为25
 ```
 
-### 快捷键
+## 快捷键
 
 - 批量保存文件：Ctrl + K => S
 
@@ -26,7 +26,7 @@ setting => 搜索 tree => 找到 Workbench Tree: Indent   Controls tree indentat
 
 - 展开代码块：Ctrl + K => Ctrl + J
 
-### 插件
+## 插件
 
 - Vue：
 
@@ -61,13 +61,24 @@ setting => 搜索 tree => 找到 Workbench Tree: Indent   Controls tree indentat
 }
 ```
 
-### 配置
+## 配置
 
 ```json
 {
     "workbench.tree.indent": 16,
     "prettier.tabWidth": 4,
     "editor.detectIndentation": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true,
+    },
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "vue"
+    ],
+    "javascript.updateImportsOnFileMove.enabled": "always",
     "vetur.format.defaultFormatter.html": "prettyhtml",
     "vetur.format.defaultFormatterOptions": {
         "prettyhtml": {

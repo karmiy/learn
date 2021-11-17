@@ -1,4 +1,4 @@
-## Linux 帮助文档
+# Linux 帮助文档
 
 - 刷新 DNS：ipconfig /flushdns
 
