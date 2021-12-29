@@ -1415,6 +1415,83 @@ Commit Phase 会一鼓作气把 DOM 更新完，不会被打断，会调用如�
 
 - getSnapShotBeforeUpdate：处于 Commit 阶段，不会有重复调用问题
 
+### requestIdleCallback
 
+[实现 React requestIdleCallback 调度能力](https://blog.csdn.net/LuckyWinty/article/details/121154921)
 
+简单的说，判断一帧有空闲时间，则去执行某个任务，见下图
 
+![Alt text](./imgs/react-04.png)
+
+目的是为了解决任务需要长时间占用主线程，导致更高优先级的任务无法及时响应，带来页面丢帧问题
+
+React 即用这个来做分片
+
+```ts
+interface Deadline {
+    timeRemaining: () => number; // 当前剩余时间，即该帧剩余时间
+    didTimeout: boolean; // 是否超时
+}
+
+type RequestIdleCallback = (cb: (deadline: Deadline) => void, options?: Options) => number;
+```
+
+但原生的 requestIdleCallback 有缺陷：
+
+- 兼容性
+
+- FPS 只有 20，高于页面流畅诉求
+
+React 则自己实现了 requestIdleCallback，需要解决的问题：
+
+- 如何判断一帧是否空闲
+
+可以利用 requestAnimationFrame，它的回调会接收一个参数
+
+```ts
+// rafTime 是回调被执行的时间，可以当作这一帧开始的时间，结束时间可以当作是 rafTime + 16.667ms（即 60FPS 的下的一帧时长）
+type RequestAnimationFrame = (cb: (rafTime: number) =>  void);
+```
+
+- 空闲，那在一帧的哪执行任务
+
+可以用宏任务 postMessage 处理，因为可以把主线程让出，在下一次事件循环前，让浏览器去更新页面
+
+Q：为什么不用微任务
+A：在一次事件循环，页面更新前会将全部微任务执行完，无法把主线程让出
+
+Q：为什么不用 setTimeout
+A：会有最小阈值，通常浏览器是 4ms
+
+简单实现：
+
+```ts
+let deadlineTime;
+let callback;
+
+const channel = new MessageChannel();
+const port1 = channel.port1;
+const port2 = channel.port2;
+
+port2.onmessage = () => {
+    // 判断当前帧是否还有空闲，即剩余时间
+    const timeRemaining = () => deadlineTime - performance.now();
+    
+    if (timeRemaining() > 0 && callback) {
+        const deadline = {
+            timeRemaining,
+            didTimeout: timeRemaining() < 0,
+        };
+
+        callback(deadline);
+    }
+};
+
+const requestIdleCallback = cb => {
+    requestAnimationFrame(rafTime => {
+        deadlineTime = rafTime + 16.667;
+        callback = cb;
+        port1.postMessage(null);
+    });
+};
+```
