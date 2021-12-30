@@ -1495,3 +1495,28 @@ const requestIdleCallback = cb => {
     });
 };
 ```
+
+## useState 原理理解
+
+React Hooks 保存状态的位置其实与类组件的一致，形式不同：
+
+- 两者的状态都挂载在组建实例对象 `FiberNode` 的 `memoizedState`
+
+- 两者保存状态值的数据结构完全不同，类组件是直接把 this.state 这个对象保存到 memoizedState 属性中，而 hooks 是用链表来保存状态的，memoizedState 属性保存的实际上是这个链表的头指针
+
+```ts
+// react-reconciler/src/ReactFiberHooks.js
+export type Hook = {
+    memoizedState: any, // 最新的状态值
+    baseState: any, // 初始状态值，如 `useState(0)`，则初始值为 0
+    baseUpdate: Update<any, any> | null,
+    queue: UpdateQueue<any, any> | null, // 临时保存对状态值的操作，更准确来说是一个链表数据结构中的一个指针
+    next: Hook | null,  // 指向下一个链表节点
+};
+```
+
+Q：为什么 hooks 只能放在函数组件/自定义 hooks 函数体的顶层？
+A：如上所言，是以链表来保存状态的，可以把理解为每个 hook 都是一个 Hook 上述对象，next 链式链接，每次取也是这样按顺序取的。要是一开始链接的是 h1 => h2 => h3，下次 if 判断中 h2 没了，那还说以 h1 => h2 => h3 取出来的话，第 3 个 hook 就会拿到第 h2 的值
+
+Q：hooks 如何更新状态
+A：setState 时调用 dispatcher，不会立即对状态值修改，而是创建一条修改操作，在对应 hook 对象的 queue 属性挂载的链表上加一个新节点。下次执行函数组建再次走到 useState 时，React 根据每个 hook 上挂载的更新操作链表来计算最新值（为什么不只存最新的操作？可能会有 `setName(prevName => prevName + 'xx')` 这种操作）
