@@ -208,6 +208,10 @@ console.log(arr);
     ]
 */
 ```
+
+可以理解为：
+
+- return 大于 0 的数字，a b 位置交换，其他不变
     
 #### reverse
 
