@@ -1369,6 +1369,8 @@ React 中当组件的 props 或 state 改变时触发组件更新，都会重新
 
 ## 如何理解 Fiber
 
+[这可能是最通俗的 React Fiber(时间分片) 打开方式](https://juejin.cn/post/6844903975112671239#heading-8)
+
 ### Fiber 的原理是什么
 
 React Fiber 是对核心算法的一次重新实现
@@ -1419,9 +1421,9 @@ Fiber 将更新进行分片，并且可以让优先级高的任务打断更新�
 
 - Commit Phase
 
-Reconciliation Phase 会找到需要更新哪些 DOM，这个阶段是可以被打断的，会调用如下生命周期：**componentWillMount、componentWillReceiveProps、shouldComponentUpdate、componentWillUpdate**
+Reconciliation Phase 会找到需要更新哪些 DOM，可以认为是 Diff 阶段，这个阶段是可以被打断的，会调用如下生命周期：**constructor、componentWillMount、componentWillReceiveProps、shouldComponentUpdate、componentWillUpdate、render**
 
-Commit Phase 会一鼓作气把 DOM 更新完，不会被打断，会调用如下生命周期：**componentDidMount、componentDidUpdate、componentWillUnmount**
+Commit Phase 将上一阶段计算出来需要处理的一次性执行了，即会一鼓作气把 DOM 更新完，不会被打断，因为要正确的处理各种副作用，如 DOM 变更，componentDidMount 中发起的请求，必须保证按顺序只调用一次，会调用如下生命周期：**componentDidMount、componentDidUpdate、componentWillUnmount**
 
 可以看出，由于 Fiber 的机制，**现在第一阶段的生命周期在一次加载或更新中可能被多次调用，造成不必要的 BUG，不安全**
 
@@ -1429,9 +1431,76 @@ Commit Phase 会一鼓作气把 DOM 更新完，不会被打断，会调用如�
 
 - static getDerivedStateFromProps：处于 Reconciliation 阶段，但因为是静态方法，用户无法做如 this.XXX 等操作，强迫这个函数变成纯函数，逻辑相对简单，就没那么多错误了
 
-- getSnapShotBeforeUpdate：处于 Commit 阶段，不会有重复调用问题
+- getSnapShotBeforeUpdate：处于 Commit 阶段，不会有重复调用问题（严格来说，这个是在进入 commit 阶段前调用）
+### Fiber 结构与 Reconciliation 阶段实现理解
 
-### requestIdleCallback
+Fiber 属性可以分为 5 个部分：
+
+```ts
+interface Fiber {
+    /** ⚛️ 结构信息 */ 
+    return: Fiber | null;
+    child: Fiber | null;
+    sibling: Fiber | null;
+    // 子节点的唯一键, 即我们渲染列表传入的key属性
+    key: null | string;
+
+    /** ⚛️ 节点的类型信息 */
+    // 标记 Fiber 类型, 例如函数组件、类组件、宿主组件（内置组件，即 ReactDOM 提供的 div, span 等）
+    tag: WorkTag;
+    // 节点元素类型, 是具体的类组件、函数组件、宿主组件（字符串）
+    type: any;
+
+    /** ⚛️ 节点的状态 */
+    // 节点实例(状态)：
+    // - 对于宿主组件，这里保存宿主组件的实例, 例如DOM节点。
+    // - 对于类组件来说，这里保存类组件的实例
+    // - 对于函数组件说，这里为空，因为函数组件没有实例
+    stateNode: any;
+    // 新的、待处理的props
+    pendingProps: any;
+    // 上一次渲染的props
+    memoizedProps: any; // The props used to create the output.
+    // 上一次渲染的组件状态
+    memoizedState: any;
+
+
+    /** ⚛️ 副作用 */
+    // 当前节点的副作用类型，例如节点更新、删除、移动
+    // Reconciliation 过程中发现的 '副作用' 就保存在节点的 effectTag 中
+    effectTag: SideEffectTag,
+    // 将本次渲染的所有节点副作用都收集起来
+    // 和节点关系一样，React 同样使用链表来将所有有副作用的 Fiber 通过 nextEffect 连接起来（即 nextEffect 指向的还是一个 Fiber 节点，而不是此 Fiber 节点的 effect 内容）
+    nextEffect: Fiber | null,
+
+    /** ⚛️ 替身，指向旧树中的节点 */
+    // Reconciliation 过程中会构建一颗新的树（官方称为 workInProgress tree，WIP 树），可以认为是一颗表示当前工作进度的树
+    // 还有一颗表示已渲染界面的旧树，React 就是一边和旧树比对，一边构建 WIP 树的
+    // alternate 指向旧树的同等节点
+    alternate: Fiber | null,
+}
+```
+
+Reconciliation 阶段会对 Fiber 进行 Diff，不会再递归去对比，也不会马上提交变更
+
+Reconciliation 简单实现可见 [粗略过程还原](https://juejin.cn/post/6844903975112671239#heading-8)
+
+### WIP 双缓冲
+
+类似于图形化领域的 “双缓冲”（先将图片绘制到一个缓冲区，在一次行传递给屏幕显示，防止屏幕抖动，优化渲染性能）
+
+WIP 树是一个缓冲，在 Reconciliation 完毕后一次性提交给浏览器进行渲染
+
+WIP 的节点并完全是新的，比如某棵子树不需要变动，React 会克隆复用旧树的子树
+
+双缓冲技术可以：
+
+- 减少内存分配和垃圾回收
+- 一个节点抛出异常，仍然可以继续沿用旧树的节点避免整棵树挂掉
+
+可以比喻为 Git 来理解它：WIP 树是从旧树 Fork 出来的功能分支，在这个新分支添加或移除特性，即使是误操作也不会影响旧的分支，当这个分支经过测试和完善就可以合并到旧分支将其替换掉
+
+### 怎么理解 requestIdleCallback
 
 [实现 React requestIdleCallback 调度能力](https://blog.csdn.net/LuckyWinty/article/details/121154921)
 
