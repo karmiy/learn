@@ -36,6 +36,21 @@ const f = _new(F, 10);
 const f = new F(10);
 ```
 
+## 实现 instanceof
+
+```js
+function instanceOf(obj, constructor) {
+    let proto = obj.__proto__;
+
+    while(proto) {
+        if (proto === constructor.prototype) return true;
+
+        proto = proto.__proto__;
+    }
+    return false;
+}
+```
+
 ## call、apply、bind 的区别与实现
 
 都是用来改变 this 指向
