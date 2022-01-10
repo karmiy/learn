@@ -1463,7 +1463,7 @@ Reconciliation 简单实现可见 [粗略过程还原](https://juejin.cn/post/68
 
 WIP 树是一个缓冲，在 Reconciliation 完毕后一次性提交给浏览器进行渲染
 
-WIP 的节点并完全是新的，比如某棵子树不需要变动，React 会克隆复用旧树的子树
+WIP 的节点并非完全是新的，比如某棵子树不需要变动，React 会克隆复用旧树的子树
 
 双缓冲技术可以：
 
