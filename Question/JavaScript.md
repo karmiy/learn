@@ -155,7 +155,7 @@ console.log(o1.list === o2.list); // false
 function clone(target) {
     if (typeof target === 'object') {
         const cloneTarget = Array.isArray(target) ? [] : {};
-        for (let key in target) {
+        for (const key in target) {
             cloneTarget[key] = clone(target[key]);
         }
         return cloneTarget;
