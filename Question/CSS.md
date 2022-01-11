@@ -161,3 +161,7 @@
     vertical-align: middle;
 }
 ```
+
+## CSS 怎么提升渲染合成层
+
+[浏览器渲染合成层](https://zhuanlan.zhihu.com/p/451219118)
