@@ -167,6 +167,59 @@ function clone(target) {
 
 更深层的写法可以参考：[如何写出一个惊艳面试官的深拷贝](https://juejin.im/post/5d6aa4f96fb9a06b112ad5b1)
 
+## 实现一个简易 Promise
+
+```js
+class _Promise {
+    constructor(callback) {
+        const resolve = data => {
+            this.status = 'resolved';
+
+            if (this._cb) return this._cb(data);
+
+            this._data = data;
+        };
+        this.status = 'pending';
+        callback(resolve);
+    }
+
+    then(callback) {
+        if (this.status === 'resolved') {
+            const result = callback(this._data);
+            return new _Promise(resolve => {
+                resolve(result);
+            });
+        }
+
+        return new _Promise(resolve => {
+            this._cb = data => {
+                const result = callback(data);
+                resolve(result);
+            };
+        });
+    }
+}
+
+
+const p = new _Promise((resolve) => {
+    setTimeout(() => {
+        resolve(1);
+    }, 1000);
+});
+
+p.then(data => {
+    console.log(data);
+
+    return 100;
+}).then(data => {
+    console.log(data);
+
+    return 200;
+}).then(data => {
+    console.log(data);
+});
+```
+
 ## 什么是柯里化，如何实现
 
 **函数式编程**中一个重要的概念
