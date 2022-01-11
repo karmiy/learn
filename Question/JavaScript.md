@@ -220,6 +220,44 @@ p.then(data => {
 });
 ```
 
+## 实现 Promise.all
+
+```js
+Promise._all = function(promiseArr) {
+    let resolvedLength = 0, isPending = true;
+    const length = promiseArr.length;
+    const result = [];
+    
+    return new Promise((resolve, reject) => {
+        promiseArr.forEach((p, i) => {
+            p.then(data => {
+                if (!isPending) return;
+                result[i] = data;
+
+                if (++resolvedLength !== length) return;
+
+                isPending = false;
+                resolve(result);
+            }).catch(err => {
+                if (!isPending) return;
+
+                isPending = false;
+                reject(err);
+            });
+        });
+    });
+};
+
+Promise._all([
+    Promise.resolve(1),
+    Promise.resolve(2),
+    Promise.resolve(3),
+    Promise.resolve(4),
+]).then(data => {
+    console.log(data);
+});
+```
+
 ## 什么是柯里化，如何实现
 
 **函数式编程**中一个重要的概念
