@@ -126,6 +126,23 @@ function toFixed(number, fractionDigits){
     return Math.round(number * Math.pow(10, fractionDigits)) / Math.pow(10, fractionDigits);  
 }  
 ```
+
+### toLocaleString
+
+```js
+// 通常给数字做货币式格式化很有用，更多配置可查看 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Number/toLocaleString
+// Number.prototype.toLocaleString(locales, options)
+// locales 选择语言
+// options 有很多可选配置
+
+console.log(Number(123456.123).toLocaleString()); // '123,456.123'，自动每千位加逗号
+console.log(Number(0.12).toLocaleString('zh', { style: 'percent' })); // '12%'，小数转百分比
+console.log(Number(0.123).toLocaleString('zh', { style: 'percent' })); // '12%'，会四舍五入
+console.log(Number(0.125).toLocaleString('zh', { style: 'percent' })); // '13%'，会四舍五入
+console.log(Number(1000000).toLocaleString('zh', { style: 'currency', currency: 'cny' })); // '¥1,000,000.00'
+console.log(Number(1000000).toLocaleString('zh', { style: 'currency', currency: 'cny', currencyDisplay: 'code' })); // 'CNY 1,000,000.00'
+console.log(Number(1000000).toLocaleString('zh', { style: 'currency', currency: 'cny', currencyDisplay: 'name' })); // '1,000,000.00人民币'
+```
     
 ## Math常用的API
     
