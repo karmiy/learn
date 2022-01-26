@@ -900,6 +900,8 @@ add(1, 2);
 
 ES 模块不是对象，import 命令会被 JavaScript 引擎静态分析，**在编译时就引入模块代码，而不是在代码运行时**，所以无法实现条件加载
 
+> 因为 import 命令会被 JavaScript 引擎静态分析，优先于模块内的其他内容执行，这也是为什么 import 只能放顶部
+
 **ES 模块系统和 CommonJS 差异：**
 
 - CommonJS 输出的是值的拷贝，ES 模块系统输出的是值的引用
@@ -2101,3 +2103,363 @@ b       c       e       a
 - 输出资源：根据 entry、模块之间的依赖关系或分包配置生成一个包含多个模块的代码块 chunk，再把每个 chunk 转换成一个单独的文件加入到输出列表（这步是可以修改输出内容的最后机会）
 - 输出完成：确认好输出内容后，根据配置确定输出的路径和文件名，把文件内容写入到文件系统
 
+## webpack 构建 ESM 与 CommonJs 差异
+
+先构建一个简单的项目
+
+```sh
+# 初始化项目
+mkdir demo-webpack-cjs-es
+npm init -y
+
+npm i --save-dev webpack webpack-cli
+```
+
+```json
+// package.json
+{
+    "name": "demo-webpack-cjs-es",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "webpack --mode development"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "webpack": "^5.67.0",
+        "webpack-cli": "^4.9.2"
+    }
+}
+```
+
+### ESM 解析
+
+```ts
+// src/index.js
+import { a } from './a.js';
+import { b } from './b.js';
+
+console.log('a, b', a, b);
+```
+
+```ts
+// src/a.js
+console.log('a');
+
+export const a = {
+    id: 1,
+};
+```
+
+```ts
+// src/b.js
+console.log('b');
+
+export const b = {
+    id: 2,
+};
+```
+
+```sh
+# 打包后查看 dist/main.js 源码
+npm run build
+```
+
+打包后的产物分析：
+
+- `__webpack_require__` 函数，用于加载模块代码（如加载 a.js、b.js 里的代码），也是整个代码的核心
+
+- `__webpack_modules__` 对象，记录所有模块的代码，内部用 `eval` 执行
+
+  ```ts
+  {
+      './src/a.js': (__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+        	eval('....a.js 里的代码');  
+      },
+      // ...
+  }
+  ```
+
+- `__webpack_module_cache__` 对象，缓存加载过的模块
+
+  ```ts
+  // 最终会变成这种结构
+  {
+      './src/a.js': {
+          exports: {
+              // ...
+          }
+      },
+      // ...
+  }
+  ```
+
+  
+
+流程分析：
+
+- 整个代码先执行了 `var __webpack_exports__ = __webpack_require__("./src/index.js")`
+- `__webpack_require__` 里做了什么？
+  - 先看 `__webpack_module_cache__['./src/index.js']` 有没有缓存，如果有，直接返回此 module.exports（module 为 { exports: {} } 结构）
+  - 如果无缓存，创建一个 module = { exports: {} }，并赋值给  `__webpack_module_cache__['./src/index.js']`
+  - 从 `__webpack_modules__['./src/index.js']` 拿到这个模块的资源，从上方产物可以知道，得到的是一个函数
+    - 执行这个函数，传入参数 `(module, modules.exports, __webpack_require__)` 
+    - 函数内通过 `eval` 执行 index.js 模块被编译后的代码
+  - 返回 module.exports
+
+index.js 编译后的代码（eval 的字符串）格式化后为如下结构：
+
+```ts
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ 
+var _a_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./a.js */ "./src/a.js");
+/* harmony import */ 
+var _b_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./b.js */ "./src/b.js");
+console.log('a, b', _a_js__WEBPACK_IMPORTED_MODULE_0__.a, _b_js__WEBPACK_IMPORTED_MODULE_1__.b);
+//# sourceURL=webpack://demo-webpack-cjs-es/./src/index.js
+```
+
+- `__webpack_require__.r` 做了什么？
+  - 接收 module 的 exports 对象，执行 `Object.defineProperty(exports, '__esModule', { value: true })` 为其挂上 **ESM** 的标识（表示这是一个 ESM 模块）
+
+- `__webpack_require__("./src/a.js")` 加载 a.js 的模块
+
+  - 同 index.js 上面的流程，一直到 a.js 的 `eval` 内容
+
+    ```ts
+    __webpack_require__.r(__webpack_exports__);
+    /* harmony export */ 
+    __webpack_require__.d(__webpack_exports__, { 
+        /* harmony export */   
+        "a": () => a,
+    });
+    console.log('a');
+    const a = { id: 1};
+    //# sourceURL=webpack://demo-webpack-cjs-es/./src/a.js
+    ```
+
+  - 同样用 `__webpack_require__.r` 为 a.js 模块的 exports 对象挂载 ESM 标识
+
+  - `__webpack_require__.d` 做了什么？
+
+    - 为 a.js 模块的 exports 对象，挂载其 **exports const a** 导出的属性值，其值得注意的是，**ESM 挂载的属性会以 get 的形式，所以可以做到：ESM 模块 import 拿到的是值的引用**
+
+      ```ts
+      // 可以简化为如下
+      // 以 get 的形式，所以当 import { a } from './a' 时，会调用 a 模块 modules.exports.a，从而触发 get，返回 a 变量，而这个 a 变量即 const a = { id: 1 }，这也是为什么 ESM 拿到的是值得引用
+      Object.defineProperty(exports, 'a', { enumerable: true, get: () => a });
+      ```
+
+- 根据上面的操作，`__webpack_require__("./src/a.js")` 返回了 a.js 的 module.exports，大约是这样的结构
+
+  ```ts
+  {
+      get a: () => a, // a 是 const a = { id: 1 }
+  }
+  ```
+
+- 同理，`__webpack_require__("./src/b.js")` 加载 b.js 的模块，拿到大约这样的结构
+
+  ```ts
+  {
+      get b: () => b, // b 是 const b = { id: 2 }
+  }
+  ```
+
+- 完成加载
+
+### ESM QA：
+
+- Q：循环依赖会打印多次 log 吗？
+  - A：不会，从 `__webpack_require__` 实现可以看出，会先去缓存 `__webpack_module_cache__` 看有没有，如果已经加载过的，会直接返回该模块的 exports 对象，不会去走 eval 执行代码，所以里面的 log 也不会再执行了
+- Q：打包成 ESM 怎么做到的 import 值得引用
+  - A：从解析流程就可以看出了，ESM 得到的 exports 里属性是以 `Object.defineProperty get` 的方式定义的，每次获取时 get 拿到的都是同一个引用，而非拷贝值
+
+### CommonJs 解析
+
+```ts
+// src/index.js
+const { a } = require('./a');
+const { b } = require('./b');
+
+console.log('a, b', a, b);
+```
+
+```ts
+// src/a.js
+console.log('a');
+
+const a = {
+    id: 1,
+};
+
+module.exports = {
+    a,
+};
+```
+
+```ts
+// src/b.js
+console.log('b');
+
+const b = {
+    id: 2,
+};
+
+module.exports = {
+    b,
+};
+```
+
+```sh
+# 打包后查看 dist/main.js 源码
+npm run build
+```
+
+> 下面与 ESM 有差异的，会用 ⭐ 标注
+
+打包后的产物同 ESM：
+
+- `__webpack_require__` 函数，源码基本同 ESM
+
+- `__webpack_modules__` 对象，与 ESM 产物略有不同
+
+  ```ts
+  // ⭐ a.js 模块函数，变成只接收一个 module 参数
+  {
+      './src/a.js': (module) => {
+        	eval('....a.js 里的代码');  
+      },
+      // ...
+      './src/index.js': (__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
+        	eval('....index.js 里的代码');   
+      },
+  }
+  ```
+
+- `__webpack_module_cache__` 对象，同 ESM
+
+流程分析：
+
+- 整个代码先执行了 `var __webpack_exports__ = __webpack_require__("./src/index.js")`
+- `__webpack_require__` 里做了什么？
+  - 先看 `__webpack_module_cache__['./src/index.js']` 有没有缓存，如果有，直接返回此 module.exports（module 为 { exports: {} } 结构）
+  - 如果无缓存，创建一个 module = { exports: {} }，并赋值给  `__webpack_module_cache__['./src/index.js']`
+  - 从 `__webpack_modules__['./src/index.js']` 拿到这个模块的资源，从上方产物可以知道，得到的是一个函数
+    - 执行这个函数，传入参数 `(module, modules.exports, __webpack_require__)` 
+    - 函数内通过 `eval` 执行 index.js 模块被编译后的代码
+  - 返回 module.exports
+
+index.js 编译后的代码（eval 的字符串）格式化后为如下结构：
+
+```ts
+const { a } = __webpack_require__(/*! ./a */ "./src/a.js");
+const { b } = __webpack_require__(/*! ./b */ "./src/b.js");
+console.log('a, b', a, b);
+//# sourceURL=webpack://demo-webpack-cjs-es/./src/index.js
+```
+
+- `__webpack_require__("./src/a.js")` 加载 a.js 的模块
+
+  - 同 index.js 上面的流程，一直到 a.js 的 `eval` 内容
+
+    ```ts
+    console.log('a');
+    const a = { id: 1 };
+    module.exports = { a };
+    ```
+
+  - ⭐ 与 ESM 的产物不同的是，CommonJs 的 a.js 模块编译后的产物很干净（其实就是源码），没有多余的 webpack 相关操作
+
+    ```ts
+    // 直接 module.exports = { a }
+    // 即直接给 a 模块 module.exports 对象上，挂了 a 属性
+    module.exports = { a };
+    ```
+
+- ⭐ 根据上面的操作，`__webpack_require__("./src/a.js")` 返回了 a.js 的 module.exports，大约是这样的结构
+
+  ```ts
+  {
+      a: {
+      	id: 1,
+      },
+  }
+  ```
+
+- ⭐ 同理，`__webpack_require__("./src/b.js")` 加载 b.js 的模块，拿到大约这样的结构
+
+  ```ts
+  {
+      b: {
+          id: 2,
+      },
+  }
+  ```
+
+- 完成加载
+
+### CommonJs QA：
+
+- Q：简而言之，与 ESM 的差异在哪？
+
+  - A：各个模块文件生成 module.exports 对象，CommonJs 与 ESM 是不同的，ESM 是 **Object.defineProperty get**，而 CommonJs 只是简单的赋值
+
+- Q：看起来 CommonJs 并没有是值的拷贝，也是引用？那和 ESM 效果上有什么不同？
+
+  - A：见这段代码，可以看出，因为 ESM 是 **Object.defineProperty get**，所以 import 后即使是基本类型的变量，在更新后可以实时拿到最新值，而 CommonJs 因为只是简单的赋值，所以给更新后拿到的依然是旧的值
+
+    ```ts
+    // CommonJs
+    
+    // src/a.js
+    let a = 1;
+    
+    const addA = () => a++;
+    
+    const getA = () => a;
+    
+    module.exports = {
+        a,
+        addA,
+        getA,
+    };
+    
+    // src/index.js
+    const { a, addA, getA } = require('./a');
+    
+    console.log('a', a); // 1
+    
+    addA();
+    console.log('a', a); // 1
+    console.log('getA', getA()); // 2
+    ```
+
+    ```ts
+    // ESM
+    
+    // src/a.js
+    let a = 1;
+    
+    const addA = () => a++;
+    
+    const getA = () => a;
+    
+    export {
+        a,
+        addA,
+        getA,
+    }
+    
+    // src/index.js
+    import { a, addA, getA } from './b';
+    
+    console.log('a', a); // 1
+    
+    addA();
+    console.log('a', a); // 2 ⭐
+    console.log('getA', getA()); // 2
+    ```
