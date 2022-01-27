@@ -40,7 +40,6 @@ defineExpose({
 ```
 
 ```html
-// app.vue
 <script>
     const sidebarRef = ref<{ count: number } | null>(null);
 
