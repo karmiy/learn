@@ -251,3 +251,84 @@ p~div {
 <span>...</span>
 <div>...</div> // 匹配这个div
 ```
+
+## pointer-events
+
+`pointer-events` 是 CSS3 用于指定在什么情况下 (如果有) 元素可以成为鼠标事件的 target
+
+如果了解 JavaScript，可以知道我们可以为 DOM 节点添加事件交互行为
+
+```html
+<div class='main' />
+```
+
+```css
+.main {
+    width: 100px;
+    height: 100px;
+    border: 1px solid skyblue;
+}
+```
+
+```js
+var main = document.querySelector('.main');
+main.onclick = function() {
+    console.log('click'); // 点击 div 元素，就可以在控制台看到输出
+}
+```
+
+但有些场景中，我们可能希望变更元素的事件行为，如：
+
+- 让一个已经绑定了 click 事件的元素，暂时失去这个事件能力
+
+那么我们可以：
+
+```css
+.main {
+    width: 100px;
+    height: 100px;
+    border: 1px solid skyblue;
+    pointer-events: none; /* 禁止元素任何事件行为，这时再去点击就会发现事件无效了 */
+}
+```
+
+值得注意的是：给元素添加 `pointer-events: none` 后，其全部子节点都会失去事件行为
+
+```html
+<div class='main'>
+    <div class='child' />
+</div>
+```
+```css
+.main {
+    width: 100px;
+    height: 100px;
+    border: 1px solid skyblue;
+    pointer-events: none;
+}
+
+.child {
+    width: 100px;
+    height: 50px;
+    border: 1px solid pink;
+}
+```
+
+```js
+var child = document.querySelector('.child');
+child.onclick = function() {
+    console.log('click'); // 会发现连 .child 节点的事件都触发不了了
+}
+```
+
+解决方案是：
+
+```css
+.child {
+    width: 100px;
+    height: 50px;
+    border: 1px solid pink;
+    pointer-events: initial; /* 单独解放 .child 的事件行为 */
+}
+```
+
