@@ -13,10 +13,24 @@ Vue3.2 新增了 setup 语法糖，不需要在 defineComponent 里定义 setup
 ```ts
 // ts 版
 const props = defineProps<{ id: number }>();
-
 // js 版
 const props = defineProps({ id: Number });
+
+// 通用
+// 这种应该更合适，也会自动推导出 typescript 类型
+defineProps({
+    description: {
+        type: String,
+        required: true,
+    },
+    size: {
+        type: Number,
+        default: 60,
+    },
+});
 ```
+
+> 注：其实不需要 const { id } = defineProps(); props 的属性会自动抛出 setup，可以直接在模板里使用
 
 ### defineEmits
 
