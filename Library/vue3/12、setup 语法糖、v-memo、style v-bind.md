@@ -32,6 +32,8 @@ defineProps({
 
 > 注：其实不需要 const { id } = defineProps(); props 的属性会自动抛出 setup，可以直接在模板里使用
 
+> 注：const { id = 10 } = defineProps<{ id?: number }>(); 是无效的，id 抛出到模板并不会取到默认值 10
+
 ### defineEmits
 
 使用 defineEmits 定义 emits
