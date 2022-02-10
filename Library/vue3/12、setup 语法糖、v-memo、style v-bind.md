@@ -10,14 +10,17 @@ Vue3.2 新增了 setup 语法糖，不需要在 defineComponent 里定义 setup
 
 使用 defineProps 接收 props
 
+有两种定义的方式：
+
 ```ts
+// ---------- NO.1 ----------
 // ts 版
 const props = defineProps<{ id: number }>();
 // js 版
 const props = defineProps({ id: Number });
 
-// 通用
-// 这种应该更合适，也会自动推导出 typescript 类型
+// ---------- NO.2 ----------
+// 也会自动推导出 typescript 类型
 defineProps({
     description: {
         type: String,
@@ -30,9 +33,59 @@ defineProps({
 });
 ```
 
-> 注：其实不需要 const { id } = defineProps(); props 的属性会自动抛出 setup，可以直接在模板里使用
+第一种方式比较简洁，但存在一些弊端，如不能设置默认值：
 
-> 注：const { id = 10 } = defineProps<{ id?: number }>(); 是无效的，id 抛出到模板并不会取到默认值 10
+```ts
+// 这个默认值 10 是无效的（原因其实是因为 props 属性会自动抛出到 setup，和这里有没有解构是没有关系的，见下面解读）
+const { id = 10 } = defineProps<{ id?: number }>();
+```
+
+第二种方式比较繁琐，但可以解决第一种方式的默认值问题，但值得注意的是，`type` 要指定如 ts 的强类型，需要借助 `PropType`：
+
+```ts
+import { PropType } from 'vue';
+
+defineProps({
+    label: {
+        type: String,
+        required: true,
+    },
+    align: {
+        type: String as PropType<'top' | 'center' | 'bottom'>,
+        default: 'center',
+    },
+    list: {
+        type: Array as PropType<Array<{ label: string }>>,
+        default: () => [],
+    },
+});
+```
+
+值得注意的，**props 的属性会自动抛出 setup，可以直接在模板里使用**，不需要手动解构抛出
+
+```html
+<script setup lang="ts">
+    // 不需要 const { label } = defineProps(); 解构出来  
+    defineProps({
+        label: {
+            type: String,
+            required: true,
+        },
+        align: {
+            type: String as PropType<'top' | 'center' | 'bottom'>,
+            default: 'center',
+        },
+        list: {
+            type: Array as PropType<Array<{ label: string }>>,
+            default: () => [],
+        },
+    });
+</script>
+
+<template>
+    <div>{{ label }}</div>
+</template>
+```
 
 ### defineEmits
 

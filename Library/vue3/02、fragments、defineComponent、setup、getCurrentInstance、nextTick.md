@@ -90,7 +90,7 @@ setup 的第一个参数接收 props
 </template>
 
 <script lang='ts'>
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 
 export default defineComponent({
     name: 'Header',
@@ -99,6 +99,12 @@ export default defineComponent({
     },
     setup(props) {
         console.log(props.title);
+
+        // 值得注意的是，如果解构了，会使 props 里的属性失去响应式效果
+        const { title } = props;
+
+        // const subTitle = computed(() => `sub_${title}`); // ⭕，这个操作没有意义，computed 不能触发
+        const subTitle = computed(() => `sub_${props.title}`); // ✅，应该这样
     },
 });
 </script>
