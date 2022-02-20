@@ -1947,29 +1947,71 @@ getComputedStyle 拿到的是 matrix 矩阵，除了 translate 是 index 4、5 �
 ## 输入url到页面加载都发生了什么事情
 
 - 输入地址
-
 - 浏览器查找域名的 IP 地址。这一步包括 DNS 具体的查找过程，包括：浏览器缓存 -> 系统缓存 -> 路由器缓存...
   
     - 查看浏览器有无该域名 IP 缓存
     - 查看操作系统有无该域名 IP 缓存
     - 查看 HOST 文件有无该域名解析配置
     - DNS 根服务器查询，返回给 DNS 客户端并缓存
-
 - 浏览器向 web 服务器发送一个 HTTP 请求，3 次握手建立 TCP 连接
-
 - 服务器的永久重定向响应（从 http://example.com 到 http://www.example.com）
-
 - 浏览器跟踪重定向地址
-
 - 服务器处理请求
-
 - 服务器返回一个 HTTP 响应
-
 - 浏览器显示 HTML
-
 - 浏览器发送请求获取嵌入在 HTML 中的资源（如图片、音频、视频、CSS、JS等等）
-
 - 浏览器发送异步请求
+
+前端在这个流程中可以考虑优化：
+
+- 优化首屏
+  
+  - JS 放最后（虽然现在好像也推荐多利用 defer async？），如 body 尾部，JS 的加载会阻塞 DOM 解析
+  - JS script 标签 defer 加载
+  
+  - CSS 会影响首屏渲染（JS 还可以 defer 异步），如果资源小，还可以考虑内嵌在 style 不作为 CSS 文件请求；如果资源大，按需确认用于首屏的 CSS，暂缓加载其余样式，直到首屏内容呈现
+  - 首屏 CSS 文件放置在页面上方（head 标签），这是因为：
+    - 放在 body 尾部，整个过程是： HTML 解析生成 DOM => DOM + CSSOM（这时还没加载那个 CSS） 生成 Layout 树 => 布局 => 绘制（页面有了第一次呈现，但是没样式，就像 “裸奔”） => 解析到 body 尾部 CSS 文件，Network 线程下载文件 => CSS 下载完毕，解析生成 CSSOM => 重新解析 HTML 生成 DOM + CSSOM 生成 Layout 树 => 布局 => 绘制（页面第二次呈现）。虽然提前呈现了页面，但后面这个过程会导致 reflow 或 repaint 消耗性能，且 “裸奔” 然后突变的现象体验并不友好
+    - 放在 head 标签，整个过程是： HTML 解析生成 DOM => Network 线程下载 CSS 文件 => CSS 下载完毕，解析生成 CSSOM => DOM + CSSOM 生成 Layout 树 => 布局 => 绘制。虽然会阻止 HTML 渲染（因为需要等 CSS 下载并解析完成后才会进行渲染），意味着如果 CSS 资源大或下载慢会出现长时间白屏（所以才有上一点提到的，CSS 资源最好就首屏所需，暂缓加载其余样式），但这个过程只发生一次解析渲染，比 “裸奔” 体验更相比，这段白屏反而体验更友好
+  - 移除会阻止内容呈现的 JS，如路由懒加载拆分只加载首屏页面代码、初始不会呈现的弹框代码后续异步加载等
+  
+- 优化请求
+  - 启用 http2，可以利用头部压缩、多路复用等特性优化请求
+
+  - 避免重定向，每个重定向都会添加一次 HTTP 请求响应往返，甚至还会执行 DNS 查找、TCP 握手和 TLS 协商
+
+  - 启用 gzip 压缩可大幅缩减所传输的响应的大小，缩短下载资源的时间，减少流量消耗，从而加速页面呈现
+
+  - 多利用缓存，如利用 contenthash 打包项目，没有变动的资源 hash 不变（一般貌似是 index.html 不缓存，其他资源强缓存？）
+
+  - 减少 HTTP 请求，尽量将多个请求合并道一个，请求建立和释放需要时间，如果请求很多，不合并 HTTP 请求，会耗费大量时间在建立和释放上，浏览器对同域名并发数量有限制，如果并发资源非常多，后面只能排队等（当然也不是说过度合并就是好的，还是要按需，因为会导致用户下载过量代码，和 “只发送需要的文件” 本意冲突，如把所有页面打成一个 JS 而不是懒加载肯定是不好的）
+
+    ```html
+    <script type="text/javascript" src="//b.aliyun.com/a.js"></script>
+    <script type="text/javascript" src="//b.aliyun.com/b.js"></script>
+    <script type="text/javascript" src="//b.aliyun.com/c.js"></script>
+    <script type="text/javascript" src="//b.aliyun.com/d.js"></script>
+    <script type="text/javascript" src="//b.aliyun.com/e.js"></script>
+    <script type="text/javascript" src="//b.aliyun.com/f.js"></script>
+    <script type="text/javascript" src="//b.aliyun.com/g.js"></script>
+    
+    <!-- 通过 combo 功能变为 -->
+    <script type="text/javascript" src="//b.aliyun.com/a.js??a.js,b.js,c.js,d.js,e.js,f.js,g.js"></script>
+    ```
+
+  - 资源放 CDN
+
+  - DNS 预解析
+
+    ```html
+     <link rel="dns-prefetch" href="//astyle.alicdn.com" />
+    ```
+
+- 优化资源
+
+  - 缩减 HTML CSS JS 资源大小，如无用代码 tree shaking 掉、打包压缩、打包去除无用内容如空格、代码按需引入、满足条件的情况下使用较小或支持 ES 模块的包
+  - 优化图片，如缩减图片大小、雪碧图（多个小图标拼大图，只要请求一次，减少 HTTP 请求）、小图 base64、小图标 iconfont 字体图标、甚至 CSS 可以实现的效果不用图片
+
 
 ## MD5
 
@@ -2465,3 +2507,39 @@ console.log('a, b', a, b);
     console.log('a', a); // 2 ⭐
     console.log('getA', getA()); // 2
     ```
+
+## Foo.getName 理解运算优先级
+
+```ts
+var Foo = function () {
+    getName = function () { console.log(1) };
+    return this;
+}
+Foo.getName = function () { console.log(2) };
+Foo.prototype.getName = function () { console.log(3) };
+var getName = function () { console.log(4) };
+function getName() {
+    console.log(5)
+};
+
+
+
+
+Foo.getName(); // 这里调用 Foo 函数上挂载的 getName，输出 2
+
+getName(); // 全局 getName 根据 JS 解析方式，先走 var getName，不赋值，再走 function getName，这时再回过头走 getName = function () { console.log(4) }，所以输出 4
+
+Foo().getName(); // Foo 执行后，更新了全局 getName 为 function () { console.log(1) }，返回 this 根据 this 指向知识可以知道是 window，window.getName() 即执行全局 getName，输出 1
+
+getName();  // 因为上面已经将全局 getName 更新，输出 1
+
+new Foo.getName(); // 根据运算优先级（https://github.com/xhlwill/blog/issues/16），Foo.getName 优先级大于 new，假设把 Foo.getName 命名为 F，即 const F = Foo.getName = function () { console.log(2) }，那就等价于 new F()，因为 new 一个构造函数时，会执行这个函数，所以输出 2
+
+new Foo().getName(); // 尽管 . 的优先级高，但 (). 没法调用，会先走 new Foo()，得到 Foo 实例 const foo = new Foo()，即 foo.getName()，输出 3
+
+new new Foo().getName(); // 可以理解为，new (new Foo().getName)() => new (function () { console.log(3) })()，输出 3
+```
+
+总结：
+
+- 遇到 new 时，可以尽可能找到离它最近的 ()，并把 () 前面的内容理解为构造函数
