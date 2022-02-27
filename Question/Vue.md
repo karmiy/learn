@@ -1194,6 +1194,8 @@ data() {
 
 ## 谈谈 Vue 的响应式原理
 
+[Vue 响应式实现](https://juejin.cn/post/6844903597986037768)
+
 Vue 响应式的实现核心在于 3 个类：
 
 - Observer：给对象添加 getter、setter，用于依赖收集与派发更新
@@ -1202,9 +1204,17 @@ Vue 响应式的实现核心在于 3 个类：
 
 - Watcher：观察者对象，实例分为渲染 watcher（render watcher）、计算属性 watcher（computed watcher）、侦听器 watcher（user watcher）
 
-流程：
+初始流程：
 
-组件会创建一个 Observer 对象，Observer 对组件的 data 使用 Object.defineProperty 对每一个属性值进行监听，并把生成的 Observer 实例放在 data 下的 \__ob__ 属性下
+- 组件会创建一个 Observer 对象，Observer 对组件的 data 使用 Object.defineProperty 对每一个属性值进行监听（可以理解为遍历 data 对象所有属性使用 defineProperty 监听，如果还是对象会递归继续 defineProperty 绑定），并把生成的 Observer 实例放在 data 下的 \__ob__ 属性下
+- 每次为 data 的属性 defineProperty 绑定监听时，都会创建一个 Dep 对象
+- 当有 Watcher 创建时，会触发 defineProperty 的 getter，从而触发 Dep 实例收集依赖，将该 Wacher 存储到 Dep 实例的 subs 数组中，以此推类，Dep 实例的 subs 数组会存有所有关联依赖的 Watcher
+
+setter 流程：
+
+- 当为 data 的属性值赋值时，会触发 defineProperty 的 setter
+- setter 中会调用 dep 的 notify 通知方法，notify 中会遍历 subs 数组拿到初始流程存储的每一个 Watcher 实例，并调用它们的 update 方法
+- Watcher 实例的 update 方法执行响应的操作更新对应视图
 
 如：
 
@@ -1225,21 +1235,28 @@ data() {
 }
 ```
 
-Observer 里有一个 dep 属性，它是 Dep 的实例,Dep 实例有一个 subs 属性，用于存放 Watcher：
+Observer 会为 name 通过 defineProperty 绑定监听，并创建有一个 dep 属性，它是 Dep 的实例，Dep 实例有一个 subs 属性，用于存放 Watcher：
 
 ```js
-// Observer 实例
-{
-    dep: Dep
-}
-
 // Dep 实例
 {
     subs: [....] // 里面是 Watcher
+    notify() {
+        this.subs.forEach(item => item.update());
+    },
 }
 ```
 
-我们的 computed watch 等会有相应的 Watcher 实例，当创建了一个 Watcher 时，这个 Watcher 依赖 data 的 name 属性，就会触发 Observer 为其绑定的 getter，将整个 Watcher 实例放到 Dep 的 subs 数组里，并且 Watcher 实例里也会存有对应的 Dep 实例。这样 Observer 的 Dep 实例中，就可以通过 subs 得到全部的 Watcher
+每当有 Watcher 创建时，会触发 getter，并把自己存储到 Dep 的 subs 中
+
+```js
+// Watcher 实例
+{
+    update() {}, // 更新视图
+}
+```
+
+我们的 computed watch 等会有相应的 Watcher 实例，当创建了一个 Watcher 时，这个 Watcher 依赖 data 的 name 属性，就会触发 Observer 为其绑定的 getter，将整个 Watcher 实例放到 Dep 的 subs 数组里，并且 Watcher 实例里也会存有对应的 Dep 实例。这样就可以通过 subs 得到全部的 Watcher
 
 当我们会 data 属性赋值时，会触发 Observer 为该属性绑定的 setter，它将触发 Dep 的 notify 方法通知全部 Watcher，而 notify 方法里会遍历 subs 数组，取出 Watcher 做相应的 update 操作
 
